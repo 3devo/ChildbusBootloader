@@ -1,0 +1,1020 @@
+
+bootloader-attiny.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000004ac  00001a00  00001a00  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00000027  00800100  00800100  00000520  2**0
+                  ALLOC
+  2 .comment      00000030  00000000  00000000  00000520  2**0
+                  CONTENTS, READONLY
+  3 .debug_aranges 000000b0  00000000  00000000  00000550  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_info   00000965  00000000  00000000  00000600  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 00000414  00000000  00000000  00000f65  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   000003ea  00000000  00000000  00001379  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_frame  00000170  00000000  00000000  00001764  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_str    0000049c  00000000  00000000  000018d4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    00000752  00000000  00000000  00001d70  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 000000a8  00000000  00000000  000024c2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00001a00 <__vectors>:
+    1a00:	24 c0       	rjmp	.+72     	; 0x1a4a <__ctors_end>
+    1a02:	33 c0       	rjmp	.+102    	; 0x1a6a <__bad_interrupt>
+    1a04:	32 c0       	rjmp	.+100    	; 0x1a6a <__bad_interrupt>
+    1a06:	31 c0       	rjmp	.+98     	; 0x1a6a <__bad_interrupt>
+    1a08:	30 c0       	rjmp	.+96     	; 0x1a6a <__bad_interrupt>
+    1a0a:	2f c0       	rjmp	.+94     	; 0x1a6a <__bad_interrupt>
+    1a0c:	2e c0       	rjmp	.+92     	; 0x1a6a <__bad_interrupt>
+    1a0e:	2d c0       	rjmp	.+90     	; 0x1a6a <__bad_interrupt>
+    1a10:	2c c0       	rjmp	.+88     	; 0x1a6a <__bad_interrupt>
+    1a12:	2b c0       	rjmp	.+86     	; 0x1a6a <__bad_interrupt>
+    1a14:	2a c0       	rjmp	.+84     	; 0x1a6a <__bad_interrupt>
+    1a16:	29 c0       	rjmp	.+82     	; 0x1a6a <__bad_interrupt>
+    1a18:	28 c0       	rjmp	.+80     	; 0x1a6a <__bad_interrupt>
+    1a1a:	27 c0       	rjmp	.+78     	; 0x1a6a <__bad_interrupt>
+    1a1c:	26 c0       	rjmp	.+76     	; 0x1a6a <__bad_interrupt>
+    1a1e:	25 c0       	rjmp	.+74     	; 0x1a6a <__bad_interrupt>
+    1a20:	24 c0       	rjmp	.+72     	; 0x1a6a <__bad_interrupt>
+    1a22:	23 c0       	rjmp	.+70     	; 0x1a6a <__bad_interrupt>
+    1a24:	22 c0       	rjmp	.+68     	; 0x1a6a <__bad_interrupt>
+    1a26:	21 c0       	rjmp	.+66     	; 0x1a6a <__bad_interrupt>
+    1a28:	20 c0       	rjmp	.+64     	; 0x1a6a <__bad_interrupt>
+    1a2a:	1f c0       	rjmp	.+62     	; 0x1a6a <__bad_interrupt>
+    1a2c:	1e c0       	rjmp	.+60     	; 0x1a6a <__bad_interrupt>
+    1a2e:	1d c0       	rjmp	.+58     	; 0x1a6a <__bad_interrupt>
+    1a30:	1c c0       	rjmp	.+56     	; 0x1a6a <__bad_interrupt>
+    1a32:	1b c0       	rjmp	.+54     	; 0x1a6a <__bad_interrupt>
+    1a34:	1a c0       	rjmp	.+52     	; 0x1a6a <__bad_interrupt>
+    1a36:	19 c0       	rjmp	.+50     	; 0x1a6a <__bad_interrupt>
+    1a38:	18 c0       	rjmp	.+48     	; 0x1a6a <__bad_interrupt>
+    1a3a:	17 c0       	rjmp	.+46     	; 0x1a6a <__bad_interrupt>
+    1a3c:	4c c1       	rjmp	.+664    	; 0x1cd6 <_Z15TwoWireCallbackhPhhh+0x24>
+    1a3e:	59 c1       	rjmp	.+690    	; 0x1cf2 <_Z15TwoWireCallbackhPhhh+0x40>
+    1a40:	6c c1       	rjmp	.+728    	; 0x1d1a <_Z15TwoWireCallbackhPhhh+0x68>
+    1a42:	80 c1       	rjmp	.+768    	; 0x1d44 <_Z15TwoWireCallbackhPhhh+0x92>
+    1a44:	9e c1       	rjmp	.+828    	; 0x1d82 <_Z15TwoWireCallbackhPhhh+0xd0>
+    1a46:	aa c1       	rjmp	.+852    	; 0x1d9c <_Z15TwoWireCallbackhPhhh+0xea>
+    1a48:	b8 c1       	rjmp	.+880    	; 0x1dba <_Z15TwoWireCallbackhPhhh+0x108>
+
+00001a4a <__ctors_end>:
+    1a4a:	11 24       	eor	r1, r1
+    1a4c:	1f be       	out	0x3f, r1	; 63
+    1a4e:	cf ef       	ldi	r28, 0xFF	; 255
+    1a50:	d2 e0       	ldi	r29, 0x02	; 2
+    1a52:	de bf       	out	0x3e, r29	; 62
+    1a54:	cd bf       	out	0x3d, r28	; 61
+
+00001a56 <__do_clear_bss>:
+    1a56:	21 e0       	ldi	r18, 0x01	; 1
+    1a58:	a0 e0       	ldi	r26, 0x00	; 0
+    1a5a:	b1 e0       	ldi	r27, 0x01	; 1
+    1a5c:	01 c0       	rjmp	.+2      	; 0x1a60 <.do_clear_bss_start>
+
+00001a5e <.do_clear_bss_loop>:
+    1a5e:	1d 92       	st	X+, r1
+
+00001a60 <.do_clear_bss_start>:
+    1a60:	a7 32       	cpi	r26, 0x27	; 39
+    1a62:	b2 07       	cpc	r27, r18
+    1a64:	e1 f7       	brne	.-8      	; 0x1a5e <.do_clear_bss_loop>
+    1a66:	c5 d1       	rcall	.+906    	; 0x1df2 <main>
+    1a68:	1f c2       	rjmp	.+1086   	; 0x1ea8 <_exit>
+
+00001a6a <__bad_interrupt>:
+    1a6a:	ca cf       	rjmp	.-108    	; 0x1a00 <__vectors>
+
+00001a6c <_ZL12_Acknowledgebb>:
+uint8_t TwoWireGetDeviceAddress() {
+	return _deviceAddress;
+}
+
+static void _Acknowledge(bool ack, bool complete=false) {
+	if (ack) {
+    1a6c:	88 23       	and	r24, r24
+    1a6e:	21 f0       	breq	.+8      	; 0x1a78 <_ZL12_Acknowledgebb+0xc>
+		TWSCRB &= ~_BV(TWAA);
+    1a70:	80 91 a4 00 	lds	r24, 0x00A4
+    1a74:	8b 7f       	andi	r24, 0xFB	; 251
+    1a76:	03 c0       	rjmp	.+6      	; 0x1a7e <_ZL12_Acknowledgebb+0x12>
+	} else {
+		TWSCRB |= _BV(TWAA);
+    1a78:	80 91 a4 00 	lds	r24, 0x00A4
+    1a7c:	84 60       	ori	r24, 0x04	; 4
+    1a7e:	80 93 a4 00 	sts	0x00A4, r24
+	}
+	
+	TWSCRB |= _BV(TWCMD1) | (complete ? 0 : _BV(TWCMD0));
+    1a82:	90 91 a4 00 	lds	r25, 0x00A4
+    1a86:	66 23       	and	r22, r22
+    1a88:	11 f0       	breq	.+4      	; 0x1a8e <_ZL12_Acknowledgebb+0x22>
+    1a8a:	82 e0       	ldi	r24, 0x02	; 2
+    1a8c:	01 c0       	rjmp	.+2      	; 0x1a90 <_ZL12_Acknowledgebb+0x24>
+    1a8e:	83 e0       	ldi	r24, 0x03	; 3
+    1a90:	89 2b       	or	r24, r25
+    1a92:	80 93 a4 00 	sts	0x00A4, r24
+    1a96:	08 95       	ret
+
+00001a98 <_Z11TwoWireInith>:
+
+
+void TwoWireInit(uint8_t broadcastAddress) {
+	// Enable Data Interrupt, Address/Stop Interrupt, Two-Wire Interface, Stop Interrpt
+	//TWSCRA = _BV(TWDIE) | _BV(TWASIE) | _BV(TWEN) | _BV(TWSIE);
+	TWSCRA = _BV(TWEN);
+    1a98:	98 e0       	ldi	r25, 0x08	; 8
+    1a9a:	90 93 a5 00 	sts	0x00A5, r25
+	TWSCRB = _BV(TWHNM);
+    1a9e:	90 93 a4 00 	sts	0x00A4, r25
+
+	// Also listen for message on the broadcast address
+	TWSAM = (broadcastAddress << 1)| 1;
+    1aa2:	88 0f       	add	r24, r24
+    1aa4:	81 60       	ori	r24, 0x01	; 1
+    1aa6:	80 93 a1 00 	sts	0x00A1, r24
+    1aaa:	08 95       	ret
+
+00001aac <_Z23TwoWireSetDeviceAddressh>:
+}
+
+void TwoWireSetDeviceAddress(uint8_t address) {
+	_deviceAddress = address;
+    1aac:	80 93 24 01 	sts	0x0124, r24
+	TWSA = (address << 1);
+    1ab0:	88 0f       	add	r24, r24
+    1ab2:	80 93 a2 00 	sts	0x00A2, r24
+    1ab6:	08 95       	ret
+
+00001ab8 <_Z23TwoWireGetDeviceAddressv>:
+}
+
+uint8_t TwoWireGetDeviceAddress() {
+	return _deviceAddress;
+    1ab8:	80 91 24 01 	lds	r24, 0x0124
+}
+    1abc:	08 95       	ret
+
+00001abe <_Z13TwoWireUpdatev>:
+
+static TWIState twiState = TWIStateIdle;
+
+// The two wire interrupt service routine
+void TwoWireUpdate()
+{
+    1abe:	ff 92       	push	r15
+    1ac0:	0f 93       	push	r16
+    1ac2:	1f 93       	push	r17
+    1ac4:	cf 93       	push	r28
+    1ac6:	df 93       	push	r29
+    1ac8:	1f 92       	push	r1
+    1aca:	cd b7       	in	r28, 0x3d	; 61
+    1acc:	de b7       	in	r29, 0x3e	; 62
+	uint8_t status = TWSSRA;
+    1ace:	00 91 a3 00 	lds	r16, 0x00A3
+	bool dataInterruptFlag = (status & _BV(TWDIF)); // Check whether the data interrupt flag is set
+	bool isAddressOrStop = (status & _BV(TWASIF)); // Get the TWI Address/Stop Interrupt Flag
+	bool isReadOperation = (status & _BV(TWDIR));
+    1ad2:	01 fb       	bst	r16, 1
+    1ad4:	ff 24       	eor	r15, r15
+    1ad6:	f0 f8       	bld	r15, 0
+	//volatile bool receiveAck = (TWSSRA & _BV(TWRA));
+	//volatile bool collision = (TWSSRA & _BV(TWC));
+	//volatile bool busError = (TWSSRA & _BV(TWBE));
+	
+	// Handle address received and stop conditions
+	if (isAddressOrStop) {
+    1ad8:	06 ff       	sbrs	r16, 6
+    1ada:	35 c0       	rjmp	.+106    	; 0x1b46 <_Z13TwoWireUpdatev+0x88>
+{
+	uint8_t status = TWSSRA;
+	bool dataInterruptFlag = (status & _BV(TWDIF)); // Check whether the data interrupt flag is set
+	bool isAddressOrStop = (status & _BV(TWASIF)); // Get the TWI Address/Stop Interrupt Flag
+	bool isReadOperation = (status & _BV(TWDIR));
+	bool addressReceived = (status & _BV(TWAS)); // Check if we received an address and not a stop
+    1adc:	10 2f       	mov	r17, r16
+    1ade:	11 70       	andi	r17, 0x01	; 1
+	//volatile bool busError = (TWSSRA & _BV(TWBE));
+	
+	// Handle address received and stop conditions
+	if (isAddressOrStop) {
+		// Send an ack unless a read is starting and there are no bytes to read.
+		bool ack = (twiBufferLen > 0) or (!isReadOperation) or (!addressReceived);
+    1ae0:	40 91 03 01 	lds	r20, 0x0103
+    1ae4:	81 e0       	ldi	r24, 0x01	; 1
+    1ae6:	41 11       	cpse	r20, r1
+    1ae8:	02 c0       	rjmp	.+4      	; 0x1aee <_Z13TwoWireUpdatev+0x30>
+    1aea:	f1 10       	cpse	r15, r1
+    1aec:	81 27       	eor	r24, r17
+		_Acknowledge(ack, !addressReceived /*complete*/);
+    1aee:	61 e0       	ldi	r22, 0x01	; 1
+    1af0:	61 27       	eor	r22, r17
+    1af2:	49 83       	std	Y+1, r20	; 0x01
+    1af4:	bb df       	rcall	.-138    	; 0x1a6c <_ZL12_Acknowledgebb>
+		
+		// If we were previously in a write, then execute the callback and setup for a read.
+		if ((twiState == TWIStateWrite) and twiBufferLen != 0) {
+    1af6:	80 91 00 01 	lds	r24, 0x0100
+    1afa:	49 81       	ldd	r20, Y+1	; 0x01
+    1afc:	82 30       	cpi	r24, 0x02	; 2
+    1afe:	61 f4       	brne	.+24     	; 0x1b18 <_Z13TwoWireUpdatev+0x5a>
+    1b00:	44 23       	and	r20, r20
+    1b02:	51 f0       	breq	.+20     	; 0x1b18 <_Z13TwoWireUpdatev+0x5a>
+			twiBufferLen = TwoWireCallback(twiAddress, twiBuffer, twiBufferLen, TWI_BUFFER_SIZE);		
+    1b04:	20 e2       	ldi	r18, 0x20	; 32
+    1b06:	64 e0       	ldi	r22, 0x04	; 4
+    1b08:	71 e0       	ldi	r23, 0x01	; 1
+    1b0a:	80 91 01 01 	lds	r24, 0x0101
+    1b0e:	d1 d0       	rcall	.+418    	; 0x1cb2 <_Z15TwoWireCallbackhPhhh>
+    1b10:	80 93 03 01 	sts	0x0103, r24
+			twiReadPos = 0;
+    1b14:	10 92 02 01 	sts	0x0102, r1
+		}
+		
+		if (!addressReceived) {
+    1b18:	11 11       	cpse	r17, r1
+    1b1a:	03 c0       	rjmp	.+6      	; 0x1b22 <_Z13TwoWireUpdatev+0x64>
+			twiState = TWIStateIdle;
+    1b1c:	10 92 00 01 	sts	0x0100, r1
+    1b20:	0b c0       	rjmp	.+22     	; 0x1b38 <_Z13TwoWireUpdatev+0x7a>
+		} else if (isReadOperation) {
+    1b22:	ff 20       	and	r15, r15
+    1b24:	21 f0       	breq	.+8      	; 0x1b2e <_Z13TwoWireUpdatev+0x70>
+			twiState = TWIStateRead;
+    1b26:	81 e0       	ldi	r24, 0x01	; 1
+    1b28:	80 93 00 01 	sts	0x0100, r24
+    1b2c:	05 c0       	rjmp	.+10     	; 0x1b38 <_Z13TwoWireUpdatev+0x7a>
+		} else {
+			twiState = TWIStateWrite;
+    1b2e:	82 e0       	ldi	r24, 0x02	; 2
+    1b30:	80 93 00 01 	sts	0x0100, r24
+			twiBufferLen = 0;
+    1b34:	10 92 03 01 	sts	0x0103, r1
+		}
+		
+		// The address is in the high 7 bits, the RD/WR bit is in the lsb
+		twiAddress = TWSD >> 1;
+    1b38:	80 91 a0 00 	lds	r24, 0x00A0
+    1b3c:	90 e0       	ldi	r25, 0x00	; 0
+    1b3e:	95 95       	asr	r25
+    1b40:	87 95       	ror	r24
+    1b42:	80 93 01 01 	sts	0x0101, r24
+	}
+
+	// Data Read
+	if (dataInterruptFlag and isReadOperation) {
+    1b46:	07 ff       	sbrs	r16, 7
+    1b48:	31 c0       	rjmp	.+98     	; 0x1bac <_Z13TwoWireUpdatev+0xee>
+    1b4a:	ff 20       	and	r15, r15
+    1b4c:	f1 f0       	breq	.+60     	; 0x1b8a <_Z13TwoWireUpdatev+0xcc>
+		if (twiReadPos < twiBufferLen) {
+    1b4e:	e0 91 02 01 	lds	r30, 0x0102
+    1b52:	80 91 03 01 	lds	r24, 0x0103
+    1b56:	e8 17       	cp	r30, r24
+    1b58:	68 f4       	brcc	.+26     	; 0x1b74 <_Z13TwoWireUpdatev+0xb6>
+			TWSD = twiBuffer[twiReadPos++];
+    1b5a:	81 e0       	ldi	r24, 0x01	; 1
+    1b5c:	8e 0f       	add	r24, r30
+    1b5e:	80 93 02 01 	sts	0x0102, r24
+    1b62:	f0 e0       	ldi	r31, 0x00	; 0
+    1b64:	ec 5f       	subi	r30, 0xFC	; 252
+    1b66:	fe 4f       	sbci	r31, 0xFE	; 254
+    1b68:	80 81       	ld	r24, Z
+    1b6a:	80 93 a0 00 	sts	0x00A0, r24
+			_Acknowledge(true /*ack*/, false /*complete*/);
+    1b6e:	60 e0       	ldi	r22, 0x00	; 0
+    1b70:	81 e0       	ldi	r24, 0x01	; 1
+    1b72:	04 c0       	rjmp	.+8      	; 0x1b7c <_Z13TwoWireUpdatev+0xbe>
+		} else {
+			TWSD = 0;
+    1b74:	10 92 a0 00 	sts	0x00A0, r1
+			_Acknowledge(false /*ack*/, true /*complete*/);
+    1b78:	61 e0       	ldi	r22, 0x01	; 1
+    1b7a:	80 e0       	ldi	r24, 0x00	; 0
+		if (twiBufferLen < TWI_BUFFER_SIZE) {
+			twiBuffer[twiBufferLen++] = data;
+		}
+	}
+
+}
+    1b7c:	0f 90       	pop	r0
+    1b7e:	df 91       	pop	r29
+    1b80:	cf 91       	pop	r28
+    1b82:	1f 91       	pop	r17
+    1b84:	0f 91       	pop	r16
+    1b86:	ff 90       	pop	r15
+		if (twiReadPos < twiBufferLen) {
+			TWSD = twiBuffer[twiReadPos++];
+			_Acknowledge(true /*ack*/, false /*complete*/);
+		} else {
+			TWSD = 0;
+			_Acknowledge(false /*ack*/, true /*complete*/);
+    1b88:	71 cf       	rjmp	.-286    	; 0x1a6c <_ZL12_Acknowledgebb>
+		}
+	}
+	
+	// Data Write
+	if (dataInterruptFlag and !isReadOperation) {		
+		uint8_t data = TWSD;
+    1b8a:	10 91 a0 00 	lds	r17, 0x00A0
+		_Acknowledge(true, false);
+    1b8e:	60 e0       	ldi	r22, 0x00	; 0
+    1b90:	81 e0       	ldi	r24, 0x01	; 1
+    1b92:	6c df       	rcall	.-296    	; 0x1a6c <_ZL12_Acknowledgebb>
+
+		if (twiBufferLen < TWI_BUFFER_SIZE) {
+    1b94:	e0 91 03 01 	lds	r30, 0x0103
+    1b98:	e0 32       	cpi	r30, 0x20	; 32
+    1b9a:	40 f4       	brcc	.+16     	; 0x1bac <_Z13TwoWireUpdatev+0xee>
+			twiBuffer[twiBufferLen++] = data;
+    1b9c:	81 e0       	ldi	r24, 0x01	; 1
+    1b9e:	8e 0f       	add	r24, r30
+    1ba0:	80 93 03 01 	sts	0x0103, r24
+    1ba4:	f0 e0       	ldi	r31, 0x00	; 0
+    1ba6:	ec 5f       	subi	r30, 0xFC	; 252
+    1ba8:	fe 4f       	sbci	r31, 0xFE	; 254
+    1baa:	10 83       	st	Z, r17
+		}
+	}
+
+}
+    1bac:	0f 90       	pop	r0
+    1bae:	df 91       	pop	r29
+    1bb0:	cf 91       	pop	r28
+    1bb2:	1f 91       	pop	r17
+    1bb4:	0f 91       	pop	r16
+    1bb6:	ff 90       	pop	r15
+    1bb8:	08 95       	ret
+
+00001bba <_Z9erasePagej>:
+#include <string.h>
+
+
+// Flash page size is 16 bytes
+void erasePage(uint16_t address) {
+	uint8_t sreg = SREG;
+    1bba:	2f b7       	in	r18, 0x3f	; 63
+	cli();
+    1bbc:	f8 94       	cli
+	
+	eeprom_busy_wait();
+    1bbe:	e1 99       	sbic	0x1c, 1	; 28
+    1bc0:	fe cf       	rjmp	.-4      	; 0x1bbe <_Z9erasePagej+0x4>
+	boot_page_erase(address);
+    1bc2:	33 e0       	ldi	r19, 0x03	; 3
+    1bc4:	fc 01       	movw	r30, r24
+    1bc6:	30 93 57 00 	sts	0x0057, r19
+    1bca:	e8 95       	spm
+	boot_spm_busy_wait();
+    1bcc:	07 b6       	in	r0, 0x37	; 55
+    1bce:	00 fc       	sbrc	r0, 0
+    1bd0:	fd cf       	rjmp	.-6      	; 0x1bcc <_Z9erasePagej+0x12>
+	
+	sei();
+    1bd2:	78 94       	sei
+	SREG = sreg;
+    1bd4:	2f bf       	out	0x3f, r18	; 63
+    1bd6:	08 95       	ret
+
+00001bd8 <_Z8readPagehPh>:
+}
+
+void readPage(uint8_t address, uint8_t *data) {
+	for (int i=0; i < SPM_PAGESIZE; i++) {
+    1bd8:	20 e0       	ldi	r18, 0x00	; 0
+    1bda:	30 e0       	ldi	r19, 0x00	; 0
+    1bdc:	90 e0       	ldi	r25, 0x00	; 0
+    1bde:	f9 01       	movw	r30, r18
+    1be0:	e8 0f       	add	r30, r24
+    1be2:	f9 1f       	adc	r31, r25
+		data[i] = pgm_read_byte(address+i);
+    1be4:	e4 91       	lpm	r30, Z
+    1be6:	db 01       	movw	r26, r22
+    1be8:	ed 93       	st	X+, r30
+    1bea:	bd 01       	movw	r22, r26
+	sei();
+	SREG = sreg;
+}
+
+void readPage(uint8_t address, uint8_t *data) {
+	for (int i=0; i < SPM_PAGESIZE; i++) {
+    1bec:	2f 5f       	subi	r18, 0xFF	; 255
+    1bee:	3f 4f       	sbci	r19, 0xFF	; 255
+    1bf0:	20 31       	cpi	r18, 0x10	; 16
+    1bf2:	31 05       	cpc	r19, r1
+    1bf4:	a1 f7       	brne	.-24     	; 0x1bde <_Z8readPagehPh+0x6>
+		data[i] = pgm_read_byte(address+i);
+	}
+}
+    1bf6:	08 95       	ret
+
+00001bf8 <_Z9writePagejPh>:
+
+void writePage(uint16_t address, uint8_t *data) {
+    1bf8:	cf 93       	push	r28
+    1bfa:	df 93       	push	r29
+	uint8_t sreg = SREG;
+    1bfc:	cf b7       	in	r28, 0x3f	; 63
+	cli();
+    1bfe:	f8 94       	cli
+	
+	eeprom_busy_wait();
+    1c00:	e1 99       	sbic	0x1c, 1	; 28
+    1c02:	fe cf       	rjmp	.-4      	; 0x1c00 <_Z9writePagejPh+0x8>
+    1c04:	20 e0       	ldi	r18, 0x00	; 0
+    1c06:	30 e0       	ldi	r19, 0x00	; 0
+	for (int i=0; i < SPM_PAGESIZE; i += 2) {
+		uint16_t w = data[i] | (data[i+1] << 8);
+		boot_page_fill(address+i, w);
+    1c08:	d1 e0       	ldi	r29, 0x01	; 1
+    1c0a:	db 01       	movw	r26, r22
+    1c0c:	a2 0f       	add	r26, r18
+    1c0e:	b3 1f       	adc	r27, r19
+    1c10:	f9 01       	movw	r30, r18
+    1c12:	e8 0f       	add	r30, r24
+    1c14:	f9 1f       	adc	r31, r25
+	uint8_t sreg = SREG;
+	cli();
+	
+	eeprom_busy_wait();
+	for (int i=0; i < SPM_PAGESIZE; i += 2) {
+		uint16_t w = data[i] | (data[i+1] << 8);
+    1c16:	11 96       	adiw	r26, 0x01	; 1
+    1c18:	4c 91       	ld	r20, X
+    1c1a:	11 97       	sbiw	r26, 0x01	; 1
+    1c1c:	50 e0       	ldi	r21, 0x00	; 0
+    1c1e:	54 2f       	mov	r21, r20
+    1c20:	44 27       	eor	r20, r20
+    1c22:	ac 91       	ld	r26, X
+    1c24:	4a 2b       	or	r20, r26
+		boot_page_fill(address+i, w);
+    1c26:	0a 01       	movw	r0, r20
+    1c28:	d0 93 57 00 	sts	0x0057, r29
+    1c2c:	e8 95       	spm
+    1c2e:	11 24       	eor	r1, r1
+void writePage(uint16_t address, uint8_t *data) {
+	uint8_t sreg = SREG;
+	cli();
+	
+	eeprom_busy_wait();
+	for (int i=0; i < SPM_PAGESIZE; i += 2) {
+    1c30:	2e 5f       	subi	r18, 0xFE	; 254
+    1c32:	3f 4f       	sbci	r19, 0xFF	; 255
+    1c34:	20 31       	cpi	r18, 0x10	; 16
+    1c36:	31 05       	cpc	r19, r1
+    1c38:	41 f7       	brne	.-48     	; 0x1c0a <_Z9writePagejPh+0x12>
+		uint16_t w = data[i] | (data[i+1] << 8);
+		boot_page_fill(address+i, w);
+	}
+	boot_page_write(address);
+    1c3a:	25 e0       	ldi	r18, 0x05	; 5
+    1c3c:	fc 01       	movw	r30, r24
+    1c3e:	20 93 57 00 	sts	0x0057, r18
+    1c42:	e8 95       	spm
+	boot_spm_busy_wait();
+    1c44:	07 b6       	in	r0, 0x37	; 55
+    1c46:	00 fc       	sbrc	r0, 0
+    1c48:	fd cf       	rjmp	.-6      	; 0x1c44 <_Z9writePagejPh+0x4c>
+	
+	sei();
+    1c4a:	78 94       	sei
+	SREG = sreg;
+    1c4c:	cf bf       	out	0x3f, r28	; 63
+}
+    1c4e:	df 91       	pop	r29
+    1c50:	cf 91       	pop	r28
+    1c52:	08 95       	ret
+
+00001c54 <_Z6blExitv>:
+#define FUNCTION_READ_EEPROM 108
+#define FUNCTION_WRITE_EEPROM 110
+
+
+
+void blExit() {
+    1c54:	08 95       	ret
+
+00001c56 <_Z12loadDeviceIDv>:
+// The attiny841 has a 512 byte EEPROM section.
+// The deviceID is at the end of the EEPROM section (address 510)
+#define DEVICE_ID_ADDRESS ((uint16_t*)(510))
+
+void loadDeviceID() {
+	_deviceID = eeprom_read_word(DEVICE_ID_ADDRESS);
+    1c56:	8e ef       	ldi	r24, 0xFE	; 254
+    1c58:	91 e0       	ldi	r25, 0x01	; 1
+    1c5a:	00 d1       	rcall	.+512    	; 0x1e5c <__eerd_word_tn841>
+	// 0xFFFF is an invalid device ID. Default to deviceID=1
+	if (_deviceID == 0xFFFF) {
+    1c5c:	8f 3f       	cpi	r24, 0xFF	; 255
+    1c5e:	2f ef       	ldi	r18, 0xFF	; 255
+    1c60:	92 07       	cpc	r25, r18
+    1c62:	11 f4       	brne	.+4      	; 0x1c68 <_Z12loadDeviceIDv+0x12>
+		_deviceID = 1;
+    1c64:	81 e0       	ldi	r24, 0x01	; 1
+    1c66:	90 e0       	ldi	r25, 0x00	; 0
+    1c68:	90 93 26 01 	sts	0x0126, r25
+    1c6c:	80 93 25 01 	sts	0x0125, r24
+    1c70:	08 95       	ret
+
+00001c72 <_Z13storeDeviceIDv>:
+	}
+}
+
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+    1c72:	60 91 25 01 	lds	r22, 0x0125
+    1c76:	70 91 26 01 	lds	r23, 0x0126
+    1c7a:	8e ef       	ldi	r24, 0xFE	; 254
+    1c7c:	91 e0       	ldi	r25, 0x01	; 1
+    1c7e:	f3 c0       	rjmp	.+486    	; 0x1e66 <__eewr_word_tn841>
+
+00001c80 <_Z7getWordPh>:
+}
+
+uint16_t getWord(uint8_t *data) {
+    1c80:	fc 01       	movw	r30, r24
+	return data[0] | (data[1] << 8);
+    1c82:	81 81       	ldd	r24, Z+1	; 0x01
+    1c84:	90 e0       	ldi	r25, 0x00	; 0
+    1c86:	98 2f       	mov	r25, r24
+    1c88:	88 27       	eor	r24, r24
+    1c8a:	20 81       	ld	r18, Z
+}
+    1c8c:	82 2b       	or	r24, r18
+    1c8e:	08 95       	ret
+
+00001c90 <_Z13checkDeviceIDPh>:
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+}
+
+uint16_t getWord(uint8_t *data) {
+	return data[0] | (data[1] << 8);
+    1c90:	fc 01       	movw	r30, r24
+    1c92:	21 81       	ldd	r18, Z+1	; 0x01
+    1c94:	30 e0       	ldi	r19, 0x00	; 0
+    1c96:	32 2f       	mov	r19, r18
+    1c98:	22 27       	eor	r18, r18
+    1c9a:	80 81       	ld	r24, Z
+    1c9c:	28 2b       	or	r18, r24
+}
+
+bool checkDeviceID(uint8_t *data) {
+	return (getWord(data) == _deviceID);
+    1c9e:	81 e0       	ldi	r24, 0x01	; 1
+    1ca0:	40 91 25 01 	lds	r20, 0x0125
+    1ca4:	50 91 26 01 	lds	r21, 0x0126
+    1ca8:	24 17       	cp	r18, r20
+    1caa:	35 07       	cpc	r19, r21
+    1cac:	09 f0       	breq	.+2      	; 0x1cb0 <_Z13checkDeviceIDPh+0x20>
+    1cae:	80 e0       	ldi	r24, 0x00	; 0
+}
+    1cb0:	08 95       	ret
+
+00001cb2 <_Z15TwoWireCallbackhPhhh>:
+
+#define BOOTLOADER_VERSION 1234
+
+int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
+    1cb2:	cf 93       	push	r28
+    1cb4:	df 93       	push	r29
+    1cb6:	eb 01       	movw	r28, r22
+	if (len < 1) {
+    1cb8:	44 23       	and	r20, r20
+    1cba:	09 f4       	brne	.+2      	; 0x1cbe <_Z15TwoWireCallbackhPhhh+0xc>
+    1cbc:	93 c0       	rjmp	.+294    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+		return 0;
+	}
+	
+	switch (data[0]) {
+    1cbe:	88 81       	ld	r24, Y
+    1cc0:	90 e0       	ldi	r25, 0x00	; 0
+    1cc2:	fc 01       	movw	r30, r24
+    1cc4:	e5 56       	subi	r30, 0x65	; 101
+    1cc6:	f1 09       	sbc	r31, r1
+    1cc8:	e7 30       	cpi	r30, 0x07	; 7
+    1cca:	f1 05       	cpc	r31, r1
+    1ccc:	08 f0       	brcs	.+2      	; 0x1cd0 <_Z15TwoWireCallbackhPhhh+0x1e>
+    1cce:	8a c0       	rjmp	.+276    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1cd0:	e2 5e       	subi	r30, 0xE2	; 226
+    1cd2:	f2 4f       	sbci	r31, 0xF2	; 242
+    1cd4:	09 94       	ijmp
+		case FUNCTION_EXIT_BOOTLOADER:
+			blExit();
+			break;
+		case FUNCTION_GET_BOOTLOADER_VERSION:
+			if (len == 3 and checkDeviceID(data+1)) {
+    1cd6:	43 30       	cpi	r20, 0x03	; 3
+    1cd8:	09 f0       	breq	.+2      	; 0x1cdc <_Z15TwoWireCallbackhPhhh+0x2a>
+    1cda:	84 c0       	rjmp	.+264    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1cdc:	cb 01       	movw	r24, r22
+    1cde:	01 96       	adiw	r24, 0x01	; 1
+    1ce0:	d7 df       	rcall	.-82     	; 0x1c90 <_Z13checkDeviceIDPh>
+    1ce2:	88 23       	and	r24, r24
+    1ce4:	09 f4       	brne	.+2      	; 0x1ce8 <_Z15TwoWireCallbackhPhhh+0x36>
+    1ce6:	7e c0       	rjmp	.+252    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+				// Return the device ID
+				data[0] = BOOTLOADER_VERSION & 0xFF;
+    1ce8:	82 ed       	ldi	r24, 0xD2	; 210
+    1cea:	88 83       	st	Y, r24
+				data[1] = BOOTLOADER_VERSION >> 8;
+    1cec:	84 e0       	ldi	r24, 0x04	; 4
+    1cee:	89 83       	std	Y+1, r24	; 0x01
+    1cf0:	76 c0       	rjmp	.+236    	; 0x1dde <_Z15TwoWireCallbackhPhhh+0x12c>
+				return 2;
+			}
+			break;
+		case FUNCTION_GET_NEXT_DEVICE_ID:
+			if (len >= 3) {
+    1cf2:	43 30       	cpi	r20, 0x03	; 3
+    1cf4:	08 f4       	brcc	.+2      	; 0x1cf8 <_Z15TwoWireCallbackhPhhh+0x46>
+    1cf6:	76 c0       	rjmp	.+236    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+				uint16_t previousID = getWord(data+1);
+				if (previousID < _deviceID) {
+    1cf8:	80 91 25 01 	lds	r24, 0x0125
+    1cfc:	90 91 26 01 	lds	r25, 0x0126
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+}
+
+uint16_t getWord(uint8_t *data) {
+	return data[0] | (data[1] << 8);
+    1d00:	2a 81       	ldd	r18, Y+2	; 0x02
+    1d02:	30 e0       	ldi	r19, 0x00	; 0
+    1d04:	32 2f       	mov	r19, r18
+    1d06:	22 27       	eor	r18, r18
+    1d08:	49 81       	ldd	r20, Y+1	; 0x01
+    1d0a:	24 2b       	or	r18, r20
+			}
+			break;
+		case FUNCTION_GET_NEXT_DEVICE_ID:
+			if (len >= 3) {
+				uint16_t previousID = getWord(data+1);
+				if (previousID < _deviceID) {
+    1d0c:	28 17       	cp	r18, r24
+    1d0e:	39 07       	cpc	r19, r25
+    1d10:	08 f0       	brcs	.+2      	; 0x1d14 <_Z15TwoWireCallbackhPhhh+0x62>
+    1d12:	68 c0       	rjmp	.+208    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+					// Return the device ID
+					data[0] = _deviceID & 0xFF;
+    1d14:	88 83       	st	Y, r24
+					data[1] = _deviceID >> 8;
+    1d16:	99 83       	std	Y+1, r25	; 0x01
+    1d18:	62 c0       	rjmp	.+196    	; 0x1dde <_Z15TwoWireCallbackhPhhh+0x12c>
+					return 2;
+				}
+			}
+			break;
+		case FUNCTION_SET_DEVICE_ID:
+			if (len == 5 and checkDeviceID(data+1)) {
+    1d1a:	45 30       	cpi	r20, 0x05	; 5
+    1d1c:	09 f0       	breq	.+2      	; 0x1d20 <_Z15TwoWireCallbackhPhhh+0x6e>
+    1d1e:	62 c0       	rjmp	.+196    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1d20:	cb 01       	movw	r24, r22
+    1d22:	01 96       	adiw	r24, 0x01	; 1
+    1d24:	b5 df       	rcall	.-150    	; 0x1c90 <_Z13checkDeviceIDPh>
+    1d26:	88 23       	and	r24, r24
+    1d28:	09 f4       	brne	.+2      	; 0x1d2c <_Z15TwoWireCallbackhPhhh+0x7a>
+    1d2a:	5c c0       	rjmp	.+184    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+}
+
+uint16_t getWord(uint8_t *data) {
+	return data[0] | (data[1] << 8);
+    1d2c:	8c 81       	ldd	r24, Y+4	; 0x04
+    1d2e:	90 e0       	ldi	r25, 0x00	; 0
+    1d30:	98 2f       	mov	r25, r24
+    1d32:	88 27       	eor	r24, r24
+    1d34:	2b 81       	ldd	r18, Y+3	; 0x03
+    1d36:	82 2b       	or	r24, r18
+				}
+			}
+			break;
+		case FUNCTION_SET_DEVICE_ID:
+			if (len == 5 and checkDeviceID(data+1)) {
+				_deviceID = getWord(data+3);
+    1d38:	90 93 26 01 	sts	0x0126, r25
+    1d3c:	80 93 25 01 	sts	0x0125, r24
+				storeDeviceID();
+    1d40:	98 df       	rcall	.-208    	; 0x1c72 <_Z13storeDeviceIDv>
+    1d42:	50 c0       	rjmp	.+160    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+			}
+			break;
+
+		case FUNCTION_GET_MCU_SIGNATURE:
+			if (len == 3 and checkDeviceID(data+1)) {
+    1d44:	43 30       	cpi	r20, 0x03	; 3
+    1d46:	09 f0       	breq	.+2      	; 0x1d4a <_Z15TwoWireCallbackhPhhh+0x98>
+    1d48:	4d c0       	rjmp	.+154    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1d4a:	cb 01       	movw	r24, r22
+    1d4c:	01 96       	adiw	r24, 0x01	; 1
+    1d4e:	a0 df       	rcall	.-192    	; 0x1c90 <_Z13checkDeviceIDPh>
+    1d50:	88 23       	and	r24, r24
+    1d52:	09 f4       	brne	.+2      	; 0x1d56 <_Z15TwoWireCallbackhPhhh+0xa4>
+    1d54:	47 c0       	rjmp	.+142    	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+				data[0] = boot_signature_byte_get(0);
+    1d56:	e0 e0       	ldi	r30, 0x00	; 0
+    1d58:	f0 e0       	ldi	r31, 0x00	; 0
+    1d5a:	81 e2       	ldi	r24, 0x21	; 33
+    1d5c:	80 93 57 00 	sts	0x0057, r24
+    1d60:	e4 91       	lpm	r30, Z
+    1d62:	e8 83       	st	Y, r30
+				data[1] = boot_signature_byte_get(2);
+    1d64:	e2 e0       	ldi	r30, 0x02	; 2
+    1d66:	f0 e0       	ldi	r31, 0x00	; 0
+    1d68:	80 93 57 00 	sts	0x0057, r24
+    1d6c:	e4 91       	lpm	r30, Z
+    1d6e:	e9 83       	std	Y+1, r30	; 0x01
+				data[2] = boot_signature_byte_get(4);
+    1d70:	e4 e0       	ldi	r30, 0x04	; 4
+    1d72:	f0 e0       	ldi	r31, 0x00	; 0
+    1d74:	80 93 57 00 	sts	0x0057, r24
+    1d78:	e4 91       	lpm	r30, Z
+    1d7a:	ea 83       	std	Y+2, r30	; 0x02
+				return 3;
+    1d7c:	83 e0       	ldi	r24, 0x03	; 3
+    1d7e:	90 e0       	ldi	r25, 0x00	; 0
+    1d80:	33 c0       	rjmp	.+102    	; 0x1de8 <_Z15TwoWireCallbackhPhhh+0x136>
+			}
+			break;
+		case FUNCTION_READ_PAGE:
+			if (len == 5 and checkDeviceID(data+1)) {
+    1d82:	45 30       	cpi	r20, 0x05	; 5
+    1d84:	79 f5       	brne	.+94     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1d86:	cb 01       	movw	r24, r22
+    1d88:	01 96       	adiw	r24, 0x01	; 1
+    1d8a:	82 df       	rcall	.-252    	; 0x1c90 <_Z13checkDeviceIDPh>
+    1d8c:	88 23       	and	r24, r24
+    1d8e:	51 f1       	breq	.+84     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+				uint16_t address = getWord(data+3);
+				
+				readPage(address, data);
+    1d90:	be 01       	movw	r22, r28
+    1d92:	8b 81       	ldd	r24, Y+3	; 0x03
+    1d94:	21 df       	rcall	.-446    	; 0x1bd8 <_Z8readPagehPh>
+				return SPM_PAGESIZE;
+    1d96:	80 e1       	ldi	r24, 0x10	; 16
+    1d98:	90 e0       	ldi	r25, 0x00	; 0
+    1d9a:	26 c0       	rjmp	.+76     	; 0x1de8 <_Z15TwoWireCallbackhPhhh+0x136>
+			}
+			break;
+		case FUNCTION_ERASE_PAGE:
+			if (len == 5 and checkDeviceID(data+1)) {
+    1d9c:	45 30       	cpi	r20, 0x05	; 5
+    1d9e:	11 f5       	brne	.+68     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1da0:	cb 01       	movw	r24, r22
+    1da2:	01 96       	adiw	r24, 0x01	; 1
+    1da4:	75 df       	rcall	.-278    	; 0x1c90 <_Z13checkDeviceIDPh>
+    1da6:	88 23       	and	r24, r24
+    1da8:	e9 f0       	breq	.+58     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+}
+
+uint16_t getWord(uint8_t *data) {
+	return data[0] | (data[1] << 8);
+    1daa:	8c 81       	ldd	r24, Y+4	; 0x04
+    1dac:	90 e0       	ldi	r25, 0x00	; 0
+    1dae:	98 2f       	mov	r25, r24
+    1db0:	88 27       	eor	r24, r24
+    1db2:	2b 81       	ldd	r18, Y+3	; 0x03
+			}
+			break;
+		case FUNCTION_ERASE_PAGE:
+			if (len == 5 and checkDeviceID(data+1)) {
+				uint16_t address = getWord(data+3);
+				erasePage(address);
+    1db4:	82 2b       	or	r24, r18
+    1db6:	01 df       	rcall	.-510    	; 0x1bba <_Z9erasePagej>
+    1db8:	15 c0       	rjmp	.+42     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+			}
+			break;
+		case FUNCTION_WRITE_PAGE:
+			if (len == 5+SPM_PAGESIZE and checkDeviceID(data+1)) {
+    1dba:	45 31       	cpi	r20, 0x15	; 21
+    1dbc:	99 f4       	brne	.+38     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+    1dbe:	cb 01       	movw	r24, r22
+    1dc0:	01 96       	adiw	r24, 0x01	; 1
+    1dc2:	66 df       	rcall	.-308    	; 0x1c90 <_Z13checkDeviceIDPh>
+    1dc4:	88 23       	and	r24, r24
+    1dc6:	71 f0       	breq	.+28     	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+				uint16_t address = getWord(data+3);				
+				writePage(address, data+5);
+    1dc8:	be 01       	movw	r22, r28
+    1dca:	6b 5f       	subi	r22, 0xFB	; 251
+    1dcc:	7f 4f       	sbci	r23, 0xFF	; 255
+void storeDeviceID() {
+	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+}
+
+uint16_t getWord(uint8_t *data) {
+	return data[0] | (data[1] << 8);
+    1dce:	8c 81       	ldd	r24, Y+4	; 0x04
+    1dd0:	90 e0       	ldi	r25, 0x00	; 0
+    1dd2:	98 2f       	mov	r25, r24
+    1dd4:	88 27       	eor	r24, r24
+    1dd6:	2b 81       	ldd	r18, Y+3	; 0x03
+			}
+			break;
+		case FUNCTION_WRITE_PAGE:
+			if (len == 5+SPM_PAGESIZE and checkDeviceID(data+1)) {
+				uint16_t address = getWord(data+3);				
+				writePage(address, data+5);
+    1dd8:	82 2b       	or	r24, r18
+    1dda:	0e df       	rcall	.-484    	; 0x1bf8 <_Z9writePagejPh>
+    1ddc:	03 c0       	rjmp	.+6      	; 0x1de4 <_Z15TwoWireCallbackhPhhh+0x132>
+		case FUNCTION_GET_BOOTLOADER_VERSION:
+			if (len == 3 and checkDeviceID(data+1)) {
+				// Return the device ID
+				data[0] = BOOTLOADER_VERSION & 0xFF;
+				data[1] = BOOTLOADER_VERSION >> 8;
+				return 2;
+    1dde:	82 e0       	ldi	r24, 0x02	; 2
+    1de0:	90 e0       	ldi	r25, 0x00	; 0
+    1de2:	02 c0       	rjmp	.+4      	; 0x1de8 <_Z15TwoWireCallbackhPhhh+0x136>
+			break;
+		case FUNCTION_WRITE_EEPROM:
+			break;
+	}
+	
+	return 0;
+    1de4:	80 e0       	ldi	r24, 0x00	; 0
+    1de6:	90 e0       	ldi	r25, 0x00	; 0
+}
+    1de8:	df 91       	pop	r29
+    1dea:	cf 91       	pop	r28
+    1dec:	08 95       	ret
+
+00001dee <_Z19twiReadDataCallbackPhh>:
+
+uint8_t twiReadDataCallback(uint8_t *data, uint8_t maxLen) {
+	return 0;
+}
+    1dee:	80 e0       	ldi	r24, 0x00	; 0
+    1df0:	08 95       	ret
+
+00001df2 <main>:
+
+
+int main(void) 
+{
+    1df2:	cf 93       	push	r28
+    1df4:	df 93       	push	r29
+    1df6:	1f 92       	push	r1
+    1df8:	cd b7       	in	r28, 0x3d	; 61
+    1dfa:	de b7       	in	r29, 0x3e	; 62
+	// XXX -nostartfiles dosn't currently work
+	// We are excluding the startup files (with the -nostartfiles linker option) so
+	// we need to take care of a few things here.
+	
+	//asm volatile ( ".set __stack, %0" :: "i" (RAMEND) );
+	SP = RAMEND;
+    1dfc:	8f ef       	ldi	r24, 0xFF	; 255
+    1dfe:	92 e0       	ldi	r25, 0x02	; 2
+    1e00:	9e bf       	out	0x3e, r25	; 62
+    1e02:	8d bf       	out	0x3d, r24	; 61
+	asm volatile ( "clr __zero_reg__" );
+    1e04:	11 24       	eor	r1, r1
+	
+	// Initialize r1 to 0
+	asm("eor r1,r1");
+    1e06:	11 24       	eor	r1, r1
+#endif
+
+	volatile uint8_t sigByte = boot_signature_byte_get(4);
+    1e08:	e4 e0       	ldi	r30, 0x04	; 4
+    1e0a:	f0 e0       	ldi	r31, 0x00	; 0
+    1e0c:	81 e2       	ldi	r24, 0x21	; 33
+    1e0e:	80 93 57 00 	sts	0x0057, r24
+    1e12:	e4 91       	lpm	r30, Z
+    1e14:	e9 83       	std	Y+1, r30	; 0x01
+
+	loadDeviceID();
+    1e16:	1f df       	rcall	.-450    	; 0x1c56 <_Z12loadDeviceIDv>
+	TwoWireInit(9);
+    1e18:	89 e0       	ldi	r24, 0x09	; 9
+    1e1a:	3e de       	rcall	.-900    	; 0x1a98 <_Z11TwoWireInith>
+	
+	uint32_t i=0;
+	
+	DDRA |= _BV(5);
+    1e1c:	d5 9a       	sbi	0x1a, 5	; 26
+	volatile uint8_t sigByte = boot_signature_byte_get(4);
+
+	loadDeviceID();
+	TwoWireInit(9);
+	
+	uint32_t i=0;
+    1e1e:	c1 2c       	mov	r12, r1
+    1e20:	d1 2c       	mov	r13, r1
+    1e22:	76 01       	movw	r14, r12
+	
+	DDRA |= _BV(5);
+	while (1) {
+		i++;
+    1e24:	8f ef       	ldi	r24, 0xFF	; 255
+    1e26:	c8 1a       	sub	r12, r24
+    1e28:	d8 0a       	sbc	r13, r24
+    1e2a:	e8 0a       	sbc	r14, r24
+    1e2c:	f8 0a       	sbc	r15, r24
+		
+		if (i > 95000) {
+    1e2e:	89 e1       	ldi	r24, 0x19	; 25
+    1e30:	c8 16       	cp	r12, r24
+    1e32:	83 e7       	ldi	r24, 0x73	; 115
+    1e34:	d8 06       	cpc	r13, r24
+    1e36:	81 e0       	ldi	r24, 0x01	; 1
+    1e38:	e8 06       	cpc	r14, r24
+    1e3a:	f1 04       	cpc	r15, r1
+    1e3c:	68 f0       	brcs	.+26     	; 0x1e58 <main+0x66>
+			PORTA |= _BV(5); 
+    1e3e:	dd 9a       	sbi	0x1b, 5	; 27
+		}
+		if (i > 100000) {
+    1e40:	81 ea       	ldi	r24, 0xA1	; 161
+    1e42:	c8 16       	cp	r12, r24
+    1e44:	86 e8       	ldi	r24, 0x86	; 134
+    1e46:	d8 06       	cpc	r13, r24
+    1e48:	81 e0       	ldi	r24, 0x01	; 1
+    1e4a:	e8 06       	cpc	r14, r24
+    1e4c:	f1 04       	cpc	r15, r1
+    1e4e:	20 f0       	brcs	.+8      	; 0x1e58 <main+0x66>
+			PORTA &= ~_BV(5);
+    1e50:	dd 98       	cbi	0x1b, 5	; 27
+			i = 0;
+    1e52:	c1 2c       	mov	r12, r1
+    1e54:	d1 2c       	mov	r13, r1
+    1e56:	76 01       	movw	r14, r12
+		}
+		
+		TwoWireUpdate();
+    1e58:	32 de       	rcall	.-924    	; 0x1abe <_Z13TwoWireUpdatev>
+	}
+    1e5a:	e4 cf       	rjmp	.-56     	; 0x1e24 <main+0x32>
+
+00001e5c <__eerd_word_tn841>:
+    1e5c:	a8 e1       	ldi	r26, 0x18	; 24
+    1e5e:	b0 e0       	ldi	r27, 0x00	; 0
+    1e60:	42 e0       	ldi	r20, 0x02	; 2
+    1e62:	50 e0       	ldi	r21, 0x00	; 0
+    1e64:	05 c0       	rjmp	.+10     	; 0x1e70 <__eerd_blraw_tn841>
+
+00001e66 <__eewr_word_tn841>:
+    1e66:	12 d0       	rcall	.+36     	; 0x1e8c <__eewr_byte_tn841>
+    1e68:	27 2f       	mov	r18, r23
+    1e6a:	11 c0       	rjmp	.+34     	; 0x1e8e <__eewr_r18_tn841>
+
+00001e6c <__eerd_block_tn841>:
+    1e6c:	dc 01       	movw	r26, r24
+    1e6e:	cb 01       	movw	r24, r22
+
+00001e70 <__eerd_blraw_tn841>:
+    1e70:	fc 01       	movw	r30, r24
+    1e72:	e1 99       	sbic	0x1c, 1	; 28
+    1e74:	fe cf       	rjmp	.-4      	; 0x1e72 <__eerd_blraw_tn841+0x2>
+    1e76:	06 c0       	rjmp	.+12     	; 0x1e84 <__eerd_blraw_tn841+0x14>
+    1e78:	ff bb       	out	0x1f, r31	; 31
+    1e7a:	ee bb       	out	0x1e, r30	; 30
+    1e7c:	e0 9a       	sbi	0x1c, 0	; 28
+    1e7e:	31 96       	adiw	r30, 0x01	; 1
+    1e80:	0d b2       	in	r0, 0x1d	; 29
+    1e82:	0d 92       	st	X+, r0
+    1e84:	41 50       	subi	r20, 0x01	; 1
+    1e86:	50 40       	sbci	r21, 0x00	; 0
+    1e88:	b8 f7       	brcc	.-18     	; 0x1e78 <__eerd_blraw_tn841+0x8>
+    1e8a:	08 95       	ret
+
+00001e8c <__eewr_byte_tn841>:
+    1e8c:	26 2f       	mov	r18, r22
+
+00001e8e <__eewr_r18_tn841>:
+    1e8e:	e1 99       	sbic	0x1c, 1	; 28
+    1e90:	fe cf       	rjmp	.-4      	; 0x1e8e <__eewr_r18_tn841>
+    1e92:	1c ba       	out	0x1c, r1	; 28
+    1e94:	9f bb       	out	0x1f, r25	; 31
+    1e96:	8e bb       	out	0x1e, r24	; 30
+    1e98:	2d bb       	out	0x1d, r18	; 29
+    1e9a:	0f b6       	in	r0, 0x3f	; 63
+    1e9c:	f8 94       	cli
+    1e9e:	e2 9a       	sbi	0x1c, 2	; 28
+    1ea0:	e1 9a       	sbi	0x1c, 1	; 28
+    1ea2:	0f be       	out	0x3f, r0	; 63
+    1ea4:	01 96       	adiw	r24, 0x01	; 1
+    1ea6:	08 95       	ret
+
+00001ea8 <_exit>:
+    1ea8:	f8 94       	cli
+
+00001eaa <__stop_program>:
+    1eaa:	ff cf       	rjmp	.-2      	; 0x1eaa <__stop_program>
