@@ -82,14 +82,8 @@ void writePage(uint16_t address, uint8_t *data) {
 #define FUNCTION_READ_EEPROM 108
 #define FUNCTION_WRITE_EEPROM 110
 
-
-
-void blExit() {
-	
-}
-
-
 static uint16_t _deviceID = 0;
+bool bootloaderRunning = true;
 
 // The attiny841 has a 512 byte EEPROM section.
 // The deviceID is at the end of the EEPROM section (address 510)
@@ -111,7 +105,7 @@ uint16_t getWord(uint8_t *data) {
 	return data[0] | (data[1] << 8);
 }
 
-bool checkDeviceID(uint8_t *data) {
+int checkDeviceID(uint8_t *data) {
 	return (getWord(data) == _deviceID);
 }
 
@@ -124,10 +118,10 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 	
 	switch (data[0]) {
 		case FUNCTION_EXIT_BOOTLOADER:
-			blExit();
+			bootloaderRunning = false;
 			break;
 		case FUNCTION_GET_BOOTLOADER_VERSION:
-			if (len == 3 and checkDeviceID(data+1)) {
+			if (len == 3 && checkDeviceID(data+1)) {
 				// Return the device ID
 				data[0] = BOOTLOADER_VERSION & 0xFF;
 				data[1] = BOOTLOADER_VERSION >> 8;
@@ -146,14 +140,14 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_SET_DEVICE_ID:
-			if (len == 5 and checkDeviceID(data+1)) {
+			if (len == 5 && checkDeviceID(data+1)) {
 				_deviceID = getWord(data+3);
 				storeDeviceID();
 			}
 			break;
 
 		case FUNCTION_GET_MCU_SIGNATURE:
-			if (len == 3 and checkDeviceID(data+1)) {
+			if (len == 3 && checkDeviceID(data+1)) {
 				data[0] = boot_signature_byte_get(0);
 				data[1] = boot_signature_byte_get(2);
 				data[2] = boot_signature_byte_get(4);
@@ -161,7 +155,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_READ_PAGE:
-			if (len == 5 and checkDeviceID(data+1)) {
+			if (len == 5 && checkDeviceID(data+1)) {
 				uint16_t address = getWord(data+3);
 				
 				readPage(address, data);
@@ -169,19 +163,19 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_ERASE_PAGE:
-			if (len == 5 and checkDeviceID(data+1)) {
+			if (len == 5 && checkDeviceID(data+1)) {
 				uint16_t address = getWord(data+3);
 				erasePage(address);
 			}
 			break;
 		case FUNCTION_WRITE_PAGE:
-			if (len == 5+SPM_PAGESIZE and checkDeviceID(data+1)) {
+			if (len == 5+SPM_PAGESIZE && checkDeviceID(data+1)) {
 				uint16_t address = getWord(data+3);				
 				writePage(address, data+5);
 			}
 			break;
 		case FUNCTION_READ_EEPROM:
-			if (len == 5 and checkDeviceID(data+1)) {
+			if (len == 5 && checkDeviceID(data+1)) {
 				
 			}
 			break;
@@ -192,39 +186,22 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 	return 0;
 }
 
-uint8_t twiReadDataCallback(uint8_t *data, uint8_t maxLen) {
-	return 0;
-}
-
-
-int main(void) 
-{
-#if 1
-	// XXX -nostartfiles dosn't currently work
-	// We are excluding the startup files (with the -nostartfiles linker option) so
-	// we need to take care of a few things here.
+extern "C" {
 	
-	//asm volatile ( ".set __stack, %0" :: "i" (RAMEND) );
-	SP = RAMEND;
-	asm volatile ( "clr __zero_reg__" );
-	
-	// Initialize r1 to 0
-	asm("eor r1,r1");
-#endif
 
-	volatile uint8_t sigByte = boot_signature_byte_get(4);
-
+void runBootloader() {
+		
 	loadDeviceID();
 	TwoWireInit(9);
 	
 	uint32_t i=0;
 	
 	DDRA |= _BV(5);
-	while (1) {
+	while (bootloaderRunning) {
 		i++;
 		
 		if (i > 95000) {
-			PORTA |= _BV(5); 
+			PORTA |= _BV(5);
 		}
 		if (i > 100000) {
 			PORTA &= ~_BV(5);
@@ -234,3 +211,4 @@ int main(void)
 		TwoWireUpdate();
 	}
 }
+};
