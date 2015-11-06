@@ -12,7 +12,7 @@
 #include <inttypes.h>
 
 void TwoWireUpdate();
-void TwoWireInit(uint8_t broadcastAddress);
+void TwoWireInit(bool useInterrupts);
 void TwoWireSetDeviceAddress(uint8_t address);
 uint8_t TwoWireGetDeviceAddress();
 

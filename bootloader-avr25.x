@@ -88,25 +88,6 @@ SECTIONS
 	/* Place the bootloader standin application immediately after the vector*/
     *(.application*)
 
-    /* For data that needs to reside in the lower 64k of progmem.  */
-     *(.progmem.gcc*)
-    /* PR 13812: Placing the trampolines here gives a better chance
-       that they will be in range of the code that uses them.  */
-    . = ALIGN(2);
-     __trampolines_start = . ;
-    /* The jump trampolines for the 16-bit limited relocs will reside here.  */
-    *(.trampolines)
-     *(.trampolines*)
-     __trampolines_end = . ;
-     *(.progmem*)
-    . = ALIGN(2);
-    /* For future tablejump instruction arrays for 3 byte pc devices.
-       We don't relax jump/call instructions within these sections.  */
-    *(.jumptables)
-     *(.jumptables*)
-    /* For code that needs to reside in the lower 128k progmem.  */
-    *(.lowtext)
-     *(.lowtext*)
 
 	/* The bootloader trampoline is a single instruction placed at the
 	   end of the application section (immediately before the bootloader).
@@ -151,6 +132,36 @@ SECTIONS
     *(.text)
     . = ALIGN(2);
      *(.text.*)
+	 
+
+	 
+    /* For data that needs to reside in the lower 64k of progmem.  */
+
+    /* PR 13812: Placing the trampolines here gives a better chance
+       that they will be in range of the code that uses them.  */
+    . = ALIGN(2);
+     __trampolines_start = . ;
+    /* The jump trampolines for the 16-bit limited relocs will reside here.  */
+  
+    *(.trampolines)
+     *(.trampolines*)
+	 
+     __trampolines_end = . ;
+
+    . = ALIGN(2);
+    /* For future tablejump instruction arrays for 3 byte pc devices.
+       We don't relax jump/call instructions within these sections.  */
+	   /*
+    *(.jumptables)
+     *(.jumptables*)
+	 
+    /* For code that needs to reside in the lower 128k progmem.  */
+    *(.lowtext)
+     *(.lowtext*)
+	 
+	 *(.progmem.gcc*)
+	 *(.progmem*)
+
     . = ALIGN(2);
     *(.fini9)  /* _exit() starts here.  */
     KEEP (*(.fini9))

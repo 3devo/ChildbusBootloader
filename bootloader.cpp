@@ -16,40 +16,72 @@
 #include <string.h>
 
 
+bool bootloaderSafeMode = true;
+
+void writePage(uint16_t address, uint8_t *data);
+
 // Flash page size is 16 bytes
 void erasePage(uint16_t address) {
-	uint8_t sreg = SREG;
-	cli();
+	// Can only write to a 64 byte 4 page boundary, so mask the lower 6 bits
+	address &= 0xFFC0;
 	
-	eeprom_busy_wait();
-	boot_page_erase(address);
-	boot_spm_busy_wait();
+	// Bail if the address is past the application section.
+	if (bootloaderSafeMode and address >= 1024*6) {
+		return;
+	}
 	
-	sei();
-	SREG = sreg;
+	//eeprom_busy_wait();
+	boot_page_erase_safe(address);
+	//boot_spm_busy_wait();
+	
+	// If we just erased page 0, restore the reset vector in case
+	// the bootloader gets interrupted before writing the page.
+	// writePage() will change bytes 0 and 1.
+	// All the other bytes in the page must remain erased (0xFF)
+	if (bootloaderSafeMode and address == 0) {
+		uint8_t data[SPM_PAGESIZE];
+		for (int i=0; i < SPM_PAGESIZE; i++) {
+			data[i] = 0xFF;
+		}
+		writePage(0, data);
+	}
 }
 
 void readPage(uint8_t address, uint8_t *data) {
+	// Can only read at a 16 byte page boundary
+	address &= 0xFFF0;
+	
 	for (int i=0; i < SPM_PAGESIZE; i++) {
 		data[i] = pgm_read_byte(address+i);
 	}
 }
 
 void writePage(uint16_t address, uint8_t *data) {
-	uint8_t sreg = SREG;
-	cli();
+	// Can only write to a 16 byte page boundary
+	address &= 0xFFF0;
+	
+	// If we are writing page 0, change the reset vector
+	// so that it jumps to the bootloader.
+	if (bootloaderSafeMode and address == 0) {
+		data[0] = 0xFF;
+		data[1] = 0xCB;
+	}
+	
+	// If the address is past the application section don't write anything
+	if (bootloaderSafeMode and address >= 1024*6) {
+		return;
+	}
 	
 	eeprom_busy_wait();
+	boot_spm_busy_wait();
 	for (int i=0; i < SPM_PAGESIZE; i += 2) {
 		uint16_t w = data[i] | (data[i+1] << 8);
 		boot_page_fill(address+i, w);
 	}
 	boot_page_write(address);
 	boot_spm_busy_wait();
-	
-	sei();
-	SREG = sreg;
 }
+
 
 // Commands
 //
@@ -71,7 +103,7 @@ void writePage(uint16_t address, uint8_t *data) {
 
 
 
-#define FUNCTION_EXIT_BOOTLOADER 100
+#define FUNCTION_GLOBAL_RESET 0
 #define FUNCTION_GET_BOOTLOADER_VERSION 101
 #define FUNCTION_GET_NEXT_DEVICE_ID 102
 #define FUNCTION_SET_DEVICE_ID 103
@@ -81,13 +113,14 @@ void writePage(uint16_t address, uint8_t *data) {
 #define FUNCTION_WRITE_PAGE 107
 #define FUNCTION_READ_EEPROM 108
 #define FUNCTION_WRITE_EEPROM 110
+#define FUNCTION_SET_BOOTLOADER_SAFE_MODE 111
 
 static uint16_t _deviceID = 0;
 bool bootloaderRunning = true;
 
 // The attiny841 has a 512 byte EEPROM section.
 // The deviceID is at the end of the EEPROM section (address 510)
-#define DEVICE_ID_ADDRESS ((uint16_t*)(510))
+#define DEVICE_ID_ADDRESS ((uint16_t*)(476))
 
 void loadDeviceID() {
 	_deviceID = eeprom_read_word(DEVICE_ID_ADDRESS);
@@ -109,15 +142,24 @@ int checkDeviceID(uint8_t *data) {
 	return (getWord(data) == _deviceID);
 }
 
-#define BOOTLOADER_VERSION 1234
+#define BOOTLOADER_VERSION 1
+
+static void setLED(bool on) {
+	if (on) {
+		PORTA |= _BV(5);
+	} else {
+		PORTA &= ~_BV(5);
+	}
+}
 
 int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
+	
 	if (len < 1) {
 		return 0;
 	}
 	
 	switch (data[0]) {
-		case FUNCTION_EXIT_BOOTLOADER:
+		case FUNCTION_GLOBAL_RESET:
 			bootloaderRunning = false;
 			break;
 		case FUNCTION_GET_BOOTLOADER_VERSION:
@@ -156,22 +198,32 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			break;
 		case FUNCTION_READ_PAGE:
 			if (len == 5 && checkDeviceID(data+1)) {
+				setLED(false);
 				uint16_t address = getWord(data+3);
 				
 				readPage(address, data);
+				setLED(true);
 				return SPM_PAGESIZE;
 			}
 			break;
 		case FUNCTION_ERASE_PAGE:
 			if (len == 5 && checkDeviceID(data+1)) {
+				setLED(false);
+							
 				uint16_t address = getWord(data+3);
 				erasePage(address);
+				
+				setLED(true);
 			}
 			break;
 		case FUNCTION_WRITE_PAGE:
 			if (len == 5+SPM_PAGESIZE && checkDeviceID(data+1)) {
+				setLED(false);
+				
 				uint16_t address = getWord(data+3);				
 				writePage(address, data+5);
+				
+				setLED(true);
 			}
 			break;
 		case FUNCTION_READ_EEPROM:
@@ -181,34 +233,27 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			break;
 		case FUNCTION_WRITE_EEPROM:
 			break;
+		case FUNCTION_SET_BOOTLOADER_SAFE_MODE:
+			if (len == 4 && checkDeviceID(data+1)) {
+				bootloaderSafeMode = data[3];
+			}
+			break;
 	}
 	
 	return 0;
 }
 
 extern "C" {
+	void runBootloader() {
+		
+		loadDeviceID();
+		TwoWireInit(false /*useInterrupts*/);
 	
+		DDRA |= _BV(5);
+		PORTA |= _BV(5);
 
-void runBootloader() {
-		
-	loadDeviceID();
-	TwoWireInit(9);
-	
-	uint32_t i=0;
-	
-	DDRA |= _BV(5);
-	while (bootloaderRunning) {
-		i++;
-		
-		if (i > 95000) {
-			PORTA |= _BV(5);
+		while (bootloaderRunning) {
+			TwoWireUpdate();
 		}
-		if (i > 100000) {
-			PORTA &= ~_BV(5);
-			i = 0;
-		}
-		
-		TwoWireUpdate();
 	}
-}
 };

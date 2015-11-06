@@ -12,16 +12,21 @@
 #include <avr/interrupt.h>
 
 static volatile uint8_t _deviceAddress = 0;
+static const uint8_t broadcastAddress = 9;
 
 #if !defined(__AVR_ATtiny841__)
 #error "Only works with ATtiny841"
 #endif
 
 
-void TwoWireInit(uint8_t broadcastAddress) {
+void TwoWireInit(bool useInterrupts) {
 	// Enable Data Interrupt, Address/Stop Interrupt, Two-Wire Interface, Stop Interrpt
-	//TWSCRA = _BV(TWDIE) | _BV(TWASIE) | _BV(TWEN) | _BV(TWSIE);
-	TWSCRA = _BV(TWEN);
+	TWSCRA = _BV(TWEN) | _BV(TWSIE);
+	
+	if (useInterrupts) {
+		TWSCRA |= _BV(TWDIE) | _BV(TWASIE) ;
+	}
+	
 	TWSCRB = _BV(TWHNM);
 
 	// Also listen for message on the broadcast address
@@ -62,15 +67,17 @@ enum TWIState {
 
 static TWIState twiState = TWIStateIdle;
 
-// The two wire interrupt service routine
-void TwoWireUpdate()
-{
+
+
+void TwoWireUpdate() {
 	uint8_t status = TWSSRA;
 	bool dataInterruptFlag = (status & _BV(TWDIF)); // Check whether the data interrupt flag is set
 	bool isAddressOrStop = (status & _BV(TWASIF)); // Get the TWI Address/Stop Interrupt Flag
 	bool isReadOperation = (status & _BV(TWDIR));
 	bool addressReceived = (status & _BV(TWAS)); // Check if we received an address and not a stop
 	
+	// Clear the interrupt flags
+	// TWSSRA |= _BV(TWDIF) | _BV(TWASIF);
 	
 	//volatile bool clockHold = (TWSSRA & _BV(TWCH));
 	//volatile bool receiveAck = (TWSSRA & _BV(TWRA));
@@ -100,6 +107,7 @@ void TwoWireUpdate()
 		
 		// The address is in the high 7 bits, the RD/WR bit is in the lsb
 		twiAddress = TWSD >> 1;
+		return;
 	}
 
 	// Data Read
@@ -111,6 +119,7 @@ void TwoWireUpdate()
 			TWSD = 0;
 			_Acknowledge(false /*ack*/, true /*complete*/);
 		}
+		return;
 	}
 	
 	// Data Write
@@ -121,7 +130,14 @@ void TwoWireUpdate()
 		if (twiBufferLen < TWI_BUFFER_SIZE) {
 			twiBuffer[twiBufferLen++] = data;
 		}
+		return;
 	}
-
 }
+
+// The two wire interrupt service routine
+ISR(TWI_SLAVE_vect)
+{
+	TwoWireUpdate();
+}
+
 #endif
