@@ -32,7 +32,7 @@ void erasePage(uint16_t address) {
 	
 	//eeprom_busy_wait();
 	boot_page_erase_safe(address);
-	//boot_spm_busy_wait();
+
 	
 	// If we just erased page 0, restore the reset vector in case
 	// the bootloader gets interrupted before writing the page.
@@ -45,6 +45,8 @@ void erasePage(uint16_t address) {
 		}
 		writePage(0, data);
 	}
+	
+	boot_spm_busy_wait();
 }
 
 void readPage(uint8_t address, uint8_t *data) {
@@ -104,16 +106,16 @@ void writePage(uint16_t address, uint8_t *data) {
 
 
 #define FUNCTION_GLOBAL_RESET 0
-#define FUNCTION_GET_BOOTLOADER_VERSION 101
-#define FUNCTION_GET_NEXT_DEVICE_ID 102
-#define FUNCTION_SET_DEVICE_ID 103
-#define FUNCTION_GET_MCU_SIGNATURE 104
-#define FUNCTION_READ_PAGE 105
-#define FUNCTION_ERASE_PAGE 106
-#define FUNCTION_WRITE_PAGE 107
-#define FUNCTION_READ_EEPROM 108
-#define FUNCTION_WRITE_EEPROM 110
-#define FUNCTION_SET_BOOTLOADER_SAFE_MODE 111
+#define FUNCTION_GET_BOOTLOADER_VERSION 100
+#define FUNCTION_GET_NEXT_DEVICE_ID 101
+#define FUNCTION_SET_DEVICE_ID 102
+#define FUNCTION_GET_MCU_SIGNATURE 103
+#define FUNCTION_READ_PAGE 104
+#define FUNCTION_ERASE_PAGE 105
+#define FUNCTION_WRITE_PAGE 106
+#define FUNCTION_READ_EEPROM 107
+#define FUNCTION_WRITE_EEPROM 108
+#define FUNCTION_SET_BOOTLOADER_SAFE_MODE 109
 
 static uint16_t _deviceID = 0;
 bool bootloaderRunning = true;
@@ -227,11 +229,25 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_READ_EEPROM:
-			if (len == 5 && checkDeviceID(data+1)) {
+			if (len == 6 && checkDeviceID(data+1)) {
+				uint16_t address = getWord(data+3);
+				uint16_t eeLen = data[5];
 				
+				if (eeLen > maxLen) {
+					return 0;
+				}
+				
+				eeprom_read_block(data, (const void*)address, eeLen);
+			
+				return len;
 			}
 			break;
 		case FUNCTION_WRITE_EEPROM:
+			if (len >= 5  && checkDeviceID(data+1)) {
+				volatile uint16_t address = getWord(data+3);
+				
+				eeprom_update_block(data+5, (void*)address, len-5);
+			}
 			break;
 		case FUNCTION_SET_BOOTLOADER_SAFE_MODE:
 			if (len == 4 && checkDeviceID(data+1)) {
