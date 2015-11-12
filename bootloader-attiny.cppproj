@@ -140,14 +140,22 @@
     </Compile>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
-      <CustomCompilationSetting Condition="'$(Configuration)' == 'Debug'">-O0</CustomCompilationSetting>
+      <CustomCompilationSetting Condition="'$(Configuration)' == 'Debug'">
+      </CustomCompilationSetting>
+    </Compile>
+    <Compile Include="SelfProgram.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SelfProgram.h">
+      <SubType>compile</SubType>
     </Compile>
     <Compile Include="TwoWire.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="TwoWire841.cpp">
       <SubType>compile</SubType>
-      <CustomCompilationSetting Condition="'$(Configuration)' == 'Debug'">-O0</CustomCompilationSetting>
+      <CustomCompilationSetting Condition="'$(Configuration)' == 'Debug'">
+      </CustomCompilationSetting>
     </Compile>
     <Compile Include="bootloader.cpp">
       <SubType>compile</SubType>
