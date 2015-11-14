@@ -52,19 +52,23 @@ void writePage(uint16_t address, uint8_t *data);
 
 
 SelfProgram selfProgram;
-bool bootloaderRunning = true;
+volatile bool bootloaderRunning = true;
 
-uint16_t getWord(uint8_t *data) {
+uint16_t getUInt16(uint8_t *data) {
 	return data[0] | (data[1] << 8);
 }
 
+uint32_t getUInt32(uint8_t *data) {
+	return data[0] | (data[1] << 8) | ((uint32_t)data[2] << 16) | ((uint32_t)data[3] << 24);
+}
+
 int checkDeviceID(uint8_t *data) {
-	return (getWord(data) == selfProgram.getDeviceID());
+	return (getUInt16(data) == selfProgram.getDeviceID());
 }
 
 int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
 	
-	if (len < 1) {
+	if (len < 3) {
 		return 0;
 	}
 	
@@ -74,7 +78,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			bootloaderRunning = false;
 			break;
 		case FUNCTION_GET_BOOTLOADER_VERSION:
-			if (len == 3 && checkDeviceID(data+1)) {
+			if (len == 5 && checkDeviceID(data+2)) {
 				// Return the device ID
 				data[0] = BOOTLOADER_VERSION & 0xFF;
 				data[1] = BOOTLOADER_VERSION >> 8;
@@ -82,8 +86,8 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_GET_NEXT_DEVICE_ID:
-			if (len >= 3) {
-				uint16_t previousID = getWord(data+1);
+			if (len == 5) {
+				uint16_t previousID = getUInt16(data+2);
 				uint16_t deviceID = selfProgram.getDeviceID();
 				if (previousID < deviceID) {
 					// Return the device ID
@@ -94,62 +98,52 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_SET_DEVICE_ID:
-			if (len == 5 && checkDeviceID(data+1)) {
-				selfProgram.storeDeviceID(getWord(data+3));
+			if (len == 7 && checkDeviceID(data+2)) {
+				selfProgram.storeDeviceID(getUInt16(data+4));
 			}
 			break;
 
 		case FUNCTION_GET_MCU_SIGNATURE:
-			if (len == 3 && checkDeviceID(data+1)) {
-				selfProgram.getSignature(data, 3);
-				return 3;
+			if (len == 5 && checkDeviceID(data+2)) {
+				uint32_t sig = selfProgram.getSignature();
+				for (int i=0; i < 4; i++) {
+					data[i] = static_cast<uint8_t>(sig >> 8*i);
+				}
+				return 4;
 			}
 			break;
 		case FUNCTION_READ_PAGE:
-			if (len == 5 && checkDeviceID(data+1)) {
-				uint16_t address = getWord(data+3);
-				return selfProgram.readPage(address, data);
+			if (len == 10 && checkDeviceID(data+2)) {
+				uint32_t address = getUInt32(data+4);
+				uint8_t len = data[8];
+				return selfProgram.readPage(address, data, len);
 			}
 			break;
 		case FUNCTION_ERASE_PAGE:
-			if (len == 5 && checkDeviceID(data+1)) {
-				selfProgram.setLED(false);
-							
-				uint16_t address = getWord(data+3);
+			if (len == 9 && checkDeviceID(data+2)) {	
+				uint32_t address = getUInt32(data+4);
 				selfProgram.erasePage(address);
-				
-				selfProgram.setLED(true);
 			}
 			break;
 		case FUNCTION_WRITE_PAGE:
-			if (len == 5+selfProgram.getPageSize() && checkDeviceID(data+1)) {
-				selfProgram.setLED(false);
-				
-				uint16_t address = getWord(data+3);
-				selfProgram.writePage(address, data+5);
-				
-				selfProgram.setLED(true);
+			if (len >= 9 && checkDeviceID(data+2)) {
+				uint32_t address = getUInt32(data+4);
+				selfProgram.writePage(address, data+8, len-9);
 			}
 			break;
 		case FUNCTION_READ_EEPROM:
-			if (len == 6 && checkDeviceID(data+1)) {
-				uint16_t address = getWord(data+3);
-				uint16_t eeLen = data[5];
-				
-				if (eeLen > maxLen) {
-					return 0;
-				}
-				
-				selfProgram.readEEPROM(data, (void*)address, eeLen);
-			
+			if (len == 10 && checkDeviceID(data+2)) {
+				uint32_t address = getUInt32(data+4);
+				uint8_t len = data[8];
+				selfProgram.readEEPROM(address, data, len);
 				return len;
 			}
 			break;
 		case FUNCTION_WRITE_EEPROM:
-			if (len >= 5  && checkDeviceID(data+1)) {
-				volatile uint16_t address = getWord(data+3);
+			if (len >= 9  && checkDeviceID(data+2)) {
+				uint16_t address = getUInt32(data+4);
 				
-				selfProgram.writeEEPROM(data+5, (void*)address, len-5);
+				selfProgram.writeEEPROM(address, data+8, len-9);
 			}
 			break;
 		case FUNCTION_SET_BOOTLOADER_SAFE_MODE:
@@ -161,6 +155,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 	
 	return 0;
 }
+
 
 extern "C" {
 	void runBootloader() {

@@ -44,18 +44,18 @@ void SelfProgram::storeDeviceID(uint16_t deviceID) {
 	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
 }
 
-void SelfProgram::getSignature(uint8_t *data, int len) {
-	data[0] = boot_signature_byte_get(0);
-	data[1] = boot_signature_byte_get(2);
-	data[2] = boot_signature_byte_get(4);			
+uint32_t SelfProgram::getSignature() {
+	return (boot_signature_byte_get(0) |
+			(((uint32_t)boot_signature_byte_get(0)) << 8) |
+			(((uint32_t)boot_signature_byte_get(0)) << 16));	
 }
 
-void SelfProgram::readEEPROM(uint8_t *data, void *address, int eeLen) {
-	eeprom_read_block(data, address, eeLen);
+void SelfProgram::readEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen) {
+	eeprom_read_block(data, (const void *)address, eeLen);
 }
 
-void SelfProgram::writeEEPROM(uint8_t *data, void *address, int len) {
-	eeprom_update_block(data, (void*)address, len);
+void SelfProgram::writeEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen) {
+	eeprom_update_block(data, (void*)address, eeLen);
 }				
 
 void SelfProgram::setLED(bool on) {
@@ -72,7 +72,7 @@ int SelfProgram::getPageSize() {
 	return SPM_PAGESIZE;
 }
 
-void SelfProgram::erasePage(uint16_t address) {
+void SelfProgram::erasePage(uint32_t address) {
 	// Can only write to a 64 byte 4 page boundary, so mask the lower 6 bits
 	address &= 0xFFC0;
 	
@@ -93,24 +93,24 @@ void SelfProgram::erasePage(uint16_t address) {
 		for (int i=0; i < SPM_PAGESIZE; i++) {
 			data[i] = 0xFF;
 		}
-		writePage(0, data);
+		writePage(0, data, SPM_PAGESIZE);
 	}
 	
 	boot_spm_busy_wait();
 }
 
-int SelfProgram::readPage(uint8_t address, uint8_t *data) {
+int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only read at a 16 byte page boundary
 	address &= 0xFFF0;
 	
-	for (int i=0; i < SPM_PAGESIZE; i++) {
+	for (int i=0; i < len; i++) {
 		data[i] = pgm_read_byte(address+i);
 	}
 	
 	return SPM_PAGESIZE;
 }
 
-void SelfProgram::writePage(uint16_t address, uint8_t *data) {
+void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
 	address &= 0xFFF0;
 	
@@ -128,7 +128,7 @@ void SelfProgram::writePage(uint16_t address, uint8_t *data) {
 	
 	eeprom_busy_wait();
 	boot_spm_busy_wait();
-	for (int i=0; i < SPM_PAGESIZE; i += 2) {
+	for (int i=0; i < len; i += 2) {
 		uint16_t w = data[i] | (data[i+1] << 8);
 		boot_page_fill(address+i, w);
 	}

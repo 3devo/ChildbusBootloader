@@ -23,21 +23,27 @@ public:
 
 	void storeDeviceID(uint16_t deviceID);
 
-	void getSignature(uint8_t *data, int len);
+	uint32_t getSignature();
 
-	void readEEPROM(uint8_t *data, void *address, int eeLen);
+	void readEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen);
 
-	void writeEEPROM(uint8_t *data, void *address, int len);
+	void writeEEPROM(uint16_t address, uint8_t *data,  uint8_t len);
 
-	static void setLED(bool on);
+	void setLED(bool on);
 
 	int getPageSize();
 
-	void erasePage(uint16_t address);
+	void erasePage(uint32_t address);
 
-	int readPage(uint8_t address, uint8_t *data);
+	int readPage(uint32_t address, uint8_t *data, uint8_t len);
 
-	void writePage(uint16_t address, uint8_t *data);
+	void writePage(uint32_t address, uint8_t *data, uint8_t len);
+
+	void startApplication();
+	
+	void checkBootMode();
+
+	void jumpToApplication();
 
 private:
 	uint16_t _deviceID;
