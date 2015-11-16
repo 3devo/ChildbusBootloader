@@ -81,7 +81,6 @@ void SelfProgram::erasePage(uint32_t address) {
 		return;
 	}
 	
-	//eeprom_busy_wait();
 	boot_page_erase_safe(address);
 
 	// If we just erased page 0, restore the reset vector in case
@@ -112,7 +111,9 @@ int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 
 void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
-	address &= 0xFFF0;
+	if (address % 16 != 0) {
+		return;
+	}
 	
 	// If we are writing page 0, change the reset vector
 	// so that it jumps to the bootloader.
@@ -126,13 +127,15 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 		return;
 	}
 	
-	eeprom_busy_wait();
-	boot_spm_busy_wait();
+	// If we are the beginning of a 4-page boundary, erase it
+	if (address % 64 == 0) {
+		boot_page_erase_safe(address);
+	}
+	
 	for (int i=0; i < len; i += 2) {
 		uint16_t w = data[i] | (data[i+1] << 8);
-		boot_page_fill(address+i, w);
+		boot_page_fill_safe(address+i, w);
 	}
-	boot_page_write(address);
-	boot_spm_busy_wait();
+	boot_page_write_safe(address);
 }
 
