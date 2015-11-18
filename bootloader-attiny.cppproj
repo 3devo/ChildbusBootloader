@@ -43,7 +43,7 @@
       <ToolOptions>
         <InterfaceProperties>
           <IspClock>125000</IspClock>
-          <DebugWireClockDiv>8000</DebugWireClockDiv>
+          <DebugWireClockDiv>0</DebugWireClockDiv>
         </InterfaceProperties>
         <InterfaceName>debugWIRE</InterfaceName>
       </ToolOptions>
