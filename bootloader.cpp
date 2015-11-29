@@ -91,8 +91,8 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 				uint16_t deviceID = selfProgram.getDeviceID();
 				if (previousID < deviceID) {
 					// Return the device ID
-					data[0] = deviceID & 0xFF;
-					data[1] = deviceID >> 8;
+					data[1] = deviceID & 0xFF;
+					data[0] = deviceID >> 8;
 					return 2;
 				}
 			}
