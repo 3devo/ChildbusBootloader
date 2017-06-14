@@ -75,11 +75,11 @@ int checkDeviceID(uint8_t *data) {
 }
 
 int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
-	
+
 	if (len < 3) {
 		return 0;
 	}
-	
+
 	switch (data[0]) {
 		case FUNCTION_GLOBAL_RESET:
 		case FUNCTION_EXIT_BOOTLOADER:
@@ -128,7 +128,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 		case FUNCTION_ERASE_PAGE:
-			if (len == 9 && checkDeviceID(data+2)) {	
+			if (len == 9 && checkDeviceID(data+2)) {
 				uint32_t address = getUInt32(data+4);
 				selfProgram.erasePage(address);
 			}
@@ -150,7 +150,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 		case FUNCTION_WRITE_EEPROM:
 			if (len >= 9  && checkDeviceID(data+2)) {
 				uint16_t address = getUInt32(data+4);
-				
+
 				selfProgram.writeEEPROM(address, data+8, len-9);
 			}
 			break;
@@ -160,17 +160,17 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			}
 			break;
 	}
-	
+
 	return 0;
 }
 
 
 extern "C" {
 	void runBootloader() {
-		
+
 		selfProgram.loadDeviceID();
 		TwoWireInit(false /*useInterrupts*/);
-	
+
 		selfProgram.setLED(true);
 
 		while (bootloaderRunning) {

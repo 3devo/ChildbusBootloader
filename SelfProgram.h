@@ -27,7 +27,7 @@ public:
 	void setSafeMode(bool safeMode);
 
 	void loadDeviceID();
-	
+
 	uint16_t getDeviceID();
 
 	void storeDeviceID(uint16_t deviceID);
@@ -49,14 +49,14 @@ public:
 	void writePage(uint32_t address, uint8_t *data, uint8_t len);
 
 	void startApplication();
-	
+
 	void checkBootMode();
 
 	void jumpToApplication();
 
 private:
 	uint16_t _deviceID;
-	bool _safeMode;	
+	bool _safeMode;
 };
 
 #endif /* SELFPROGRAM_H_ */

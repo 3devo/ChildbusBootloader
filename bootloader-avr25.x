@@ -132,9 +132,9 @@ SECTIONS
     *(.text)
     . = ALIGN(2);
      *(.text.*)
-	 
 
-	 
+
+
     /* For data that needs to reside in the lower 64k of progmem.  */
 
     /* PR 13812: Placing the trampolines here gives a better chance
@@ -142,10 +142,10 @@ SECTIONS
     . = ALIGN(2);
      __trampolines_start = . ;
     /* The jump trampolines for the 16-bit limited relocs will reside here.  */
-  
+
     *(.trampolines)
      *(.trampolines*)
-	 
+
      __trampolines_end = . ;
 
     . = ALIGN(2);
@@ -154,11 +154,11 @@ SECTIONS
 	   /*
     *(.jumptables)
      *(.jumptables*)
-	 
+
     /* For code that needs to reside in the lower 128k progmem.  */
     *(.lowtext)
      *(.lowtext*)
-	 
+
 	 *(.progmem.gcc*)
 	 *(.progmem*)
 

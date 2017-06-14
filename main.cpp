@@ -52,5 +52,5 @@ FUSES =
 
 int main() {
 	runBootloader();
-	startApplication();	
+	startApplication();
 }
