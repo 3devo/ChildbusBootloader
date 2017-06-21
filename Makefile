@@ -28,6 +28,7 @@ CXXFLAGS      += -Wall -Wextra
 CXXFLAGS      += -Os -fpack-struct -fshort-enums
 CXXFLAGS      += -flto -fno-fat-lto-objects
 CXXFLAGS      += -DF_CPU=8000000UL
+CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)

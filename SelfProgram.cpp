@@ -25,7 +25,6 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 
-
 // The attiny841 has a 512 byte EEPROM section.
 // The deviceID is at the end of the EEPROM section (address 510)
 #define DEVICE_ID_ADDRESS ((uint16_t*)(476))
@@ -83,8 +82,8 @@ int SelfProgram::getPageSize() {
 }
 
 void SelfProgram::erasePage(uint32_t address) {
-	// Can only write to a 64 byte 4 page boundary, so mask the lower 6 bits
-	address &= 0xFFC0;
+	// Mask of bits inside the page
+	address &= ~(SPM_ERASESIZE - 1);
 
 	// Bail if the address is past the application section.
 	if (_safeMode and address >= 1024*6) {
@@ -110,7 +109,7 @@ void SelfProgram::erasePage(uint32_t address) {
 
 int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only read at a 16 byte page boundary
-	address &= 0xFFF0;
+	address &= ~(SPM_PAGESIZE - 1);
 
 	for (int i=0; i < len; i++) {
 		data[i] = pgm_read_byte(address+i);
@@ -121,7 +120,7 @@ int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 
 void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
-	if (address % 16 != 0) {
+	if (address % SPM_PAGESIZE != 0) {
 		return;
 	}
 
@@ -138,7 +137,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	}
 
 	// If we are the beginning of a 4-page boundary, erase it
-	if (address % 64 == 0) {
+	if (address % SPM_ERASESIZE == 0) {
 		boot_page_erase_safe(address);
 	}
 
