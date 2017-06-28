@@ -40,6 +40,7 @@ void startApplication() {
 	asm("nop");
 }
 
+#if defined(__AVR_ATtiny841__) || defined(__AVR_ATtiny441__)
 // Store the fuse bits in a separate section of the elf file.
 // Note that fuse bits are inverted (0 enables the feature) so we must bitwise
 // and the masks together.
@@ -49,6 +50,7 @@ FUSES =
 	.high = FUSE_SPIEN & FUSE_EESAVE,
 	.extended = FUSE_SELFPRGEN & FUSE_BODACT0 & FUSE_BODPD0
 };
+#endif
 
 int main() {
 	runBootloader();
