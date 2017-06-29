@@ -32,11 +32,19 @@ CC             = avr-gcc
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-all: hex
+all: hex fuses
 
 lst:  $(PRG).lst
 
 hex:  $(PRG).hex
+
+fuses:
+	@if $(OBJDUMP) -s -j .fuse 2> /dev/null $(PRG).elf > /dev/null; then \
+		$(OBJDUMP) -s -j .fuse $(PRG).elf; \
+		echo "        ^^     Low"; \
+		echo "          ^^   High"; \
+		echo "            ^^ Extended"; \
+	fi
 
 clean:
 	rm -rf $(OBJ) $(OBJ:.o=.d) $(PRG).elf $(PRG).hex $(PRG).lst $(PRG).map
@@ -53,7 +61,7 @@ $(PRG).elf: $(OBJ)
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-.PHONY: all lst hex clean
+.PHONY: all lst hex clean fuses
 
 # pull in dependency info for *existing* .o files
 -include $(OBJ:.o=.d)
