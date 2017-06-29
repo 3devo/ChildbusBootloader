@@ -58,6 +58,15 @@ FUSES =
 	// BOD always on
 	.extended = FUSE_SELFPRGEN & FUSE_BODACT0 & FUSE_BODPD0
 };
+#elif defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny24__)
+FUSES =
+{
+	// Internal 8Mhz, 6/14CK startup time
+	.low = FUSE_CKSEL3 & FUSE_CKSEL2 & FUSE_CKSEL0 & FUSE_SUT1 & FUSE_SUT0,
+	// Brown-out at 2.7V (8Mhz needs 2.5V or more)
+	.high = FUSE_SPIEN & FUSE_EESAVE & FUSE_BODLEVEL1,
+	.extended = FUSE_SELFPRGEN,
+};
 #endif
 
 extern void uart_init();
