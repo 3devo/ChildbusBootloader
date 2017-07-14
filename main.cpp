@@ -16,7 +16,8 @@
  */
 
 // This is the Modulo bootloader for attiny841 based devices.
-// The bootloader uses the following memory layout
+// By default, the bootloader uses the following memory layout (but this
+// can be changed by changing BL_SIZE in the Makefile):
 //
 //   0x0000 - 2 byte reset vector. Jumps to the bootloader section (0x1800)
 //   0x17FE - 2 byte application trampoline. The bootloader will jump here when it exits.

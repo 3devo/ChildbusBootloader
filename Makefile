@@ -15,7 +15,10 @@
 PRG            = bootloader-attiny
 CPPSRC         = $(wildcard *.cpp)
 OBJ            = $(CPPSRC:.cpp=.o)
+LINKER_SCRIPT  = linker-script.x
 MCU            = attiny841
+# Size of the bootloader area. Must be a multiple of the erase size
+BL_SIZE        = 2048
 
 CXXFLAGS       =
 CXXFLAGS      += -g3 -mmcu=$(MCU) -std=gnu++11
@@ -26,7 +29,12 @@ CXXFLAGS      += -DF_CPU=8000000UL
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)
-LDFLAGS       += -T bootloader-avr25.x
+
+# Use a custom linker script
+LDFLAGS       += -T $(LINKER_SCRIPT)
+# Pass BL_SIZE to the script for positioning
+LDFLAGS       += -Wl,--defsym=BL_SIZE=$(BL_SIZE)
+
 
 CC             = avr-gcc
 OBJCOPY        = avr-objcopy
@@ -49,7 +57,7 @@ fuses:
 clean:
 	rm -rf $(OBJ) $(OBJ:.o=.d) $(PRG).elf $(PRG).hex $(PRG).lst $(PRG).map
 
-$(PRG).elf: $(OBJ)
+$(PRG).elf: $(OBJ) $(LINKER_SCRIPT)
 	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 %.o: %.cpp
