@@ -132,8 +132,8 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 		// trampoline area
 		uint16_t instruction = data[0] | (data[1] << 8);
 		writeTrampoline(instruction);
-		data[0] = 0xFF;
-		data[1] = 0xCB;
+		data[0] = pgm_read_byte(0);
+		data[1] = pgm_read_byte(1);
 	}
 
 	// If the address is past the application section don't write anything
