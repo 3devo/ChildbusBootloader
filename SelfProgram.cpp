@@ -30,11 +30,7 @@
 // The deviceID is at the end of the EEPROM section (address 510)
 #define DEVICE_ID_ADDRESS ((uint16_t*)(476))
 
-SelfProgram::SelfProgram() : _deviceID(0), _safeMode(true) {
-}
-
-void SelfProgram::setSafeMode(bool safeMode) {
-	_safeMode = safeMode;
+SelfProgram::SelfProgram() : _deviceID(0) {
 }
 
 uint16_t SelfProgram::getDeviceID() {
@@ -87,7 +83,7 @@ void SelfProgram::erasePage(uint32_t address) {
 	address &= ~(SPM_ERASESIZE - 1);
 
 	// Bail if the address is past the application section.
-	if (_safeMode and address + SPM_ERASESIZE > (uint32_t)&startApplication) {
+	if (address + SPM_ERASESIZE > (uint32_t)&startApplication) {
 		return;
 	}
 
@@ -97,7 +93,7 @@ void SelfProgram::erasePage(uint32_t address) {
 	// the bootloader gets interrupted before writing the page.
 	// writePage() will change bytes 0 and 1.
 	// All the other bytes in the page must remain erased (0xFF)
-	if (_safeMode and address == 0) {
+	if (address == 0) {
 		uint8_t data[SPM_PAGESIZE];
 		for (int i=0; i < SPM_PAGESIZE; i++) {
 			data[i] = 0xFF;
@@ -127,7 +123,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 
 	// If we are writing page 0, change the reset vector
 	// so that it jumps to the bootloader.
-	if (_safeMode and address == 0) {
+	if (address == 0) {
 		// Copy the reset vector from the data into the boot
 		// trampoline area
 		uint16_t instruction = data[0] | (data[1] << 8);
@@ -137,7 +133,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	}
 
 	// If the address is past the application section don't write anything
-	if (_safeMode and address + len > (uint32_t)&startApplication) {
+	if (address + len > (uint32_t)&startApplication) {
 		return;
 	}
 

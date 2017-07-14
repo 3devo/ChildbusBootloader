@@ -154,11 +154,6 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 				selfProgram.writeEEPROM(address, data+8, len-9);
 			}
 			break;
-		case FUNCTION_SET_BOOTLOADER_SAFE_MODE:
-			if (len == 4 && checkDeviceID(data+1)) {
-				selfProgram.setSafeMode(data[3]);
-			}
-			break;
 	}
 
 	return 0;
