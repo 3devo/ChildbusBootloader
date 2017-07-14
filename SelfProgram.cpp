@@ -87,7 +87,7 @@ void SelfProgram::erasePage(uint32_t address) {
 	address &= ~(SPM_ERASESIZE - 1);
 
 	// Bail if the address is past the application section.
-	if (_safeMode and address >= 1024*6) {
+	if (_safeMode and address + SPM_ERASESIZE > (uint32_t)&startApplication) {
 		return;
 	}
 
@@ -137,7 +137,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	}
 
 	// If the address is past the application section don't write anything
-	if (_safeMode and address >= 1024*6) {
+	if (_safeMode and address + len > (uint32_t)&startApplication) {
 		return;
 	}
 
