@@ -38,7 +38,9 @@
 // The application code will overwrite this instruction with a jump to to the start of the application.
 void __attribute__((noinline)) __attribute__((naked)) __attribute__((section(".boot_trampoline"))) startApplication();
 void startApplication() {
-	asm("nop");
+	// When no application is flashed yet, this code is used. This
+	// just restarts the bootloader.
+	asm("rjmp __vectors");
 }
 
 #if defined(__AVR_ATtiny841__) || defined(__AVR_ATtiny441__)
