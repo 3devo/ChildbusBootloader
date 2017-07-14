@@ -26,28 +26,7 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 
-// The attiny841 has a 512 byte EEPROM section.
-// The deviceID is at the end of the EEPROM section (address 510)
-#define DEVICE_ID_ADDRESS ((uint16_t*)(476))
-
-SelfProgram::SelfProgram() : _deviceID(0) {
-}
-
-uint16_t SelfProgram::getDeviceID() {
-	return _deviceID;
-}
-
-void SelfProgram::loadDeviceID() {
-	_deviceID = eeprom_read_word(DEVICE_ID_ADDRESS);
-	// 0xFFFF is an invalid device ID. Default to deviceID=1
-	if (_deviceID == 0xFFFF) {
-		_deviceID = 1;
-	}
-}
-
-void SelfProgram::storeDeviceID(uint16_t deviceID) {
-	_deviceID = deviceID;
-	eeprom_write_word(DEVICE_ID_ADDRESS, _deviceID);
+SelfProgram::SelfProgram() {
 }
 
 uint32_t SelfProgram::getSignature() {

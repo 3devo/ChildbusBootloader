@@ -31,10 +31,6 @@ uint32_t getUInt32(uint8_t *data) {
 	return data[0] | (data[1] << 8) | ((uint32_t)data[2] << 16) | ((uint32_t)data[3] << 24);
 }
 
-int checkDeviceID(uint8_t *data) {
-	return (getUInt16(data) == selfProgram.getDeviceID());
-}
-
 int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
 	return 0;
 }
@@ -43,7 +39,6 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 extern "C" {
 	void runBootloader() {
 
-		selfProgram.loadDeviceID();
 		TwoWireInit(false /*useInterrupts*/);
 
 		selfProgram.setLED(true);
