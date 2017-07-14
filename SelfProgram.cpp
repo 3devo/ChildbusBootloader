@@ -121,7 +121,7 @@ int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 
 void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
-	if (address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
+	if (!len || address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
 		return;
 	}
 
