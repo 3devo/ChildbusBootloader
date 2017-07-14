@@ -18,6 +18,7 @@
 #define SIGRD 5
 
 #include "SelfProgram.h"
+#include "bootloader.h"
 
 #include <avr/io.h>
 #include <avr/boot.h>
@@ -127,6 +128,10 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// If we are writing page 0, change the reset vector
 	// so that it jumps to the bootloader.
 	if (_safeMode and address == 0) {
+		// Copy the reset vector from the data into the boot
+		// trampoline area
+		uint16_t instruction = data[0] | (data[1] << 8);
+		writeTrampoline(instruction);
 		data[0] = 0xFF;
 		data[1] = 0xCB;
 	}
@@ -138,7 +143,10 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 
 	// If we are the beginning of a 4-page boundary, erase it
 	if (address % SPM_ERASESIZE == 0) {
-		boot_page_erase_safe(address);
+		// If this is the page containing the trampoline, it
+		// will already be erased when writing the first page
+		if (address / SPM_ERASESIZE != (uint32_t)&startApplication / SPM_ERASESIZE)
+			boot_page_erase_safe(address);
 	}
 
 	for (int i=0; i < len; i += 2) {
@@ -148,3 +156,16 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	boot_page_write_safe(address);
 }
 
+void SelfProgram::writeTrampoline(uint16_t instruction) {
+	uint32_t address = (uint32_t)&startApplication;
+	// Erase the page containing the trampoline. This might erase
+	// other application code. This makes no attempt to preserve the
+	// other code to keep since simple. This should work since we're
+	// writing a new application anyway.
+	boot_page_erase_safe(address);
+
+	// Take the reset instruction from the page at offset 0 and 1
+	// and overwrite the trampoline with it
+	boot_page_fill_safe(address, instruction);
+	boot_page_write_safe(address);
+}

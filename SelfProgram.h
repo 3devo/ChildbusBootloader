@@ -48,6 +48,8 @@ public:
 
 	void writePage(uint32_t address, uint8_t *data, uint8_t len);
 
+	void writeTrampoline(uint16_t instruction);
+
 private:
 	uint16_t _deviceID;
 	bool _safeMode;

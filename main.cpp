@@ -23,9 +23,9 @@
 //   0x17FE - 2 byte application trampoline. The bootloader will jump here when it exits.
 //   0x1800 - 2048 byte bootloader
 //
-// The bootloader will write bytes 0x0002-0x17FF, protecting the reset vector and
-// bootloader code. The only modification needed to make a program compatible with the
-// bootloader is to insert a jump instruction at address 0x17FE to start the application.
+// The bootloader will write bytes 0x0002-0x17FD, protecting the reset
+// vector, trampoline and bootloader code. The reset vector will be
+// automatically copied into the trampoline area.
 //
 // To view the disassembled bootloader, run:
 //  /cygdrive/c/Program\ Files\ \(x86\)/Atmel/Atmel\ Toolchain/AVR8\ GCC/Native/3.4.1061/avr8-gnu-toolchain/bin/avr-objdump.exe -d Release/bootloader-attiny.elf
