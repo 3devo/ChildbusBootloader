@@ -43,15 +43,6 @@ void SelfProgram::writeEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen) {
 	eeprom_update_block(data, (void*)address, eeLen);
 }
 
-void SelfProgram::setLED(bool on) {
-	DDRA |= _BV(5);
-	if (on) {
-		PORTA |= _BV(5);
-	} else {
-		PORTA &= ~_BV(5);
-	}
-}
-
 // Flash page size is 16 bytes
 int SelfProgram::getPageSize() {
 	return SPM_PAGESIZE;

@@ -41,8 +41,6 @@ extern "C" {
 
 		TwoWireInit(false /*useInterrupts*/);
 
-		selfProgram.setLED(true);
-
 		while (bootloaderRunning) {
 			TwoWireUpdate();
 		}
