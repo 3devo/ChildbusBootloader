@@ -65,5 +65,10 @@ SECTIONS
 
       /* Verify that the boot_trampoline is the expected size */
       ASSERT(. == BL_START, "boot_trampoline section should be a single 2-byte instruction");
+
+      /* Verify that the bootloader is aligned to a erase size boundary,
+       * so changing boot_trampoline does not need to erase any part of
+       * the bootloader. */
+      ASSERT(BL_START % ERASE_SIZE == 0, "Bootloader should be aligned to erase size (change BL_SIZE)");
    }
 }

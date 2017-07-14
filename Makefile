@@ -19,6 +19,8 @@ LINKER_SCRIPT  = linker-script.x
 MCU            = attiny841
 # Size of the bootloader area. Must be a multiple of the erase size
 BL_SIZE        = 2048
+# Set the flash erase page size for the MCU here.
+ERASE_SIZE     = 64
 
 CXXFLAGS       =
 CXXFLAGS      += -g3 -mmcu=$(MCU) -std=gnu++11
@@ -34,6 +36,8 @@ LDFLAGS       += -mmcu=$(MCU)
 LDFLAGS       += -T $(LINKER_SCRIPT)
 # Pass BL_SIZE to the script for positioning
 LDFLAGS       += -Wl,--defsym=BL_SIZE=$(BL_SIZE)
+# Pass ERASE_SIZE to the script to verify alignment
+LDFLAGS       += -Wl,--defsym=ERASE_SIZE=$(ERASE_SIZE)
 
 
 CC             = avr-gcc
