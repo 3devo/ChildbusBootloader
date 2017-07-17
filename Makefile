@@ -29,6 +29,7 @@ CXXFLAGS      += -Os -fpack-struct -fshort-enums
 CXXFLAGS      += -flto -fno-fat-lto-objects
 CXXFLAGS      += -DF_CPU=8000000UL
 CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
+CXXFLAGS      += -D$(BOARD)
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)
@@ -44,6 +45,9 @@ LDFLAGS       += -Wl,--defsym=ERASE_SIZE=$(ERASE_SIZE)
 CC             = avr-gcc
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
+
+interface_v1.3: BOARD=BOARD_IFACE_V1_3
+interface_v1.3: all
 
 all: hex fuses
 
