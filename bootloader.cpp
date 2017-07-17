@@ -43,11 +43,11 @@ struct Commands {
 SelfProgram selfProgram;
 volatile bool bootloaderRunning = true;
 
-uint16_t getUInt16(uint8_t *data) {
+static uint16_t getUInt16(uint8_t *data) {
 	return (uint16_t)data[0] << 8 | data[1];
 }
 
-uint32_t getUInt32(uint8_t *data) {
+static uint32_t getUInt32(uint8_t *data) {
 	return ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |  (data[2] << 8) | data[3];
 }
 
