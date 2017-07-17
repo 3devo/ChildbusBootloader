@@ -49,8 +49,11 @@ void startApplication() {
 // and the masks together.
 FUSES =
 {
+	// Internal 8Mhz, 6CK / 14CK+16ms startup time
 	.low = FUSE_SUT_CKSEL4 & FUSE_SUT_CKSEL3 & FUSE_SUT_CKSEL2 & FUSE_SUT_CKSEL0,
-	.high = FUSE_SPIEN & FUSE_EESAVE,
+	// Brown-out at 2.5-2.9V (8Mhz needs 2.4V or more)
+	.high = FUSE_SPIEN & FUSE_EESAVE & FUSE_BODLEVEL1,
+	// BOD always on
 	.extended = FUSE_SELFPRGEN & FUSE_BODACT0 & FUSE_BODPD0
 };
 #endif
