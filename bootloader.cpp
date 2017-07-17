@@ -44,11 +44,11 @@ SelfProgram selfProgram;
 volatile bool bootloaderRunning = true;
 
 uint16_t getUInt16(uint8_t *data) {
-	return data[0] | (data[1] << 8);
+	return (uint16_t)data[0] << 8 | data[1];
 }
 
 uint32_t getUInt32(uint8_t *data) {
-	return data[0] | (data[1] << 8) | ((uint32_t)data[2] << 16) | ((uint32_t)data[3] << 24);
+	return ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |  (data[2] << 8) | data[3];
 }
 
 static uint8_t calcCrc(uint8_t *data, uint8_t len) {
