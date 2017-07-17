@@ -46,6 +46,8 @@ public:
 
 	int readPage(uint32_t address, uint8_t *data, uint8_t len);
 
+	int readByte(uint32_t address);
+
 	void writePage(uint32_t address, uint8_t *data, uint8_t len);
 
 	void writeTrampoline(uint16_t instruction);

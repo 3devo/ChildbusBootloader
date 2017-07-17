@@ -16,10 +16,14 @@
  */
 
 #include <string.h>
+#include <avr/io.h>
+#include <util/delay.h>
 #include <util/crc16.h>
 
+#include "Boards.h"
 #include "TwoWire.h"
 #include "SelfProgram.h"
+#include "bootloader.h"
 
 struct Status {
 	static const uint8_t COMMAND_OK            = 0x00;
@@ -58,8 +62,140 @@ static uint8_t calcCrc(uint8_t *data, uint8_t len) {
 	return crc;
 }
 
+static uint8_t writeBuffer[SPM_ERASESIZE];
+static uint16_t nextWriteAddress = 0;
+
+static bool equalToFlash(uint16_t address, uint8_t len) {
+	uint8_t offset = 0;
+	while (len > 0) {
+		if (writeBuffer[offset] != selfProgram.readByte(address + offset))
+			return false;
+		--len;
+		++offset;
+	}
+	return true;
+}
+
+
+static void commitToFlash(uint16_t address, uint8_t len) {
+	// If nothing needs to be changed, then don't
+	if (equalToFlash(address, len))
+		return;
+
+	uint8_t offset = 0;
+	while (len > 0) {
+		uint8_t pageLen = len < SPM_PAGESIZE ? len : SPM_PAGESIZE;
+		selfProgram.writePage(address + offset, &writeBuffer[offset], pageLen);
+		len -= pageLen;
+		offset += pageLen;
+	}
+}
+
+static int handleWriteFlash(uint16_t address, uint8_t *data, uint8_t len) {
+	if (address == 0)
+		nextWriteAddress = 0;
+
+	// Only consecutive writes are supported
+	if (address != nextWriteAddress)
+		return Status::INVALID_ARGUMENTS;
+
+	nextWriteAddress += len;
+	while (address < nextWriteAddress) {
+		writeBuffer[address % SPM_ERASESIZE] = *data;
+		++data;
+		++address;
+
+		if (address % SPM_ERASESIZE == 0)
+			commitToFlash(address - SPM_ERASESIZE, SPM_ERASESIZE);
+	}
+
+	return Status::COMMAND_OK;
+}
+
+#ifdef HAVE_DISPLAY
+void displayOn() {
+	// This pin has a pullup to 3v3, so the display comes out of
+	// reset as soon as the 3v3 is powered up. To prevent that, pull
+	// it low now.
+	*PIN_DISPLAY_RESET.port &= ~PIN_DISPLAY_RESET.mask;
+	*PIN_DISPLAY_RESET.ddr |= PIN_DISPLAY_RESET.mask;
+
+	// Reset sequence for the display according to datasheet: Enable
+	// 3v3 logic supply, then release the reset, then powerup the
+	// boost converter for LED power. This is a lot slower than
+	// possible according to the datasheet.
+	*PIN_3V3_ENABLE.ddr |= PIN_3V3_ENABLE.mask;
+	*PIN_3V3_ENABLE.port |= PIN_3V3_ENABLE.mask;
+
+        _delay_ms(1);
+	// Switch to input to let external 3v3 pullup work instead of
+	// making it high (which would be 5v);
+	*PIN_DISPLAY_RESET.ddr &= ~PIN_DISPLAY_RESET.mask;
+
+        _delay_ms(1);
+	*PIN_BOOST_ENABLE.ddr |= PIN_BOOST_ENABLE.mask;
+	*PIN_BOOST_ENABLE.port |= PIN_BOOST_ENABLE.mask;
+
+        _delay_ms(5);
+}
+#endif
+
 static int processCommand(uint8_t *data, uint8_t len, uint8_t maxLen) {
+	if (maxLen < 5)
+		return 0;
+
 	switch (data[0]) {
+		case Commands::GET_PROTOCOL_VERSION:
+			data[0] = Status::COMMAND_OK;
+			data[1] = 1;
+			data[2] = 0;
+			return 3;
+
+		case Commands::SET_I2C_ADDRESS:
+			// Only respond if the hw type in the request is
+			// the wildcard or matches ours.
+			if (data[2] != 0 && data[2] != INFO_HW_TYPE)
+				return 0;
+
+			TwoWireSetDeviceAddress(data[1]);
+			data[0] = Status::COMMAND_OK;
+			return 1;
+
+		#ifdef HAVE_DISPLAY
+		case Commands::POWER_UP_DISPLAY:
+			displayOn();
+			data[0] = Status::COMMAND_OK;
+			data[1] = DISPLAY_CONTROLLER_TYPE;
+			return 2;
+		#endif
+
+		case Commands::GET_HARDWARE_INFO:
+			data[0] = Status::COMMAND_OK;
+			data[1] = INFO_HW_TYPE;
+			data[2] = INFO_HW_REVISION;
+			data[3] = INFO_BL_VERSION;
+			// Available flash size
+			data[4] = (uint16_t)&startApplication;
+			return 5;
+
+		case Commands::START_APPLICATION:
+			bootloaderRunning = false;
+			// This is probably never sent
+			data[0] = Status::COMMAND_OK;
+			return 1;
+
+		case Commands::WRITE_FLASH:
+			data[0] = handleWriteFlash(getUInt16(data + 1), data + 3, len - 3);
+			return 1;
+
+		case Commands::FINALIZE_FLASH:
+		{
+			uint16_t pageAddress = nextWriteAddress & ~(SPM_PAGESIZE - 1);
+			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
+			data[0] = Status::COMMAND_OK;
+			return 1;
+		}
+
 		default:
 			data[0] = Status::COMMAND_NOT_SUPPORTED;
 			return 1;
@@ -94,7 +230,6 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 
 extern "C" {
 	void runBootloader() {
-
 		TwoWireInit(false /*useInterrupts*/);
 
 		while (bootloaderRunning) {

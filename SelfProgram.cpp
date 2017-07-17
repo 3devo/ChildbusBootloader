@@ -85,6 +85,14 @@ int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
 	return SPM_PAGESIZE;
 }
 
+int SelfProgram::readByte(uint32_t address) {
+	// The first two bytes have been relocated to the end of flash,
+	// so read from there.
+	if (address < 2)
+		address += (uint32_t)&startApplication;
+	pgm_read_byte(address);
+}
+
 void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
 	if (!len || address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
