@@ -19,6 +19,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <util/crc16.h>
+#include <avr/wdt.h>
 
 #include "Boards.h"
 #include "TwoWire.h"
@@ -42,6 +43,11 @@ struct Commands {
 	static const uint8_t START_APPLICATION     = 0x04;
 	static const uint8_t WRITE_FLASH           = 0x05;
 	static const uint8_t FINALIZE_FLASH        = 0x06;
+};
+
+struct GeneralCallCommands {
+	static const uint8_t RESET = 0x06;
+	static const uint8_t RESET_ADDRESS = 0x04;
 };
 
 SelfProgram selfProgram;
@@ -202,7 +208,21 @@ static int processCommand(uint8_t *data, uint8_t len, uint8_t maxLen) {
 	}
 }
 
+static int handleGeneralCall(uint8_t *data, uint8_t len, uint8_t /* maxLen */) {
+	if (len >= 1 && data[0] == GeneralCallCommands::RESET) {
+		wdt_enable(WDTO_15MS);
+		while(true) /* wait */;
+
+	} else if (len >= 1 && data[0] == GeneralCallCommands::RESET_ADDRESS) {
+		TwoWireResetDeviceAddress();
+	}
+	return 0;
+}
+
 int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
+	if (address == 0)
+		return handleGeneralCall(data, len, maxLen);
+
 	// Check that there is at least room for a status byte and a CRC
 	if (maxLen < 2)
 		return 0;

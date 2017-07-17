@@ -24,6 +24,7 @@ void TwoWireUpdate();
 void TwoWireInit(bool useInterrupts);
 void TwoWireSetDeviceAddress(uint8_t address);
 uint8_t TwoWireGetDeviceAddress();
+void TwoWireResetDeviceAddress();
 
 int TwoWireCallback(uint8_t address, uint8_t *buffer, uint8_t len, uint8_t maxLen);
 

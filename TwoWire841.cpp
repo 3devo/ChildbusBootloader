@@ -41,10 +41,7 @@ void TwoWireInit(bool useInterrupts) {
 
 	TWSCRB = _BV(TWHNM);
 
-	// Set address and mask to listen for a range of addresses, and
-	// enable general call (address 0) recognition by setting TWSA0.
-	TWSA = (broadcastAddress << 1) | 1;
-	TWSAM = (broadcastMask << 1);
+	TwoWireResetDeviceAddress();
 }
 
 void TwoWireSetDeviceAddress(uint8_t address) {
@@ -55,6 +52,14 @@ void TwoWireSetDeviceAddress(uint8_t address) {
 
 uint8_t TwoWireGetDeviceAddress() {
 	return _deviceAddress;
+}
+
+void TwoWireResetDeviceAddress() {
+	// Set address and mask to listen for a range of addresses, and
+	// enable general call (address 0) recognition by setting TWSA0.
+	TWSA = (broadcastAddress << 1) | 1;
+	TWSAM = (broadcastMask << 1);
+	_deviceAddress = 0;
 }
 
 static void _Acknowledge(bool ack, bool complete=false) {
