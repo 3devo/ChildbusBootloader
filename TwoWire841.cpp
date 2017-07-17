@@ -22,7 +22,9 @@
 #include <avr/interrupt.h>
 
 static volatile uint8_t _deviceAddress = 0;
-static const uint8_t broadcastAddress = 9;
+// Listen on address 8-15
+static const uint8_t broadcastAddress = 0x08;
+static const uint8_t broadcastMask = 0x07;
 
 #if !defined(__AVR_ATtiny841__)
 #error "Only works with ATtiny841"
@@ -39,13 +41,16 @@ void TwoWireInit(bool useInterrupts) {
 
 	TWSCRB = _BV(TWHNM);
 
-	// Also listen for message on the broadcast address
-	TWSAM = (broadcastAddress << 1)| 1;
+	// Set address and mask to listen for a range of addresses, and
+	// enable general call (address 0) recognition by setting TWSA0.
+	TWSA = (broadcastAddress << 1) | 1;
+	TWSAM = (broadcastMask << 1);
 }
 
 void TwoWireSetDeviceAddress(uint8_t address) {
 	_deviceAddress = address;
-	TWSA = (address << 1);
+	TWSA = (address << 1) | 1;
+	TWSAM = 0;
 }
 
 uint8_t TwoWireGetDeviceAddress() {
