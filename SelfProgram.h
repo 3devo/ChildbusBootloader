@@ -20,6 +20,8 @@
 
 #include <inttypes.h>
 
+void startApplication();
+
 class SelfProgram {
 public:
 	SelfProgram();
@@ -52,6 +54,8 @@ public:
 
 	void writeTrampoline(uint16_t instruction);
 
+	uint32_t trampolineStart = (uint32_t)&startApplication * 2;
+	uint32_t applicationSize = trampolineStart;
 private:
 	uint16_t _deviceID;
 	bool _safeMode;

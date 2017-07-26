@@ -198,7 +198,7 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			data[2] = INFO_BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
-			uint16_t size = (uint16_t)&startApplication * 2;
+			uint16_t size = selfProgram.applicationSize;
 			data[3] = size >> 8;
 			data[4] = size;
 			return cmd_ok(5);

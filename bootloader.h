@@ -24,7 +24,6 @@ extern "C" {
 #endif
 
 void runBootloader();
-void startApplication();
 
 #ifdef __cplusplus
 }

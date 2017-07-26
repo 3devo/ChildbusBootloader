@@ -53,7 +53,7 @@ void SelfProgram::erasePage(uint32_t address) {
 	address &= ~(SPM_ERASESIZE - 1);
 
 	// Bail if the address is past the application section.
-	if (address + SPM_ERASESIZE > (uint32_t)&startApplication) {
+	if (address + SPM_ERASESIZE > applicationSize) {
 		return;
 	}
 
@@ -89,7 +89,7 @@ int SelfProgram::readByte(uint32_t address) {
 	// The first two bytes have been relocated to the end of flash,
 	// so read from there.
 	if (address < 2)
-		address += (uint32_t)&startApplication;
+		address += trampolineStart;
 	pgm_read_byte(address);
 }
 
@@ -111,7 +111,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	}
 
 	// If the address is past the application section don't write anything
-	if (address + len > (uint32_t)&startApplication) {
+	if (address + len > applicationSize) {
 		return;
 	}
 
@@ -119,7 +119,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	if (address % SPM_ERASESIZE == 0) {
 		// If this is the page containing the trampoline, it
 		// will already be erased when writing the first page
-		if (address / SPM_ERASESIZE != (uint32_t)&startApplication / SPM_ERASESIZE)
+		if (address / SPM_ERASESIZE != trampolineStart / SPM_ERASESIZE)
 			boot_page_erase_safe(address);
 	}
 
@@ -131,7 +131,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 }
 
 void SelfProgram::writeTrampoline(uint16_t instruction) {
-	uint32_t address = (uint32_t)&startApplication;
+	uint32_t address = trampolineStart;
 	// Erase the page containing the trampoline. This might erase
 	// other application code. This makes no attempt to preserve the
 	// other code to keep since simple. This should work since we're
