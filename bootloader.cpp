@@ -33,6 +33,9 @@ struct Status {
 	static const uint8_t INVALID_TRANSFER      = 0x03;
 	static const uint8_t INVALID_CRC           = 0x04;
 	static const uint8_t INVALID_ARGUMENTS     = 0x05;
+	// Never sent, used internally to indicate no status should be
+	// returned.
+	static const uint8_t NO_REPLY              = 0xff;
 };
 
 struct Commands {
@@ -146,70 +149,74 @@ void displayOn() {
 }
 #endif
 
-static int processCommand(uint8_t *data, uint8_t len, uint8_t maxLen) {
-	if (maxLen < 5)
-		return 0;
+struct cmd_result {
+	cmd_result(uint8_t status, uint8_t len = 0) : status(status), len(len) {}
+	uint8_t status;
+	uint8_t len;
+};
 
-	switch (data[0]) {
+cmd_result cmd_ok(uint8_t len = 0) {
+	return cmd_result(Status::COMMAND_OK, len);
+}
+
+static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLen) {
+	if (maxLen < 5)
+		return cmd_result(Status::NO_REPLY);
+
+	switch (cmd) {
 		case Commands::GET_PROTOCOL_VERSION:
-			data[0] = Status::COMMAND_OK;
-			data[1] = 1;
-			data[2] = 0;
-			return 3;
+			data[0] = 1;
+			data[1] = 0;
+			return cmd_ok(2);
 
 		case Commands::SET_I2C_ADDRESS:
 			// Only respond if the hw type in the request is
 			// the wildcard or matches ours.
-			if (data[2] != 0 && data[2] != INFO_HW_TYPE)
-				return 0;
+			if (data[1] != 0 && data[1] != INFO_HW_TYPE)
+				return cmd_result(Status::NO_REPLY);
 
-			TwoWireSetDeviceAddress(data[1]);
-			data[0] = Status::COMMAND_OK;
-			return 1;
+			TwoWireSetDeviceAddress(data[0]);
+			return cmd_ok();
 
 		#ifdef HAVE_DISPLAY
 		case Commands::POWER_UP_DISPLAY:
 			displayOn();
-			data[0] = Status::COMMAND_OK;
-			data[1] = DISPLAY_CONTROLLER_TYPE;
-			return 2;
+			data[0] = DISPLAY_CONTROLLER_TYPE;
+			return cmd_ok(1);
 		#endif
 
 		case Commands::GET_HARDWARE_INFO:
 		{
-			data[0] = Status::COMMAND_OK;
-			data[1] = INFO_HW_TYPE;
-			data[2] = INFO_HW_REVISION;
-			data[3] = INFO_BL_VERSION;
+			data[0] = INFO_HW_TYPE;
+			data[1] = INFO_HW_REVISION;
+			data[2] = INFO_BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
 			uint16_t size = (uint16_t)&startApplication * 2;
-			data[4] = size >> 8;
-			data[5] = size;
-			return 6;
-
+			data[3] = size >> 8;
+			data[4] = size;
+			return cmd_ok(5);
 		}
 		case Commands::START_APPLICATION:
 			bootloaderRunning = false;
 			// This is probably never sent
-			data[0] = Status::COMMAND_OK;
-			return 1;
+			return cmd_ok();
 
 		case Commands::WRITE_FLASH:
-			data[0] = handleWriteFlash(getUInt16(data + 1), data + 3, len - 3);
-			return 1;
+		{
 
+			uint8_t status = handleWriteFlash(getUInt16(data), data + 2, len - 2);
+			return cmd_result(status);
+		}
 		case Commands::FINALIZE_FLASH:
 		{
 			uint16_t pageAddress = nextWriteAddress & ~(SPM_PAGESIZE - 1);
 			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
-			data[0] = Status::COMMAND_OK;
-			return 1;
+			return cmd_ok();
 		}
 
 		default:
-			data[0] = Status::COMMAND_NOT_SUPPORTED;
-			return 1;
+			return cmd_result(Status::COMMAND_NOT_SUPPORTED);
 	}
 }
 
@@ -242,7 +249,12 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			len = 1;
 		} else {
 			// CRC checks out, process a command
-			len = processCommand(data, len - 1, maxLen - 1);
+			cmd_result res = processCommand(data[0], data + 1, len - 2, maxLen - 2);
+			if (res.status == Status::NO_REPLY)
+				return 0;
+
+			data[0] = res.status;
+			len = res.len + 1;
 		}
 	}
 
