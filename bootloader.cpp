@@ -170,6 +170,9 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			return cmd_ok(2);
 
 		case Commands::SET_I2C_ADDRESS:
+			if (len != 2)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
 			// Only respond if the hw type in the request is
 			// the wildcard or matches ours.
 			if (data[1] != 0 && data[1] != INFO_HW_TYPE)
@@ -187,6 +190,9 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 
 		case Commands::GET_HARDWARE_INFO:
 		{
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
 			data[0] = INFO_HW_TYPE;
 			data[1] = INFO_HW_REVISION;
 			data[2] = INFO_BL_VERSION;
@@ -198,18 +204,26 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			return cmd_ok(5);
 		}
 		case Commands::START_APPLICATION:
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
 			bootloaderRunning = false;
 			// This is probably never sent
 			return cmd_ok();
 
 		case Commands::WRITE_FLASH:
 		{
+			if (len < 2)
+				return cmd_result(Status::INVALID_ARGUMENTS);
 
 			uint8_t status = handleWriteFlash(getUInt16(data), data + 2, len - 2);
 			return cmd_result(status);
 		}
 		case Commands::FINALIZE_FLASH:
 		{
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
 			uint16_t pageAddress = nextWriteAddress & ~(SPM_PAGESIZE - 1);
 			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
 			return cmd_ok();
