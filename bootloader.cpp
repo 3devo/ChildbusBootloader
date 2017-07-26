@@ -225,7 +225,7 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint16_t pageAddress = nextWriteAddress & ~(SPM_PAGESIZE - 1);
+			uint16_t pageAddress = nextWriteAddress & ~(SPM_ERASESIZE - 1);
 			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
 			return cmd_ok();
 		}
