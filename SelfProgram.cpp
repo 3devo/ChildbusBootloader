@@ -90,7 +90,7 @@ int SelfProgram::readByte(uint32_t address) {
 	// so read from there.
 	if (address < 2)
 		address += trampolineStart;
-	pgm_read_byte(address);
+	return pgm_read_byte(address);
 }
 
 void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
