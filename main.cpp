@@ -32,6 +32,7 @@
 
 
 #include <avr/io.h>
+#include <avr/wdt.h>
 #include "bootloader.h"
 
 // This is a single instruction placed immediately before the bootloader.
@@ -59,6 +60,10 @@ FUSES =
 #endif
 
 int main() {
+	// Disable watchdog, to prevent it triggering again
+	MCUSR &= ~(1 << WDRF);
+	wdt_disable();
+
 	runBootloader();
 	startApplication();
 }
