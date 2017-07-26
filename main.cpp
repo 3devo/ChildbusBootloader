@@ -34,6 +34,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "bootloader.h"
+#include <stdio.h>
 
 // This is a single instruction placed immediately before the bootloader.
 // The application code will overwrite this instruction with a jump to to the start of the application.
@@ -59,10 +60,18 @@ FUSES =
 };
 #endif
 
+extern void uart_init();
+
 int main() {
 	// Disable watchdog, to prevent it triggering again
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
+
+	// Uncomment this to allow the use of printf on pin PA1 (TX
+	// only). See also usart.cpp. This needs a bigger bootloader
+	// area.
+	//uart_init();
+	//printf("Hello\n");
 
 	runBootloader();
 	startApplication();

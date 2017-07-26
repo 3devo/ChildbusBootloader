@@ -20,6 +20,7 @@
 #include <util/delay.h>
 #include <util/crc16.h>
 #include <avr/wdt.h>
+#include <stdio.h>
 
 #include "Boards.h"
 #include "TwoWire.h"
