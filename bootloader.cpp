@@ -176,14 +176,19 @@ static int processCommand(uint8_t *data, uint8_t len, uint8_t maxLen) {
 		#endif
 
 		case Commands::GET_HARDWARE_INFO:
+		{
 			data[0] = Status::COMMAND_OK;
 			data[1] = INFO_HW_TYPE;
 			data[2] = INFO_HW_REVISION;
 			data[3] = INFO_BL_VERSION;
-			// Available flash size
-			data[4] = (uint16_t)&startApplication;
-			return 5;
+			// Available flash size is up to startApplication.
+			// Convert from words to bytes.
+			uint16_t size = (uint16_t)&startApplication * 2;
+			data[4] = size >> 8;
+			data[5] = size;
+			return 6;
 
+		}
 		case Commands::START_APPLICATION:
 			bootloaderRunning = false;
 			// This is probably never sent
