@@ -46,6 +46,7 @@ struct Commands {
 	static const uint8_t START_APPLICATION     = 0x04;
 	static const uint8_t WRITE_FLASH           = 0x05;
 	static const uint8_t FINALIZE_FLASH        = 0x06;
+	static const uint8_t READ_FLASH            = 0x07;
 };
 
 struct GeneralCallCommands {
@@ -227,6 +228,20 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			uint16_t pageAddress = nextWriteAddress & ~(SPM_PAGESIZE - 1);
 			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
 			return cmd_ok();
+		}
+		case Commands::READ_FLASH:
+		{
+			if (len < 3)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			uint16_t address = data[0] << 8 | data[1];
+			uint8_t len = data[2];
+
+			if (len > maxLen)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			selfProgram.readFlash(address, data, len);
+			return cmd_ok(len);
 		}
 
 		default:
