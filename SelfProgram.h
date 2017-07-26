@@ -46,7 +46,7 @@ public:
 
 	void erasePage(uint32_t address);
 
-	int readPage(uint32_t address, uint8_t *data, uint8_t len);
+	void readFlash(uint32_t address, uint8_t *data, uint8_t len);
 
 	int readByte(uint32_t address);
 

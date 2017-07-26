@@ -74,15 +74,10 @@ void SelfProgram::erasePage(uint32_t address) {
 	boot_spm_busy_wait();
 }
 
-int SelfProgram::readPage(uint32_t address, uint8_t *data, uint8_t len) {
-	// Can only read at a 16 byte page boundary
-	address &= ~(SPM_PAGESIZE - 1);
-
+void SelfProgram::readFlash(uint32_t address, uint8_t *data, uint8_t len) {
 	for (int i=0; i < len; i++) {
-		data[i] = pgm_read_byte(address+i);
+		data[i] = readByte(address + i);
 	}
-
-	return SPM_PAGESIZE;
 }
 
 int SelfProgram::readByte(uint32_t address) {
