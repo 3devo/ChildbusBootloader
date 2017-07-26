@@ -113,13 +113,13 @@ void TwoWireUpdate() {
 		// If we were previously in a write, then execute the callback and setup for a read.
 		if ((twiState == TWIStateWrite) and twiBufferLen != 0) {
 			twiBufferLen = TwoWireCallback(twiAddress, twiBuffer, twiBufferLen, TWI_BUFFER_SIZE);
-			twiReadPos = 0;
 		}
 
 		if (!addressReceived) {
 			twiState = TWIStateIdle;
 		} else if (isReadOperation) {
 			twiState = TWIStateRead;
+			twiReadPos = 0;
 		} else {
 			twiState = TWIStateWrite;
 			twiBufferLen = 0;
