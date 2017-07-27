@@ -18,26 +18,14 @@
 #include <string.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include <util/crc16.h>
-#include <avr/wdt.h>
 #include <stdio.h>
 
 #include "Boards.h"
 #include "TwoWire.h"
+#include "BaseProtocol.h"
 #include "SelfProgram.h"
 #include "bootloader.h"
 
-struct Status {
-	static const uint8_t COMMAND_OK            = 0x00;
-	static const uint8_t COMMAND_FAILED        = 0x01;
-	static const uint8_t COMMAND_NOT_SUPPORTED = 0x02;
-	static const uint8_t INVALID_TRANSFER      = 0x03;
-	static const uint8_t INVALID_CRC           = 0x04;
-	static const uint8_t INVALID_ARGUMENTS     = 0x05;
-	// Never sent, used internally to indicate no status should be
-	// returned.
-	static const uint8_t NO_REPLY              = 0xff;
-};
 
 struct Commands {
 	static const uint8_t GET_PROTOCOL_VERSION  = 0x00;
@@ -50,11 +38,6 @@ struct Commands {
 	static const uint8_t READ_FLASH            = 0x07;
 };
 
-struct GeneralCallCommands {
-	static const uint8_t RESET = 0x06;
-	static const uint8_t RESET_ADDRESS = 0x04;
-};
-
 SelfProgram selfProgram;
 volatile bool bootloaderRunning = true;
 
@@ -64,13 +47,6 @@ static uint16_t getUInt16(uint8_t *data) {
 
 static uint32_t getUInt32(uint8_t *data) {
 	return ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |  (data[2] << 8) | data[3];
-}
-
-static uint8_t calcCrc(uint8_t *data, uint8_t len) {
-	uint8_t crc = 0;
-	for (uint8_t i = 0; i < len; ++i)
-		crc = _crc8_ccitt_update(crc, data[i]);
-	return crc;
 }
 
 static uint8_t writeBuffer[SPM_ERASESIZE];
@@ -155,17 +131,7 @@ void displayOn() {
 }
 #endif
 
-struct cmd_result {
-	cmd_result(uint8_t status, uint8_t len = 0) : status(status), len(len) {}
-	uint8_t status;
-	uint8_t len;
-};
-
-cmd_result cmd_ok(uint8_t len = 0) {
-	return cmd_result(Status::COMMAND_OK, len);
-}
-
-static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLen) {
+cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLen) {
 	if (maxLen < 5)
 		return cmd_result(Status::NO_REPLY);
 
@@ -254,51 +220,6 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 			return cmd_result(Status::COMMAND_NOT_SUPPORTED);
 	}
 }
-
-static int handleGeneralCall(uint8_t *data, uint8_t len, uint8_t /* maxLen */) {
-	if (len >= 1 && data[0] == GeneralCallCommands::RESET) {
-		wdt_enable(WDTO_15MS);
-		while(true) /* wait */;
-
-	} else if (len >= 1 && data[0] == GeneralCallCommands::RESET_ADDRESS) {
-		TwoWireResetDeviceAddress();
-	}
-	return 0;
-}
-
-int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen) {
-	if (address == 0)
-		return handleGeneralCall(data, len, maxLen);
-
-	// Check that there is at least room for a status byte and a CRC
-	if (maxLen < 2)
-		return 0;
-
-	if (len < 2) {
-		data[0] = Status::INVALID_TRANSFER;
-		len = 1;
-	} else {
-		uint8_t crc = calcCrc(data, len);
-		if (crc != 0) {
-			data[0] = Status::INVALID_CRC;
-			len = 1;
-		} else {
-			// CRC checks out, process a command
-			cmd_result res = processCommand(data[0], data + 1, len - 2, maxLen - 2);
-			if (res.status == Status::NO_REPLY)
-				return 0;
-
-			data[0] = res.status;
-			len = res.len + 1;
-		}
-	}
-
-	data[len] = calcCrc(data, len);
-	++len;
-
-	return len;
-}
-
 
 extern "C" {
 	void runBootloader() {
