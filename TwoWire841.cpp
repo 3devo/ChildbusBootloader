@@ -33,16 +33,15 @@ void TwoWireInit(bool useInterrupts, uint8_t initialAddress, uint8_t initialMask
 	initAddress = initialAddress;
 	initMask = initialMask;
 
+	TwoWireResetDeviceAddress();
+	TWSCRB = _BV(TWHNM);
+
 	// Enable Data Interrupt, Address/Stop Interrupt, Two-Wire Interface, Stop Interrpt
 	TWSCRA = _BV(TWEN) | _BV(TWSIE);
 
 	if (useInterrupts) {
 		TWSCRA |= _BV(TWDIE) | _BV(TWASIE) ;
 	}
-
-	TWSCRB = _BV(TWHNM);
-
-	TwoWireResetDeviceAddress();
 }
 
 void TwoWireDeinit() {
