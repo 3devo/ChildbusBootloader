@@ -88,18 +88,20 @@ static bool equalToFlash(uint16_t address, uint8_t len) {
 }
 
 
-static void commitToFlash(uint16_t address, uint8_t len) {
+static bool commitToFlash(uint16_t address, uint8_t len) {
 	// If nothing needs to be changed, then don't
 	if (equalToFlash(address, len))
-		return;
+		return true;
 
 	uint8_t offset = 0;
 	while (len > 0) {
 		uint8_t pageLen = len < SPM_PAGESIZE ? len : SPM_PAGESIZE;
-		selfProgram.writePage(address + offset, &writeBuffer[offset], pageLen);
+		if (!selfProgram.writePage(address + offset, &writeBuffer[offset], pageLen))
+			return false;
 		len -= pageLen;
 		offset += pageLen;
 	}
+	return true;
 }
 
 static int handleWriteFlash(uint16_t address, uint8_t *data, uint8_t len) {
@@ -116,8 +118,10 @@ static int handleWriteFlash(uint16_t address, uint8_t *data, uint8_t len) {
 		++data;
 		++address;
 
-		if (address % SPM_ERASESIZE == 0)
-			commitToFlash(address - SPM_ERASESIZE, SPM_ERASESIZE);
+		if (address % SPM_ERASESIZE == 0) {
+			if (!commitToFlash(address - SPM_ERASESIZE, SPM_ERASESIZE))
+				return Status::COMMAND_FAILED;
+		}
 	}
 
 	return Status::COMMAND_OK;
@@ -227,7 +231,8 @@ static cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
 			uint16_t pageAddress = nextWriteAddress & ~(SPM_ERASESIZE - 1);
-			commitToFlash(pageAddress, nextWriteAddress - pageAddress);
+			if (!commitToFlash(pageAddress, nextWriteAddress - pageAddress))
+				return cmd_result(Status::COMMAND_FAILED);
 			return cmd_ok();
 		}
 		case Commands::READ_FLASH:

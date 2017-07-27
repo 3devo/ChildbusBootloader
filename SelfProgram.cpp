@@ -88,10 +88,10 @@ int SelfProgram::readByte(uint32_t address) {
 	return pgm_read_byte(address);
 }
 
-void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
+bool SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
 	if (!len || address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
-		return;
+		return false;
 	}
 
 	// If we are writing page 0, change the reset vector
@@ -107,7 +107,7 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 
 	// If the address is past the application section don't write anything
 	if (address + len > applicationSize) {
-		return;
+		return false;
 	}
 
 	// If we are the beginning of a 4-page boundary, erase it
@@ -123,6 +123,8 @@ void SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 		boot_page_fill_safe(address+i, w);
 	}
 	boot_page_write_safe(address);
+
+	return true;
 }
 
 void SelfProgram::writeTrampoline(uint16_t instruction) {
