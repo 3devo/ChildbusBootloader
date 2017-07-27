@@ -372,7 +372,12 @@ test(120_write_flash) {
   uint8_t *data = (uint8_t*)malloc(flash_size);
   auto on_failure = [data]() { free(data); };
   assertTrue(data != nullptr);
-  for (uint16_t i = 0; i < flash_size; ++i)
+  assertMoreOrEqual(flash_size, 2U);
+  // The bootloader requires a RCALL or RJMP instruction at address 0,
+  // so give it one
+  data[0] = 0x00;
+  data[1] = 0xC0;
+  for (uint16_t i = 2; i < flash_size; ++i)
     data[i] = random();
 
   assertTrue(write_and_verify_flash(data, flash_size, 1, 1));
