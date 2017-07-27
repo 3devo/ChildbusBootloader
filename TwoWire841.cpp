@@ -21,7 +21,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static volatile uint8_t _deviceAddress = 0;
 static uint8_t initAddress = 0;
 static uint8_t initMask = 0;
 
@@ -50,13 +49,8 @@ void TwoWireDeinit() {
 }
 
 void TwoWireSetDeviceAddress(uint8_t address) {
-	_deviceAddress = address;
 	TWSA = (address << 1) | 1;
 	TWSAM = 0;
-}
-
-uint8_t TwoWireGetDeviceAddress() {
-	return _deviceAddress;
 }
 
 void TwoWireResetDeviceAddress() {
@@ -64,7 +58,6 @@ void TwoWireResetDeviceAddress() {
 	// enable general call (address 0) recognition by setting TWSA0.
 	TWSA = (initAddress << 1) | 1;
 	TWSAM = (initMask << 1);
-	_deviceAddress = 0;
 }
 
 static void _Acknowledge(bool ack, bool complete=false) {
