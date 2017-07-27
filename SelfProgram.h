@@ -48,11 +48,13 @@ public:
 
 	void readFlash(uint32_t address, uint8_t *data, uint8_t len);
 
-	int readByte(uint32_t address);
+	uint8_t readByte(uint32_t address);
 
 	bool writePage(uint32_t address, uint8_t *data, uint8_t len);
 
 	void writeTrampoline(uint16_t instruction);
+
+	uint16_t offsetRelativeJump(uint16_t instruction, int16_t offset);
 
 	uint32_t trampolineStart = (uint32_t)&startApplication * 2;
 	uint32_t applicationSize = trampolineStart;

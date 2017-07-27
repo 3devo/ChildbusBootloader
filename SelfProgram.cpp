@@ -80,11 +80,14 @@ void SelfProgram::readFlash(uint32_t address, uint8_t *data, uint8_t len) {
 	}
 }
 
-int SelfProgram::readByte(uint32_t address) {
+uint8_t SelfProgram::readByte(uint32_t address) {
 	// The first two bytes have been relocated to the end of flash,
-	// so read from there.
-	if (address < 2)
-		address += trampolineStart;
+	// so read from there, and make sure to undo the changes made
+	if (address < 2) {
+		uint16_t instruction = pgm_read_word(trampolineStart);
+		instruction = offsetRelativeJump(instruction, trampolineStart);
+		return address == 0 ? instruction : (instruction >> 8);
+	}
 	return pgm_read_byte(address);
 }
 
@@ -100,7 +103,15 @@ bool SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 		// Copy the reset vector from the data into the boot
 		// trampoline area
 		uint16_t instruction = data[0] | (data[1] << 8);
+		instruction = offsetRelativeJump(instruction, -trampolineStart);
+		// Not a supported instruction? Return an error
+		if (!instruction)
+			return false;
+
+		// Write the to-be-written reset vector to the trampoline
 		writeTrampoline(instruction);
+
+		// And preserve the current reset vector
 		data[0] = pgm_read_byte(0);
 		data[1] = pgm_read_byte(1);
 	}
@@ -125,6 +136,24 @@ bool SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
 	boot_page_write_safe(address);
 
 	return true;
+}
+
+// This expects a rjmp or rcall instruction, which stores the
+// jump amount (relative to the current address) in the lower 12 bits.
+// The given offset (in bytes) is added to the jump amount.
+uint16_t SelfProgram::offsetRelativeJump(uint16_t instruction, int16_t offset) {
+	if ((instruction & 0xE000) != 0xC000)
+		return 0;
+
+	// Since flash sizes are always a power of two, these jumps wrap
+	// cleanly and any extra bits (e.g. when flash is < 2**12 words
+	// long) are ignored. This also means we do not really have to
+	// distinguish between a positive or negative jump, the wrap
+	// around makes sure that the used bits will be the same anyway.
+	uint16_t jump = instruction & 0xFFF;
+	// Jump amount is in words, not bytes
+	jump += (offset / 2);
+	return (instruction & 0xF000) | (jump & 0xFFF);
 }
 
 void SelfProgram::writeTrampoline(uint16_t instruction) {
