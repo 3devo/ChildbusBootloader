@@ -106,14 +106,14 @@ void TwoWireUpdate() {
 
 	// Handle address received and stop conditions
 	if (isAddressOrStop) {
-		// Send an ack unless a read is starting and there are no bytes to read.
-		bool ack = (twiBufferLen > 0) or (!isReadOperation) or (!addressReceived);
-		_Acknowledge(ack, !addressReceived /*complete*/);
-
 		// If we were previously in a write, then execute the callback and setup for a read.
 		if ((twiState == TWIStateWrite) and twiBufferLen != 0) {
 			twiBufferLen = TwoWireCallback(twiAddress, twiBuffer, twiBufferLen, TWI_BUFFER_SIZE);
 		}
+
+		// Send an ack unless a read is starting and there are no bytes to read.
+		bool ack = (twiBufferLen > 0) or (!isReadOperation) or (!addressReceived);
+		_Acknowledge(ack, !addressReceived /*complete*/);
 
 		if (!addressReceived) {
 			twiState = TWIStateIdle;
