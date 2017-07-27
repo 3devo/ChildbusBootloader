@@ -21,7 +21,7 @@
 #include <inttypes.h>
 
 void TwoWireUpdate();
-void TwoWireInit(bool useInterrupts);
+void TwoWireInit(bool useInterrupts, uint8_t initialAddress, uint8_t initialMask = 0x00);
 void TwoWireDeinit();
 void TwoWireSetDeviceAddress(uint8_t address);
 uint8_t TwoWireGetDeviceAddress();
