@@ -44,6 +44,11 @@ void TwoWireInit(bool useInterrupts) {
 	TwoWireResetDeviceAddress();
 }
 
+void TwoWireDeinit() {
+	TWSCRA = TWSCRB = TWSA = TWSAM = TWSD = 0;
+	TWSSRA = _BV(TWDIF) | _BV(TWASIF) | _BV(TWC);
+}
+
 void TwoWireSetDeviceAddress(uint8_t address) {
 	_deviceAddress = address;
 	TWSA = (address << 1) | 1;

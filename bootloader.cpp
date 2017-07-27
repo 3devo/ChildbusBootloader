@@ -302,5 +302,7 @@ extern "C" {
 		while (bootloaderRunning) {
 			TwoWireUpdate();
 		}
+
+		TwoWireDeinit();
 	}
 }
