@@ -111,7 +111,8 @@ comparisons. This CRC was mostly chosen because an efficient AVR implementation
 is available and it seems to perform well enough.
 
 Polynomial: x^8 + x^2 + x + 1 (0x83 / 0xE0)
-Starting value: 0x00
+Starting value: 0xff
+No output XOR
 
 Version compatibility
 ---------------------

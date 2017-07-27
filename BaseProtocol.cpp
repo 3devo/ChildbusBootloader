@@ -22,7 +22,7 @@
 #include "BaseProtocol.h"
 
 static uint8_t calcCrc(uint8_t *data, uint8_t len) {
-	uint8_t crc = 0;
+	uint8_t crc = 0xff;
 	for (uint8_t i = 0; i < len; ++i)
 		crc = _crc8_ccitt_update(crc, data[i]);
 	return crc;
