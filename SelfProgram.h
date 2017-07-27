@@ -44,20 +44,20 @@ public:
 
 	int getPageSize();
 
-	void erasePage(uint32_t address);
+	void erasePage(uint16_t address);
 
-	void readFlash(uint32_t address, uint8_t *data, uint8_t len);
+	void readFlash(uint16_t address, uint8_t *data, uint8_t len);
 
-	uint8_t readByte(uint32_t address);
+	uint8_t readByte(uint16_t address);
 
-	bool writePage(uint32_t address, uint8_t *data, uint8_t len);
+	bool writePage(uint16_t address, uint8_t *data, uint8_t len);
 
 	void writeTrampoline(uint16_t instruction);
 
 	uint16_t offsetRelativeJump(uint16_t instruction, int16_t offset);
 
-	uint32_t trampolineStart = (uint32_t)&startApplication * 2;
-	uint32_t applicationSize = trampolineStart;
+	uint16_t trampolineStart = (uint16_t)&startApplication * 2;
+	uint16_t applicationSize = trampolineStart;
 private:
 	uint16_t _deviceID;
 	bool _safeMode;

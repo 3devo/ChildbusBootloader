@@ -48,7 +48,7 @@ int SelfProgram::getPageSize() {
 	return SPM_PAGESIZE;
 }
 
-void SelfProgram::erasePage(uint32_t address) {
+void SelfProgram::erasePage(uint16_t address) {
 	// Mask of bits inside the page
 	address &= ~(SPM_ERASESIZE - 1);
 
@@ -74,13 +74,13 @@ void SelfProgram::erasePage(uint32_t address) {
 	boot_spm_busy_wait();
 }
 
-void SelfProgram::readFlash(uint32_t address, uint8_t *data, uint8_t len) {
-	for (int i=0; i < len; i++) {
+void SelfProgram::readFlash(uint16_t address, uint8_t *data, uint8_t len) {
+	for (uint8_t i=0; i < len; i++) {
 		data[i] = readByte(address + i);
 	}
 }
 
-uint8_t SelfProgram::readByte(uint32_t address) {
+uint8_t SelfProgram::readByte(uint16_t address) {
 	// The first two bytes have been relocated to the end of flash,
 	// so read from there, and make sure to undo the changes made
 	if (address < 2) {
@@ -91,7 +91,7 @@ uint8_t SelfProgram::readByte(uint32_t address) {
 	return pgm_read_byte(address);
 }
 
-bool SelfProgram::writePage(uint32_t address, uint8_t *data, uint8_t len) {
+bool SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
 	if (!len || address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
 		return false;
@@ -157,7 +157,7 @@ uint16_t SelfProgram::offsetRelativeJump(uint16_t instruction, int16_t offset) {
 }
 
 void SelfProgram::writeTrampoline(uint16_t instruction) {
-	uint32_t address = trampolineStart;
+	uint16_t address = trampolineStart;
 	// Erase the page containing the trampoline. This might erase
 	// other application code. This makes no attempt to preserve the
 	// other code to keep since simple. This should work since we're
