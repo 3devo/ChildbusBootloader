@@ -26,6 +26,11 @@
 *.exe
 *.out
 *.app
+*.elf
+*.hex
+
+# Dependency files
+*.d
 
 # =========================
 # Operating System Files
@@ -73,6 +78,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# YouCompleteMe config files
+.ycm_extra_conf.py
 
 Debug
 Release
