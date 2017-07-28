@@ -450,3 +450,12 @@ return an inconsistent state.
 | 1     | Status: `COMMAND_OK` (0x00)
 | 0+    | Data
 | 1     | CRC
+
+License
+-------
+Permission is hereby granted, free of charge, to anyone
+obtaining a copy of this document, to do whatever they want with them without
+any restriction, including, but not limited to, copying, modification and
+redistribution.
+
+NO WARRANTY OF ANY KIND IS PROVIDED.
