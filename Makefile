@@ -12,7 +12,7 @@
 # To compile, just make sure that avr-gcc and friends are in your path
 # and type "make".
 
-PRG            = bootloader-attiny
+PRG            = bootloader
 CPPSRC         = $(wildcard *.cpp)
 OBJ            = $(CPPSRC:.cpp=.o)
 LINKER_SCRIPT  = linker-script.x
