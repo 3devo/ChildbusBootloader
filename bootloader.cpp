@@ -41,14 +41,6 @@ struct Commands {
 SelfProgram selfProgram;
 volatile bool bootloaderRunning = true;
 
-static uint16_t getUInt16(uint8_t *data) {
-	return (uint16_t)data[0] << 8 | data[1];
-}
-
-static uint32_t getUInt32(uint8_t *data) {
-	return ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |  (data[2] << 8) | data[3];
-}
-
 static uint8_t writeBuffer[SPM_ERASESIZE];
 static uint16_t nextWriteAddress = 0;
 
@@ -188,7 +180,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 			if (len < 2)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint8_t status = handleWriteFlash(getUInt16(data), data + 2, len - 2);
+			uint16_t address = data[0] << 8 | data[1];
+			uint8_t status = handleWriteFlash(address, data + 2, len - 2);
 			return cmd_result(status);
 		}
 		case Commands::FINALIZE_FLASH:
