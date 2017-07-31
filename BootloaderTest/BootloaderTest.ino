@@ -143,11 +143,6 @@ test(040_not_set_i2c_address) {
   uint8_t type = random(HARDWARE_TYPE + 1, 256);
   uint8_t data[2] = { cfg.setAddr, type };
   write_command(Commands::SET_I2C_ADDRESS, data, sizeof(data));
-/*I
-  uint8_t status;
-  if (cfg.setAddr == 1)
-    read_status(&status, NULL, 0);
-*/
 
   // The command should be ignored, so a read command should not be acked
   assertEqual(bus.startRead(cfg.curAddr), SoftWire::nack);
