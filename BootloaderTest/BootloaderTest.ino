@@ -506,7 +506,7 @@ void runFixedTests() {
   // LAST_ADDRESS)
   cfg.resetAddr = random(FIRST_ADDRESS, LAST_ADDRESS);
   // Change address to a low address
-  cfg.setAddr = 1;
+  cfg.setAddr = 0x01;
   runTests();
   // Change address to the same as used for the set address command
   cfg.setAddr = cfg.curAddr;
@@ -515,11 +515,11 @@ void runFixedTests() {
   cfg.setAddr = LAST_ADDRESS;
   runTests();
   // Change address to a higher address
-  cfg.setAddr = 130;
+  cfg.setAddr = 0x82;
   runTests();
   // Change to another address without general call reset in between
   cfg.resetAddr = 0;
-  cfg.setAddr = 123;
+  cfg.setAddr = 0x7b;
   runTests();
   // And do general call resets again
   cfg.resetAddr = random(FIRST_ADDRESS, LAST_ADDRESS);
@@ -529,6 +529,8 @@ void runFixedTests() {
   // write test, since it is slow.
   cfg.skipWrite = true;
   for (uint8_t i = 1; i < 128; ++i) {
+    if (cfg.displayAttached && i == DISPLAY_I2C_ADDRESS)
+      continue;
     cfg.curAddr = random(FIRST_ADDRESS, LAST_ADDRESS + 1);
     cfg.setAddr = i;
     runTests();
@@ -537,7 +539,9 @@ void runFixedTests() {
 }
 
 void runRandomTest() {
-  cfg.setAddr = random(1, 128);
+  do {
+    cfg.setAddr = random(1, 128);
+  } while (cfg.displayAttached && cfg.setAddr == DISPLAY_I2C_ADDRESS);
   cfg.resetAddr = random(FIRST_ADDRESS, LAST_ADDRESS+1);
   runTests();
 }
