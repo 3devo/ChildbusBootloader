@@ -33,8 +33,9 @@ The bootloader is based on the bootloader written by Erin Tomson for the
 Modulo board. Mostly the TWI implementation remains, most of the other
 parts of the bootloader have been replaced.
 
-All code and accompanying materials is licensed under the GPL, version
+Most code and accompanying materials is licensed under the GPL, version
 3. See the LICENSE file for the full license.
 
-One exception is the protocol documentation, in the PROTOCOL.md file,
-which has a more liberal license (see the file for the exact license).
+The protocol documentation, in the PROTOCOL.md file, has a more liberal
+license (see the file for the exact license). The testing sketch, in the
+BootloaderTest directory, is licensed under the 3-clause BSD license.
