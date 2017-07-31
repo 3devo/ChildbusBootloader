@@ -91,10 +91,10 @@ uint8_t SelfProgram::readByte(uint16_t address) {
 	return pgm_read_byte(address);
 }
 
-bool SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
+uint8_t SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 	// Can only write to a 16 byte page boundary
 	if (!len || address % SPM_PAGESIZE != 0 || len > SPM_PAGESIZE) {
-		return false;
+		return 1;
 	}
 
 	// If we are writing page 0, change the reset vector
@@ -106,7 +106,7 @@ bool SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 		instruction = offsetRelativeJump(instruction, -trampolineStart);
 		// Not a supported instruction? Return an error
 		if (!instruction)
-			return false;
+			return 2;
 
 		// Write the to-be-written reset vector to the trampoline
 		writeTrampoline(instruction);
@@ -118,7 +118,7 @@ bool SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 
 	// If the address is past the application section don't write anything
 	if (address + len > applicationSize) {
-		return false;
+		return 3;
 	}
 
 	// If we are the beginning of a 4-page boundary, erase it
@@ -135,7 +135,7 @@ bool SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 	}
 	boot_page_write_safe(address);
 
-	return true;
+	return 0;
 }
 
 // This expects a rjmp or rcall instruction, which stores the

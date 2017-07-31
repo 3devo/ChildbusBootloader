@@ -382,11 +382,6 @@ This command allows writing an application to flash.
 | 0+    | Data
 | 1     | CRC
 
-| Bytes | Reply format
-|-------|-------------------------------
-| 1     | Status: `COMMAND_OK` (0x00)
-| 1     | CRC
-
 The address specified indicates the (byte) address of the first byte to
 write.
 
@@ -415,6 +410,26 @@ the slave should prevent an erase-write cycle. This allows the master
 to send write commands on every startup, without danger of wearing out
 the flash contents.
 
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_OK` (0x00)
+| 1     | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `INVALID_ARGUMENTS` (0x05)
+| 1     | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_FAILED` (0x01)
+| 1     | Reason
+| 1     | CRC
+
+When flashing fails for any reason, an additional reason byte is
+returned. The meaning of this byte is purely informative and not defined
+by this protocol, it should be looked up in the bootloader.
+
 `FINALIZE_FLASH` command
 ------------------------
 This command commits all unwritten bytes (as sent by `WRITE_FLASH`) the
@@ -430,6 +445,16 @@ should be sent, except with a zero address to start over.
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
 | 1     | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_FAILED` (0x01)
+| 1     | Reason
+| 1     | CRC
+
+When flashing fails for any reason, an additional reason byte is
+returned. The meaning of this byte is purely informative and not defined
+by this protocol, it should be looked up in the bootloader.
 
 `READ_FLASH` command
 ------------------------

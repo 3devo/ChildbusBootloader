@@ -50,7 +50,7 @@ public:
 
 	uint8_t readByte(uint16_t address);
 
-	bool writePage(uint16_t address, uint8_t *data, uint8_t len);
+	uint8_t writePage(uint16_t address, uint8_t *data, uint8_t len);
 
 	void writeTrampoline(uint16_t instruction);
 
