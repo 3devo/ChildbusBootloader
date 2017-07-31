@@ -46,12 +46,10 @@ CC             = avr-gcc
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-interface_v1.3: BOARD=BOARD_IFACE_V1_3
-interface_v1.3: all
+interface_v1.3:
+	$(MAKE) all PRG=bootloader-iface-v1.3 BOARD=BOARD_IFACE_V1_3
 
 all: hex fuses
-
-lst:  $(PRG).lst
 
 hex:  $(PRG).hex
 
@@ -64,7 +62,7 @@ fuses:
 	fi
 
 clean:
-	rm -rf $(OBJ) $(OBJ:.o=.d) $(PRG).elf $(PRG).hex $(PRG).lst $(PRG).map
+	rm -rf $(OBJ) $(OBJ:.o=.d) *.elf *.hex *.lst *.map
 
 $(PRG).elf: $(OBJ) $(LINKER_SCRIPT)
 	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
