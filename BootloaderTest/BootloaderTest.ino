@@ -441,10 +441,13 @@ test(130_invalid_writes) {
 }
 
 void runTests() {
+  static uint32_t count = 0;
   long seed = random();
   randomSeed(seed);
 
   Serial.println("****************************");
+  Serial.print("Test #");
+  Serial.println(++count);
   Serial.print("Random seed: ");
   Serial.println(seed);
   Serial.print("current addr = 0x");
