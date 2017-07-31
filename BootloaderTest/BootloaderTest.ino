@@ -26,7 +26,7 @@ struct {
 
   // These are not changed, so set them here
   bool printRawData = false;
-  bool displayAttached = false;
+  bool displayAttached = true;
   // When non-zero, only write this much bytes to flash on each test, to
   // speed up testing
   uint16_t maxWriteSize = 0;
