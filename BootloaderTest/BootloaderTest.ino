@@ -297,14 +297,14 @@ bool verify_flash(uint8_t *data, uint16_t len, uint8_t readlen) {
   return true;
 }
 
-bool write_flash_cmd(uint16_t address, uint8_t *data, uint8_t len, uint8_t *status) {
+bool write_flash_cmd(uint16_t address, uint8_t *data, uint8_t len, uint8_t *status, uint8_t *reason) {
   auto on_failure = []() { return false; };
   uint8_t dataout[len + 2];
 
   dataout[0] = address >> 8;
   dataout[1] = address;
   memcpy(dataout + 2, data, len);
-  assertTrue(run_transaction(Commands::WRITE_FLASH, dataout, len + 2, status));
+  assertTrue(run_transaction(Commands::WRITE_FLASH, dataout, len + 2, status, reason, 0, 1));
   return true;
 }
 
@@ -318,8 +318,8 @@ bool write_flash(uint8_t *data, uint16_t len, uint8_t writelen) {
 
   while (offset < len) {
     uint8_t nextlen = min(writelen, len - offset);
-    uint8_t status;
-    assertTrue(write_flash_cmd(offset, data + offset, nextlen, &status));
+    uint8_t status, reason;
+    assertTrue(write_flash_cmd(offset, data + offset, nextlen, &status, &reason));
     assertOk(status);
     offset += nextlen;
   }
@@ -401,23 +401,43 @@ test(120_write_flash) {
 
 test(130_invalid_writes) {
   uint8_t data[32];
-  uint8_t status;
+  uint8_t status, reason;
   // Start at 0 and skip a few bytes
-  assertTrue(write_flash_cmd(0, data, 13, &status));
+  assertTrue(write_flash_cmd(0, data, 13, &status, &reason));
   assertOk(status);
-  assertTrue(write_flash_cmd(17, data, 11, &status));
+  assertTrue(write_flash_cmd(17, data, 11, &status, &reason));
   assertEqual(status, Status::INVALID_ARGUMENTS);
 
   // Restart at 0 and then skip up to the next erase page
-  assertTrue(write_flash_cmd(0, data, 13, &status));
+  assertTrue(write_flash_cmd(0, data, 13, &status, &reason));
   assertOk(status);
-  assertTrue(write_flash_cmd(64, data, 11, &status));
+  assertTrue(write_flash_cmd(64, data, 11, &status, &reason));
   assertEqual(status, Status::INVALID_ARGUMENTS);
   // Packet should be ignored, so a subsequent write aligned with the
   // first write should work.
-  assertTrue(write_flash_cmd(13, data, 13, &status));
+  assertTrue(write_flash_cmd(13, data, 13, &status, &reason));
   assertOk(status);
 
+  // If address 0/1 does not contain an RJMP/RCALL, it should return
+  // COMMAND_FAILED and reason=2. These are not required by the
+  // protocol, they just test the bootloader implementation
+  data[0] = 0x00;
+  data[1] = 0x00;
+  assertTrue(write_flash_cmd(0, data, 16, &status, &reason));
+  assertOk(status);
+  assertTrue(write_flash_cmd(16, data, 16, &status, &reason));
+  assertOk(status);
+  assertTrue(write_flash_cmd(32, data, 16, &status, &reason));
+  assertOk(status);
+  assertTrue(write_flash_cmd(48, data, 16, &status, &reason));
+  assertEqual(status, Status::COMMAND_FAILED);
+  assertEqual(reason, 2);
+
+  assertTrue(write_flash_cmd(0, data, 2, &status, &reason));
+  assertOk(status);
+  assertTrue(run_transaction(Commands::FINALIZE_FLASH, nullptr, 0, &status, &reason, 0, 1));
+  assertEqual(status, Status::COMMAND_FAILED);
+  assertEqual(reason, 2);
 }
 
 void runTests() {
