@@ -49,14 +49,23 @@ bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor =
   return true;
 }
 
-bool read_status(uint8_t *status, uint8_t *datain, uint8_t expectedLen, bool skip_start = false) {
+bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLen, bool skip_start = false) {
   auto on_failure = []() { return false; };
-  assertLessOrEqual(expectedLen + 2, MAX_MSG_LEN);
+  assertLessOrEqual(okLen + 2, MAX_MSG_LEN);
+  assertLessOrEqual(failLen + 2, MAX_MSG_LEN);
   if (!skip_start) {
     assertAck(bus.startRead(cfg.curAddr));
   }
   assertTrue(status != nullptr);
   assertAck(bus.readThenAck(*status));
+
+  uint8_t expectedLen;
+  if (*status == Status::COMMAND_OK)
+      expectedLen = okLen;
+  else if (*status == Status::COMMAND_FAILED)
+    expectedLen = failLen;
+  else // All other errors have no data
+    expectedLen = 0;
 
   for (uint8_t i = 0; i < expectedLen; ++i)
     assertAck(bus.readThenAck(datain[i]));
@@ -73,17 +82,17 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t expectedLen, bool ski
   return true;
 }
 
-bool run_transaction(uint8_t cmd, uint8_t *dataout, size_t len, uint8_t *status, uint8_t *datain = nullptr, size_t expectedLen = 0) {
+bool run_transaction(uint8_t cmd, uint8_t *dataout, size_t len, uint8_t *status, uint8_t *datain = nullptr, size_t okLen = 0, uint8_t failLen = 0) {
   auto on_failure = []() { return false; };
   assertTrue(write_command(cmd, dataout, len));
-  assertTrue(read_status(status, datain, expectedLen));
+  assertTrue(read_status(status, datain, okLen, failLen));
   return true;
 }
 
-bool run_transaction_ok(uint8_t cmd, uint8_t *dataout = nullptr, size_t len = 0, uint8_t *datain = nullptr, size_t expectedLen = 0) {
+bool run_transaction_ok(uint8_t cmd, uint8_t *dataout = nullptr, size_t len = 0, uint8_t *datain = nullptr, size_t okLen = 0, uint8_t failLen = 0) {
   auto on_failure = []() { return false; };
   uint8_t status;
-  assertTrue(run_transaction(cmd, dataout, len, &status, datain, expectedLen));
+  assertTrue(run_transaction(cmd, dataout, len, &status, datain, okLen, failLen));
   assertOk(status);
   return true;
 }
@@ -180,7 +189,7 @@ test(050_set_i2c_address) {
   // response from the new address.
   bool skip_start = (res == SoftWire::ack);
   uint8_t status;
-  assertTrue(read_status(&status, NULL, 0, skip_start));
+  assertTrue(read_status(&status, NULL, 0, 0, skip_start));
   assertOk(status);
 
   // If the address actually changed, check that no response is received
@@ -216,7 +225,7 @@ test(060_reread_protocol_version) {
   assertEqual(version, PROTOCOL_VERSION);
 
   uint8_t status;
-  assertTrue(read_status(&status, data, sizeof(data)));
+  assertTrue(read_status(&status, data, sizeof(data), 0));
   assertOk(status);
   version = data[0] << 8 | data[1];
   assertEqual(version, PROTOCOL_VERSION);
@@ -238,7 +247,7 @@ test(080_crc_error) {
   uint8_t crc_xor = random(1, 256);
   assertTrue(write_command(Commands::GET_HARDWARE_INFO, nullptr, 0, crc_xor));
   // This expects a CRC error, so no data
-  assertTrue(read_status(&status, nullptr, 0));
+  assertTrue(read_status(&status, nullptr, 0, 0));
   assertEqual(status, Status::INVALID_CRC);
 }
 
