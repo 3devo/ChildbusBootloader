@@ -126,6 +126,12 @@ test(010_general_call_reset) {
     assertAck(bus.startWrite(i));
     bus.stop();
   }
+
+  // After a reset, the display should be off
+  if (cfg.displayAttached && cmd == GeneralCallCommands::RESET) {
+    assertEqual(bus.startWrite(DISPLAY_I2C_ADDRESS), SoftWire::nack);
+    bus.stop();
+  }
 }
 
 test(020_ack) {
