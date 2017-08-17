@@ -400,8 +400,6 @@ slave implementation, this command returns no reply, so the application
 can be started immediately after receiving the command, instead of
 having to wait for a reply to be read first.
 
-TODO: Perhaps do send a reply and complicate the slave code a bit?
-
 | Bytes | Command field
 |-------|-------------------------------
 | 1     | Cmd: `START_APPLICATION` (0x05)
