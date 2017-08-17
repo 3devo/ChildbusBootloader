@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PrintingSoftWire bus(SDA, SCL);
 
-struct {
+struct Cfg {
   // A single test is done using these values, then they are changed
   // into various variations
 
@@ -56,6 +56,14 @@ struct {
   // These are not changed, so set them here
   bool printRawData = false;
   bool displayAttached = true;
+
+  enum {
+    FLASH_ONCE, // Flash random data in the first run
+    FLASH_ONE_BYTE_PER_RUN, // Additionallly change one byte on each run
+    FLASH_EVERY_TIME, // Change every byte on every run. This will wear out the flash!
+  };
+  uint8_t flashWear = FLASH_ONCE;
+
   // When non-zero, only write this much bytes to flash on each test, to
   // speed up testing
   uint16_t maxWriteSize = 0;
@@ -413,7 +421,7 @@ bool write_flash_cmd(uint16_t address, uint8_t *data, uint8_t len, uint8_t *stat
   return true;
 }
 
-bool write_flash(uint8_t *data, uint16_t len, uint8_t writelen) {
+bool write_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8_t *erase_count) {
   uint16_t offset = 0;
   auto on_failure = [&offset]() {
     Serial.print("offset = 0x");
@@ -428,11 +436,11 @@ bool write_flash(uint8_t *data, uint16_t len, uint8_t writelen) {
     assertOk(status);
     offset += nextlen;
   }
-  assertTrue(run_transaction_ok(Commands::FINALIZE_FLASH));
+  assertTrue(run_transaction_ok(Commands::FINALIZE_FLASH, nullptr, 0, erase_count, 1, 1));
   return true;
 }
 
-bool write_and_verify_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8_t readlen) {
+bool write_and_verify_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8_t readlen, uint8_t *erase_count) {
   auto on_failure = [readlen, writelen]() {
     Serial.print("writelen = ");
     Serial.println(writelen);
@@ -443,7 +451,7 @@ bool write_and_verify_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8
 #ifdef TIME_WRITE
   unsigned long start = millis();
 #endif
-  assertTrue(write_flash(data, len, writelen));
+  assertTrue(write_flash(data, len, writelen, erase_count));
 #ifdef TIME_WRITE
   unsigned long now = millis();
   Serial.print("Write took ");
@@ -478,30 +486,57 @@ test(120_write_flash) {
   if (cfg.maxWriteSize && cfg.maxWriteSize < flash_size)
     flash_size = cfg.maxWriteSize;
 
-  uint8_t *data = (uint8_t*)malloc(flash_size);
-  auto on_failure = [data]() { free(data); };
-  assertTrue(data != nullptr);
-  assertMoreOrEqual(flash_size, 2U);
-  // The bootloader requires a RCALL or RJMP instruction at address 0,
-  // so give it one
-  data[0] = 0x00;
-  data[1] = 0xC0;
-  for (uint16_t i = 2; i < flash_size; ++i)
-    data[i] = random();
+  static uint8_t *data = NULL;
+  static size_t data_len = 0;
+  // The first time, we always generate fully random data, flash it, and
+  // then change one byte. Since the previous testing session will likely have
+  // generated the same contents (since the random seed is not random),
+  // this ensures that at leaste one byte will really be different.
+  bool full_random = (data == NULL) || (cfg.flashWear == Cfg::FLASH_EVERY_TIME);
+  bool change_one = (data == NULL) || (cfg.flashWear == Cfg::FLASH_ONE_BYTE_PER_RUN);
+  if (data_len  == 0) {
+    data = (uint8_t*)malloc(flash_size);
+    assertTrue(data != nullptr);
+    data_len = flash_size;
+  } else {
+    assertEqual(data_len, flash_size);
+  }
 
-  assertTrue(write_and_verify_flash(data, flash_size, 1, 1));
-  assertTrue(write_and_verify_flash(data, flash_size, 7, 16));
-  assertTrue(write_and_verify_flash(data, flash_size, 16, 3));
+  assertMoreOrEqual(flash_size, 2U);
+  if (full_random) {
+    // The bootloader requires a RCALL or RJMP instruction at address 0,
+    // so give it one
+    data[0] = 0x00;
+    data[1] = 0xC0;
+    for (uint16_t i = 2; i < flash_size; ++i)
+      data[i] = random();
+  }
+
+  // Write flash using various messages sizes
+  uint8_t erase_count;
+  assertTrue(write_and_verify_flash(data, flash_size, 1, 1, &erase_count));
+  // If we didn't randomize, nothing should have changed (but if we did
+  // randomize, we can't be sure that something changed).
+  if (!full_random)
+    assertEqual(erase_count, 0);
+
+  if (change_one) {
+    data[random(2, flash_size)] += random(256);
+  }
+  assertTrue(write_and_verify_flash(data, flash_size, 7, 16, &erase_count));
+  assertEqual(erase_count, change_one ? 1 : 0);
+  assertTrue(write_and_verify_flash(data, flash_size, 16, 3, &erase_count));
+  assertEqual(erase_count, 0);
   // Max write and read size
   uint8_t writelen = MAX_MSG_LEN - 4; // cmd, 2xaddr, crc
-  uint8_t readlen = MAX_MSG_LEN - 2; // cmd, 2xaddr
-  assertTrue(write_and_verify_flash(data, flash_size, writelen, readlen));
+  uint8_t readlen = MAX_MSG_LEN - 3; // status, len, 2xaddr
+  assertTrue(write_and_verify_flash(data, flash_size, writelen, readlen, &erase_count));
+  assertEqual(erase_count, 0);
   // Random sizes
   writelen = random(1, writelen);
   readlen = random(1, readlen);
-  assertTrue(write_and_verify_flash(data, flash_size, writelen, readlen));
-
-  free(data);
+  assertTrue(write_and_verify_flash(data, flash_size, writelen, readlen, &erase_count));
+  assertEqual(erase_count, 0);
 }
 
 test(130_invalid_writes) {
@@ -543,9 +578,10 @@ test(130_invalid_writes) {
   assertEqual(status, Status::COMMAND_FAILED);
   assertEqual(reason, 2);
 
+  // FINALIZE_FLASH should also fail with an invalid address 0/1
   assertTrue(write_flash_cmd(0, data, 2, &status, &reason));
   assertOk(status);
-  assertTrue(run_transaction(Commands::FINALIZE_FLASH, nullptr, 0, &status, &reason, 0, 1));
+  assertTrue(run_transaction(Commands::FINALIZE_FLASH, nullptr, 0, &status, &reason, 1, 1));
   assertEqual(status, Status::COMMAND_FAILED);
   assertEqual(reason, 2);
 }
