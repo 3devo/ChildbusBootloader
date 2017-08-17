@@ -232,14 +232,13 @@ The base protocol defines these commands:
 | 0x01        | `SET_I2C_ADDRESS`
 | 0x02        | `POWER_UP_DISPLAY`
 | 0x03        | `GET_HARDWARE_INFO`
-| 0x04        | `START_APPLICATION`
-| 0x05        | `WRITE_FLASH`
-| 0x06        | `FINALIZE_FLASH`
-| 0x07        | `READ_FLASH`
+| 0x04        | `GET_SERIAL_NUMBER`
+| 0x05        | `START_APPLICATION`
+| 0x06        | `WRITE_FLASH`
+| 0x07        | `FINALIZE_FLASH`
+| 0x08        | `READ_FLASH`
 | 0x80 - 0xfe | Reserved for application commands
 | 0xff        | Reserved
-
-TODO: read flash? Eeprom? Signature bytes?
 
 `GET_PROTOCOL_VERSION` command
 ------------------------------
@@ -374,6 +373,26 @@ available to write to.
 The max message size indicates the largest I²C message that can be sent
 or received (including the checksum, excluding the address byte).
 
+`GET_SERIAL_NUMBER` command
+---------------------------
+This command requests the serial number of the board, if available. If
+no serial number is present, this command can return
+`COMMAND_NOT_SUPPORTED`.
+
+| Bytes | Command field
+|-------|-------------------------------
+| 1     | Cmd: `GET_SERIAL_NUMBER` (0x04)
+| 1     | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
+| n     | Serial number
+| 1     | CRC
+
+The length and format of the serial number is device-dependent.
+
 `START_APPLICATION` comand
 --------------------------
 This command tells the bootloader to start the application. To simplify
@@ -385,7 +404,7 @@ TODO: Perhaps do send a reply and complicate the slave code a bit?
 
 | Bytes | Command field
 |-------|-------------------------------
-| 1     | Cmd: `START_APPLICATION` (0x04)
+| 1     | Cmd: `START_APPLICATION` (0x05)
 | 1     | CRC
 
 `WRITE_FLASH` command
@@ -394,7 +413,7 @@ This command allows writing an application to flash.
 
 | Bytes | Command field
 |-------|-------------------------------
-| 1     | Cmd: `WRITE_FLASH` (0x05)
+| 1     | Cmd: `WRITE_FLASH` (0x06)
 | 2     | Address
 | 0+    | Data
 | 1     | CRC
@@ -458,7 +477,7 @@ should be sent, except with a zero address to start over.
 
 | Bytes | Command field
 |-------|-------------------------------
-| 1     | Cmd: `FINALIZE_FLASH` (0x06)
+| 1     | Cmd: `FINALIZE_FLASH` (0x07)
 | 1     | CRC
 
 | Bytes | Reply format

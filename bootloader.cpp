@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <avr/io.h>
+#include <avr/boot.h>
 #include <util/delay.h>
 #include <stdio.h>
 
@@ -26,16 +27,22 @@
 #include "SelfProgram.h"
 #include "bootloader.h"
 
+// Make boot_signature_byte_get work on ATtiny841, until this is merged:
+// https://savannah.nongnu.org/patch/index.php?9437
+#if !defined(SIGRD) && defined(RSIG)
+#define SIGRD RSIG
+#endif
 
 struct Commands {
 	static const uint8_t GET_PROTOCOL_VERSION  = 0x00;
 	static const uint8_t SET_I2C_ADDRESS       = 0x01;
 	static const uint8_t POWER_UP_DISPLAY      = 0x02;
 	static const uint8_t GET_HARDWARE_INFO     = 0x03;
-	static const uint8_t START_APPLICATION     = 0x04;
-	static const uint8_t WRITE_FLASH           = 0x05;
-	static const uint8_t FINALIZE_FLASH        = 0x06;
-	static const uint8_t READ_FLASH            = 0x07;
+	static const uint8_t GET_SERIAL_NUMBER     = 0x04;
+	static const uint8_t START_APPLICATION     = 0x05;
+	static const uint8_t WRITE_FLASH           = 0x06;
+	static const uint8_t FINALIZE_FLASH        = 0x07;
+	static const uint8_t READ_FLASH            = 0x08;
 };
 
 SelfProgram selfProgram;
@@ -170,6 +177,23 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			dataout[3] = size >> 8;
 			dataout[4] = size;
 			return cmd_ok(5);
+		}
+		case Commands::GET_SERIAL_NUMBER:
+		{
+			// These are offsets into the device signature imprint table, which
+			// store the parts of the serial number (lot number, wafer number, x/y
+			// coordinates).
+			static const uint8_t serial_offset[] = {0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x15, 0x16, 0x17};
+
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			if (maxLen < sizeof(serial_offset))
+				return cmd_result(Status::NO_REPLY);
+
+			for (uint8_t i = 0; i < sizeof(serial_offset); ++i)
+				dataout[i] = boot_signature_byte_get(serial_offset[i]);
+			return cmd_ok(sizeof(serial_offset));
 		}
 		case Commands::START_APPLICATION:
 			if (len != 0)
