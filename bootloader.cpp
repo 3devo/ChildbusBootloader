@@ -18,6 +18,7 @@
 #include <string.h>
 #include <avr/io.h>
 #include <avr/boot.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 #include <stdio.h>
 
@@ -183,7 +184,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			// These are offsets into the device signature imprint table, which
 			// store the parts of the serial number (lot number, wafer number, x/y
 			// coordinates).
-			static const uint8_t serial_offset[] = {0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x15, 0x16, 0x17};
+			static const uint8_t PROGMEM serial_offset[] = {0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x15, 0x16, 0x17};
 
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
@@ -192,7 +193,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 				return cmd_result(Status::NO_REPLY);
 
 			for (uint8_t i = 0; i < sizeof(serial_offset); ++i)
-				dataout[i] = boot_signature_byte_get(serial_offset[i]);
+				dataout[i] = boot_signature_byte_get(pgm_read_byte(&serial_offset[i]));
 			return cmd_ok(sizeof(serial_offset));
 		}
 		case Commands::START_APPLICATION:
