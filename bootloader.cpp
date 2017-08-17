@@ -227,7 +227,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 		}
 		case Commands::READ_FLASH:
 		{
-			if (len < 3)
+			if (len != 3)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
 			uint16_t address = datain[0] << 8 | datain[1];
