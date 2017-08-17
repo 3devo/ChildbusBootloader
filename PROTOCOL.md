@@ -356,7 +356,6 @@ on.
 | 1     | Hardware revision
 | 1     | Bootloader version
 | 2     | Available flash size
-| 1     | Max message size
 | 1     | CRC
 
 The following hardware types & revisions are defined:
