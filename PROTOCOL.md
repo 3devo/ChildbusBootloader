@@ -32,6 +32,7 @@ line is controlled by the slave.
 <tr>
 <td>Start</td><td>address+R</td>
 <td style="background-color: #aaa">status</td>
+<td style="background-color: #aaa">number of result bytes</td>
 <td style="background-color: #aaa">result bytes ...</td>
 <td style="background-color: #aaa">CRC</td>
 <td>Stop</td>
@@ -46,6 +47,18 @@ typically is in a read transfer).
 
 The maximum read or write length is 32 bytes (excluding address, including
 everything else).
+
+The number of result bytes in the transfer indicates the number of
+result bytes, excluding the status, the number itself and the CRC.
+
+The master should either look at the length byte to know how much bytes
+to read, or it should make sure to read enough bytes so all possibly
+expected replies would fit. If the master is unable to look at the
+length byte during the transfer and thus reads more bytes than the slave
+has available, the slave should just return arbitrary values. The master
+should ignore these by looking at the length byte after the transfer.
+Alternatively, it could do a short read first, look at the length byte
+and then do a longer read to get the full reply.
 
 The CRC is calculated over all bytes, except the address byte.
 
@@ -244,6 +257,7 @@ this version number.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 1     | Major version
 | 1     | Minor version
 | 1     | CRC
@@ -263,6 +277,7 @@ other I²C devices.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 1     | CRC
 
 The I²C address given is the 7-bit address, where the MSB is ignored by
@@ -307,6 +322,7 @@ complete before the display is powered on and ready.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00) or `COMMAND_NOT_SUPPORTED` (0x02)
+| 1     | Length
 | 1     | Controller type
 | 1     | CRC
 
@@ -334,6 +350,7 @@ on.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 1     | Hardware type
 | 1     | Hardware revision
 | 1     | Bootloader version
@@ -413,16 +430,19 @@ the flash contents.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 1     | CRC
 
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `INVALID_ARGUMENTS` (0x05)
+| 1     | Length
 | 1     | CRC
 
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_FAILED` (0x01)
+| 1     | Length
 | 1     | Reason
 | 1     | CRC
 
@@ -444,11 +464,13 @@ should be sent, except with a zero address to start over.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 1     | CRC
 
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_FAILED` (0x01)
+| 1     | Length
 | 1     | Reason
 | 1     | CRC
 
@@ -473,6 +495,7 @@ return an inconsistent state.
 | Bytes | Reply format
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
 | 0+    | Data
 | 1     | CRC
 
