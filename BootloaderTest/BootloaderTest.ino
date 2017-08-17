@@ -50,7 +50,6 @@ struct Cfg {
 
   bool repStartAfterWrite = false;
   bool repStartAfterRead = false;
-  bool ackLastRead = false;
   bool skipWrite = false;
 
   // These are not changed, so set them here
@@ -112,10 +111,7 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
     assertAck(bus.readThenAck(datain[i]));
 
   uint8_t crc;
-  if (cfg.ackLastRead)
-    assertAck(bus.readThenAck(crc));
-  else
-    assertAck(bus.readThenNack(crc));
+  assertAck(bus.readThenNack(crc));
 
   uint8_t expectedCrc = Crc().update(*status).update(len).update(datain, expectedLen).get();
   assertEqual(crc, expectedCrc);
@@ -608,8 +604,6 @@ void runTests() {
     Serial.println("using repstart after write");
   if (cfg.repStartAfterRead)
     Serial.println("using repstart after read");
-  if (cfg.ackLastRead)
-    Serial.println("acking last read");
 
   bus.print = cfg.printRawData;
 
@@ -627,7 +621,6 @@ void runTests() {
   // Randomly change these values on every run
   cfg.repStartAfterWrite = random(2);
   cfg.repStartAfterRead = random(2);
-  cfg.ackLastRead = random(2);
 }
 
 void runFixedTests() {
@@ -638,7 +631,6 @@ void runFixedTests() {
   cfg.skipWrite = false;
   cfg.repStartAfterWrite = false;
   cfg.repStartAfterRead = false;
-  cfg.ackLastRead = false;
   cfg.setAddr = 0;
 
   // Run the tests for all allowed I2c addresses, without changing the

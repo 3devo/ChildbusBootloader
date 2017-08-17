@@ -41,9 +41,8 @@ line is controlled by the slave.
 
 Acks and nacks are omitted from this table, but are present after each
 byte. All bytes should be acked by the other party than the one that
-sent the data. A nack should always mean the end of the transfer, but
-the last byte in a transfer does not need to be acked (though it
-typically is in a read transfer).
+sent the data. The last byte in a read transfer should always be acked
+by the master, so the slave knows to release the bus.
 
 The maximum read or write length is 32 bytes (excluding address, including
 everything else).
