@@ -80,8 +80,8 @@ bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor =
 
 bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLen, bool skip_start = false) {
   auto on_failure = []() { return false; };
-  assertLessOrEqual(okLen + 2, MAX_MSG_LEN);
-  assertLessOrEqual(failLen + 2, MAX_MSG_LEN);
+  assertLessOrEqual(okLen + 3, MAX_MSG_LEN);
+  assertLessOrEqual(failLen + 3, MAX_MSG_LEN);
   if (!skip_start) {
     assertAck(bus.startRead(cfg.curAddr));
   }
@@ -96,6 +96,10 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
   else // All other errors have no data
     expectedLen = 0;
 
+  uint8_t len;
+  assertAck(bus.readThenAck(len));
+  assertEqual(len, expectedLen);
+
   for (uint8_t i = 0; i < expectedLen; ++i)
     assertAck(bus.readThenAck(datain[i]));
 
@@ -105,7 +109,7 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
   else
     assertAck(bus.readThenNack(crc));
 
-  uint8_t expectedCrc = Crc().update(*status).update(datain, expectedLen).get();
+  uint8_t expectedCrc = Crc().update(*status).update(len).update(datain, expectedLen).get();
   assertEqual(crc, expectedCrc);
   if (!cfg.repStartAfterRead)
     bus.stop();
