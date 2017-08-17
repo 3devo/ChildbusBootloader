@@ -235,6 +235,7 @@ The base protocol defines these commands:
 | 0x04        | `START_APPLICATION`
 | 0x05        | `WRITE_FLASH`
 | 0x06        | `FINALIZE_FLASH`
+| 0x07        | `READ_FLASH`
 | 0x80 - 0xfe | Reserved for application commands
 | 0xff        | Reserved
 
