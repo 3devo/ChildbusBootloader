@@ -26,6 +26,10 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 
+// The actual value is set by main(), to avoid the overhead gcc
+// generates for running a "constructor" to set this value
+uint16_t SelfProgram::trampolineStart = 0;
+
 void SelfProgram::readFlash(uint16_t address, uint8_t *data, uint8_t len) {
 	for (uint8_t i=0; i < len; i++) {
 		data[i] = readByte(address + i);

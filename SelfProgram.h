@@ -34,8 +34,11 @@ public:
 
 	uint16_t offsetRelativeJump(uint16_t instruction, int16_t offset);
 
-	uint16_t trampolineStart = (uint16_t)&startApplication * 2;
-	uint16_t applicationSize = trampolineStart;
+	static uint16_t trampolineStart;
+
+	// Use a reference to make this an alias to trampolineStart for
+	// readability
+	static constexpr const uint16_t& applicationSize = trampolineStart;
 };
 
 #endif /* SELFPROGRAM_H_ */

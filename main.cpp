@@ -34,6 +34,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "bootloader.h"
+#include "SelfProgram.h"
 #include <stdio.h>
 
 // This is a single instruction placed immediately before the bootloader.
@@ -66,6 +67,12 @@ int main() {
 	// Disable watchdog, to prevent it triggering again
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
+
+	// Set this value here, to avoid gcc generating a lot of
+	// overhead for running a constructor to set this value. It
+	// cannot be inline at compiletime, since the value is not known
+	// until link time.
+	SelfProgram::trampolineStart = (uint16_t)&startApplication * 2;
 
 	// Uncomment this to allow the use of printf on pin PA1 (TX
 	// only). See also usart.cpp. This needs a bigger bootloader
