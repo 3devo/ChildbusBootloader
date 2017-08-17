@@ -46,7 +46,7 @@ struct Commands {
 };
 
 SelfProgram selfProgram;
-volatile bool bootloaderRunning = true;
+volatile bool bootloaderExit = false;
 
 static uint8_t writeBuffer[SPM_ERASESIZE];
 static uint16_t nextWriteAddress = 0;
@@ -199,7 +199,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			bootloaderRunning = false;
+			bootloaderExit = true;
 			// This is probably never sent
 			return cmd_ok();
 
@@ -249,7 +249,7 @@ extern "C" {
 	void runBootloader() {
 		TwoWireInit(false /*useInterrupts*/, INITIAL_I2C_ADDRESS, INITIAL_I2C_MASK);
 
-		while (bootloaderRunning) {
+		while (!bootloaderExit) {
 			TwoWireUpdate();
 		}
 
