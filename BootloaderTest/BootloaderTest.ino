@@ -324,6 +324,29 @@ test(070_get_hardware_info) {
   assertEqual(flash_size, AVAILABLE_FLASH_SIZE);
 }
 
+test(075_get_serial_number) {
+  uint8_t data[9];
+  assertTrue(run_transaction_ok(Commands::GET_SERIAL_NUMBER, nullptr, 0, data, sizeof(data)));
+
+  auto on_failure = [&data]() {
+    for (uint8_t i = 0; i < sizeof(data); ++i) {
+      Serial.print(" 0x"); Serial.print(data[i], HEX);
+    }
+  };
+
+  // This is not required by the protocol, but the current
+  // implementation returns the unique data from the attiny chip, which
+  // is a lot number, wafer number and x/y position. The lot number
+  // seems to be an ASCII uppercase letter followed by 5 ASCII numbers,
+  // so check that.
+  assertMoreOrEqual(data[0], 'A');
+  assertLessOrEqual(data[0], 'Z');
+  for (uint8_t i = 1; i < 6; ++i) {
+    assertMoreOrEqual(data[i], '0');
+    assertLessOrEqual(data[i], '9');
+  }
+}
+
 test(080_crc_error) {
   uint8_t status;
   uint8_t crc_xor = random(1, 256);

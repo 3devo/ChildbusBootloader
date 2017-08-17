@@ -48,10 +48,11 @@ struct Commands {
     SET_I2C_ADDRESS       = 0x01,
     POWER_UP_DISPLAY      = 0x02,
     GET_HARDWARE_INFO     = 0x03,
-    START_APPLICATION     = 0x04,
-    WRITE_FLASH           = 0x05,
-    FINALIZE_FLASH        = 0x06,
-    READ_FLASH            = 0x07,
+    GET_SERIAL_NUMBER     = 0x04,
+    START_APPLICATION     = 0x05,
+    WRITE_FLASH           = 0x06,
+    FINALIZE_FLASH        = 0x07,
+    READ_FLASH            = 0x08,
     END_OF_COMMANDS
   };
 };
