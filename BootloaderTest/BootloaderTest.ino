@@ -70,7 +70,7 @@ bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor =
   for (uint8_t i = 0; i < len; ++i)
     assertAck(bus.write(dataout[i]));
 
-  uint8_t crc = calcCrc(cmd, dataout, len);
+  uint8_t crc = Crc().update(cmd).update(dataout, len).get();
   assertAck(bus.write(crc ^ crc_xor));
 
   if (!cfg.repStartAfterWrite)
@@ -105,7 +105,8 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
   else
     assertAck(bus.readThenNack(crc));
 
-  assertEqual(crc, calcCrc(*status, datain, expectedLen));
+  uint8_t expectedCrc = Crc().update(*status).update(datain, expectedLen).get();
+  assertEqual(crc, expectedCrc);
   if (!cfg.repStartAfterRead)
     bus.stop();
   return true;
