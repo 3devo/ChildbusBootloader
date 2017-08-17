@@ -24,15 +24,15 @@ void startApplication();
 
 class SelfProgram {
 public:
-	void readFlash(uint16_t address, uint8_t *data, uint8_t len);
+	static void readFlash(uint16_t address, uint8_t *data, uint8_t len);
 
-	uint8_t readByte(uint16_t address);
+	static uint8_t readByte(uint16_t address);
 
-	uint8_t writePage(uint16_t address, uint8_t *data, uint8_t len);
+	static uint8_t writePage(uint16_t address, uint8_t *data, uint8_t len);
 
-	void writeTrampoline(uint16_t instruction);
+	static void writeTrampoline(uint16_t instruction);
 
-	uint16_t offsetRelativeJump(uint16_t instruction, int16_t offset);
+	static uint16_t offsetRelativeJump(uint16_t instruction, int16_t offset);
 
 	static uint16_t trampolineStart;
 

@@ -46,7 +46,6 @@ struct Commands {
 	static const uint8_t READ_FLASH            = 0x08;
 };
 
-SelfProgram selfProgram;
 volatile bool bootloaderExit = false;
 
 static uint8_t writeBuffer[SPM_ERASESIZE];
@@ -55,7 +54,7 @@ static uint16_t nextWriteAddress = 0;
 static bool equalToFlash(uint16_t address, uint8_t len) {
 	uint8_t offset = 0;
 	while (len > 0) {
-		if (writeBuffer[offset] != selfProgram.readByte(address + offset))
+		if (writeBuffer[offset] != SelfProgram::readByte(address + offset))
 			return false;
 		--len;
 		++offset;
@@ -72,7 +71,7 @@ static uint8_t commitToFlash(uint16_t address, uint8_t len) {
 	uint8_t offset = 0;
 	while (len > 0) {
 		uint8_t pageLen = len < SPM_PAGESIZE ? len : SPM_PAGESIZE;
-		uint8_t err = selfProgram.writePage(address + offset, &writeBuffer[offset], pageLen);
+		uint8_t err = SelfProgram::writePage(address + offset, &writeBuffer[offset], pageLen);
 		if (err)
 			return err;
 		len -= pageLen;
@@ -174,7 +173,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			dataout[2] = INFO_BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
-			uint16_t size = selfProgram.applicationSize;
+			uint16_t size = SelfProgram::applicationSize;
 			dataout[3] = size >> 8;
 			dataout[4] = size;
 			return cmd_ok(5);
@@ -237,7 +236,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len > maxLen)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			selfProgram.readFlash(address, dataout, len);
+			SelfProgram::readFlash(address, dataout, len);
 			return cmd_ok(len);
 		}
 
