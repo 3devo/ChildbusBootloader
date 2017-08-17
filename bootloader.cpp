@@ -222,7 +222,9 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 				dataout[0] = err;
 				return cmd_result(Status::COMMAND_FAILED, 1);
 			} else {
-				return cmd_ok();
+				dataout[0] = SelfProgram::eraseCount;
+				SelfProgram::eraseCount = 0;
+				return cmd_ok(1);
 			}
 		}
 		case Commands::READ_FLASH:

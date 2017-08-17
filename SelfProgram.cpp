@@ -29,6 +29,7 @@
 // The actual value is set by main(), to avoid the overhead gcc
 // generates for running a "constructor" to set this value
 uint16_t SelfProgram::trampolineStart = 0;
+uint8_t SelfProgram::eraseCount = 0;
 
 void SelfProgram::readFlash(uint16_t address, uint8_t *data, uint8_t len) {
 	for (uint8_t i=0; i < len; i++) {
@@ -81,8 +82,11 @@ uint8_t SelfProgram::writePage(uint16_t address, uint8_t *data, uint8_t len) {
 	if (address % SPM_ERASESIZE == 0) {
 		// If this is the page containing the trampoline, it
 		// will already be erased when writing the first page
-		if (address / SPM_ERASESIZE != trampolineStart / SPM_ERASESIZE)
+		if (address / SPM_ERASESIZE != trampolineStart / SPM_ERASESIZE) {
+			if (eraseCount < 0xff)
+				++eraseCount;
 			boot_page_erase_safe(address);
+		}
 	}
 
 	for (int i=0; i < len; i += 2) {
@@ -118,6 +122,8 @@ void SelfProgram::writeTrampoline(uint16_t instruction) {
 	// other application code. This makes no attempt to preserve the
 	// other code to keep since simple. This should work since we're
 	// writing a new application anyway.
+	if (eraseCount < 0xff)
+		++eraseCount;
 	boot_page_erase_safe(address);
 
 	// Take the reset instruction from the page at offset 0 and 1

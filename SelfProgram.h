@@ -39,6 +39,8 @@ public:
 	// Use a reference to make this an alias to trampolineStart for
 	// readability
 	static constexpr const uint16_t& applicationSize = trampolineStart;
+
+	static uint8_t eraseCount;
 };
 
 #endif /* SELFPROGRAM_H_ */

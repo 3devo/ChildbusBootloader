@@ -482,6 +482,7 @@ should be sent, except with a zero address to start over.
 |-------|-------------------------------
 | 1     | Status: `COMMAND_OK` (0x00)
 | 1     | Length
+| 1     | Erasecount
 | 1     | CRC
 
 | Bytes | Reply format
@@ -490,6 +491,10 @@ should be sent, except with a zero address to start over.
 | 1     | Length
 | 1     | Reason
 | 1     | CRC
+
+The erasecount is the number of pages erased since the last reset, or
+the last succesful `FINALIZE_FLASH` command. This is returned to
+facilitate verification of the "erase only when needed" mechanism.
 
 When flashing fails for any reason, an additional reason byte is
 returned. The meaning of this byte is purely informative and not defined
