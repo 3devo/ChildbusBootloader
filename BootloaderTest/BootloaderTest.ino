@@ -505,8 +505,13 @@ test(120_write_flash) {
 }
 
 test(130_invalid_writes) {
-  uint8_t data[32];
+  uint8_t data[16];
   uint8_t status, reason;
+
+  // Read the current flash contents to prevent actually writing to flash
+  uint8_t dataout[3] = {0, 0, sizeof(data)};
+  assertTrue(run_transaction_ok(Commands::READ_FLASH, dataout, sizeof(dataout), data, sizeof(data)));
+
   // Start at 0 and skip a few bytes
   assertTrue(write_flash_cmd(0, data, 13, &status, &reason));
   assertOk(status);
