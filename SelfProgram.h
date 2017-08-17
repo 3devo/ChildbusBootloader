@@ -24,28 +24,6 @@ void startApplication();
 
 class SelfProgram {
 public:
-	SelfProgram();
-
-	void setSafeMode(bool safeMode);
-
-	void loadDeviceID();
-
-	uint16_t getDeviceID();
-
-	void storeDeviceID(uint16_t deviceID);
-
-	uint32_t getSignature();
-
-	void readEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen);
-
-	void writeEEPROM(uint16_t address, uint8_t *data,  uint8_t len);
-
-	void setLED(bool on);
-
-	int getPageSize();
-
-	void erasePage(uint16_t address);
-
 	void readFlash(uint16_t address, uint8_t *data, uint8_t len);
 
 	uint8_t readByte(uint16_t address);
@@ -58,9 +36,6 @@ public:
 
 	uint16_t trampolineStart = (uint16_t)&startApplication * 2;
 	uint16_t applicationSize = trampolineStart;
-private:
-	uint16_t _deviceID;
-	bool _safeMode;
 };
 
 #endif /* SELFPROGRAM_H_ */

@@ -26,54 +26,6 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 
-SelfProgram::SelfProgram() {
-}
-
-uint32_t SelfProgram::getSignature() {
-	return (boot_signature_byte_get(0) |
-			(((uint32_t)boot_signature_byte_get(0)) << 8) |
-			(((uint32_t)boot_signature_byte_get(0)) << 16));
-}
-
-void SelfProgram::readEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen) {
-	eeprom_read_block(data, (const void *)address, eeLen);
-}
-
-void SelfProgram::writeEEPROM(uint16_t address, uint8_t *data,  uint8_t eeLen) {
-	eeprom_update_block(data, (void*)address, eeLen);
-}
-
-// Flash page size is 16 bytes
-int SelfProgram::getPageSize() {
-	return SPM_PAGESIZE;
-}
-
-void SelfProgram::erasePage(uint16_t address) {
-	// Mask of bits inside the page
-	address &= ~(SPM_ERASESIZE - 1);
-
-	// Bail if the address is past the application section.
-	if (address + SPM_ERASESIZE > applicationSize) {
-		return;
-	}
-
-	boot_page_erase_safe(address);
-
-	// If we just erased page 0, restore the reset vector in case
-	// the bootloader gets interrupted before writing the page.
-	// writePage() will change bytes 0 and 1.
-	// All the other bytes in the page must remain erased (0xFF)
-	if (address == 0) {
-		uint8_t data[SPM_PAGESIZE];
-		for (int i=0; i < SPM_PAGESIZE; i++) {
-			data[i] = 0xFF;
-		}
-		writePage(0, data, SPM_PAGESIZE);
-	}
-
-	boot_spm_busy_wait();
-}
-
 void SelfProgram::readFlash(uint16_t address, uint8_t *data, uint8_t len) {
 	for (uint8_t i=0; i < len; i++) {
 		data[i] = readByte(address + i);
