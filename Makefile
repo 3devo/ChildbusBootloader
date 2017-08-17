@@ -45,11 +45,12 @@ LDFLAGS       += -Wl,--defsym=ERASE_SIZE=$(ERASE_SIZE)
 CC             = avr-gcc
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
+SIZE           = avr-size
 
 interface_v1.3:
 	$(MAKE) all PRG=bootloader-iface-v1.3 BOARD=BOARD_IFACE_V1_3
 
-all: hex fuses
+all: hex fuses size
 
 hex:  $(PRG).hex
 
@@ -61,6 +62,8 @@ fuses:
 		echo "            ^^ Extended"; \
 	fi
 
+size:
+	$(SIZE) --format=avr $(PRG).elf
 clean:
 	rm -rf $(OBJ) $(OBJ:.o=.d) *.elf *.hex *.lst *.map
 
@@ -76,7 +79,7 @@ $(PRG).elf: $(OBJ) $(LINKER_SCRIPT)
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-.PHONY: all lst hex clean fuses
+.PHONY: all lst hex clean fuses size
 
 # pull in dependency info for *existing* .o files
 -include $(OBJ:.o=.d)
