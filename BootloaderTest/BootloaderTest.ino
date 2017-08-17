@@ -90,7 +90,7 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
 
   uint8_t expectedLen;
   if (*status == Status::COMMAND_OK)
-      expectedLen = okLen;
+    expectedLen = okLen;
   else if (*status == Status::COMMAND_FAILED)
     expectedLen = failLen;
   else // All other errors have no data
