@@ -57,7 +57,7 @@ int TwoWireCallback(uint8_t address, uint8_t *data, uint8_t len, uint8_t maxLen)
 			len = 1;
 		} else {
 			// CRC checks out, process a command
-			cmd_result res = processCommand(data[0], data + 1, len - 2, maxLen - 2);
+			cmd_result res = processCommand(data[0], data + 1, len - 2, data + 1, maxLen - 2);
 			if (res.status == Status::NO_REPLY)
 				return 0;
 

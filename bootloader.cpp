@@ -127,14 +127,14 @@ void displayOn() {
 }
 #endif
 
-cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLen) {
+cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *dataout, uint8_t maxLen) {
 	if (maxLen < 5)
 		return cmd_result(Status::NO_REPLY);
 
 	switch (cmd) {
 		case Commands::GET_PROTOCOL_VERSION:
-			data[0] = 1;
-			data[1] = 0;
+			dataout[0] = 1;
+			dataout[1] = 0;
 			return cmd_ok(2);
 
 		case Commands::SET_I2C_ADDRESS:
@@ -143,16 +143,16 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 
 			// Only respond if the hw type in the request is
 			// the wildcard or matches ours.
-			if (data[1] != 0 && data[1] != INFO_HW_TYPE)
+			if (datain[1] != 0 && datain[1] != INFO_HW_TYPE)
 				return cmd_result(Status::NO_REPLY);
 
-			TwoWireSetDeviceAddress(data[0]);
+			TwoWireSetDeviceAddress(datain[0]);
 			return cmd_ok();
 
 		#ifdef HAVE_DISPLAY
 		case Commands::POWER_UP_DISPLAY:
 			displayOn();
-			data[0] = DISPLAY_CONTROLLER_TYPE;
+			dataout[0] = DISPLAY_CONTROLLER_TYPE;
 			return cmd_ok(1);
 		#endif
 
@@ -161,14 +161,14 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			data[0] = INFO_HW_TYPE;
-			data[1] = INFO_HW_REVISION;
-			data[2] = INFO_BL_VERSION;
+			dataout[0] = INFO_HW_TYPE;
+			dataout[1] = INFO_HW_REVISION;
+			dataout[2] = INFO_BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
 			uint16_t size = selfProgram.applicationSize;
-			data[3] = size >> 8;
-			data[4] = size;
+			dataout[3] = size >> 8;
+			dataout[4] = size;
 			return cmd_ok(5);
 		}
 		case Commands::START_APPLICATION:
@@ -184,8 +184,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 			if (len < 2)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint16_t address = data[0] << 8 | data[1];
-			return handleWriteFlash(address, data + 2, len - 2, data);
+			uint16_t address = datain[0] << 8 | datain[1];
+			return handleWriteFlash(address, datain + 2, len - 2, dataout);
 		}
 		case Commands::FINALIZE_FLASH:
 		{
@@ -195,7 +195,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 			uint16_t pageAddress = nextWriteAddress & ~(SPM_ERASESIZE - 1);
 			uint8_t err = commitToFlash(pageAddress, nextWriteAddress - pageAddress);
 			if (err) {
-				data[0] = err;
+				dataout[0] = err;
 				return cmd_result(Status::COMMAND_FAILED, 1);
 			} else {
 				return cmd_ok();
@@ -206,13 +206,13 @@ cmd_result processCommand(uint8_t cmd, uint8_t *data, uint8_t len, uint8_t maxLe
 			if (len < 3)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint16_t address = data[0] << 8 | data[1];
-			uint8_t len = data[2];
+			uint16_t address = datain[0] << 8 | datain[1];
+			uint8_t len = datain[2];
 
 			if (len > maxLen)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			selfProgram.readFlash(address, data, len);
+			selfProgram.readFlash(address, dataout, len);
 			return cmd_ok(len);
 		}
 
