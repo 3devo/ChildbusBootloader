@@ -271,6 +271,48 @@ test(060_reread_protocol_version) {
   assertEqual(version, PROTOCOL_VERSION);
 }
 
+test(065_short_long_read) {
+  uint8_t status, len, dummy;
+  uint8_t data[2];
+
+  // Send a command
+  assertTrue(write_command(Commands::GET_PROTOCOL_VERSION, nullptr, 0));
+
+  // Do a short read, just enough to read the length byte
+  assertAck(bus.startRead(cfg.curAddr));
+  assertAck(bus.readThenAck(status));
+  assertOk(status);
+  assertAck(bus.readThenNack(len));
+  assertEqual(len, sizeof(data));
+  if (!cfg.repStartAfterRead)
+    bus.stop();
+
+  // Check that we can still read a valid reply after that
+  assertTrue(read_status(&status, data, sizeof(data), 0));
+  assertOk(status);
+  uint16_t version = data[0] << 8 | data[1];
+  assertEqual(version, PROTOCOL_VERSION);
+
+  // Do a long read, way past the CRC
+  assertAck(bus.startRead(cfg.curAddr));
+  assertAck(bus.readThenAck(status));
+  assertOk(status);
+  assertAck(bus.readThenAck(len));
+  assertEqual(len, sizeof(data));
+  for (uint8_t i = 0; i < 10; ++i) {
+    assertAck(bus.readThenAck(dummy));
+  }
+  assertAck(bus.readThenNack(dummy));
+  if (!cfg.repStartAfterRead)
+    bus.stop();
+
+  // Check that we can still read a valid reply after that
+  assertTrue(read_status(&status, data, sizeof(data), 0));
+  assertOk(status);
+  version = data[0] << 8 | data[1];
+  assertEqual(version, PROTOCOL_VERSION);
+}
+
 test(070_get_hardware_info) {
   uint8_t data[5];
   assertTrue(run_transaction_ok(Commands::GET_HARDWARE_INFO, nullptr, 0, data, sizeof(data)));
