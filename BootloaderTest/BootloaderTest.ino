@@ -617,7 +617,7 @@ void runTests() {
 
   bus.print = cfg.printRawData;
 
-  Test::resetAllTests();
+  Test::resetDoneTests();
 
   // Run all tests to completion
   Test::runUntilDone();
@@ -731,9 +731,6 @@ void setup() {
   // Run as fast as possible. With zero delay, the above direct pin
   // access results in about 12us clock period at 16Mhz
   bus.setDelay_us(0);
-
-  // Allow re-running tests
-  Test::flags.keep_completed_tests = true;
 
   Serial.println();
   Serial.println("****************************");
