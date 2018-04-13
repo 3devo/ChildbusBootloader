@@ -221,9 +221,10 @@ test(050_set_i2c_address) {
   uint8_t data[2] = { cfg.setAddr, type };
   write_command(Commands::SET_I2C_ADDRESS, data, sizeof(data));
 
-  // The command should be ignored, so a read command should not be acked
+  // The response might be available at the old or new address, try the
+  // old address first, but it's ok if the old address nacks.
   SoftWire::result_t res = bus.startRead(cfg.curAddr);
-  assertTrue(res == SoftWire::ack || SoftWire::nack);
+  assertTrue(res == SoftWire::ack || res == SoftWire::nack);
 
   // Update the address, use this one for now
   uint8_t oldAddr = cfg.curAddr;
