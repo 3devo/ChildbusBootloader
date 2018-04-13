@@ -610,9 +610,9 @@ void runTests() {
 
   Test::resetAllTests();
 
-  // Run twice: once for setup, once to run the actual test
-  Test::run();
-  Test::run();
+  // Run all tests to completion
+  while (Test::remaining())
+    Test::run();
 
   if (Test::getCurrentFailed()) {
     Serial.println("FAILED");
