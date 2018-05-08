@@ -35,8 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 // These are macros, so the caller's line number info and expressions
 // are preserved
-#define assertAck(result) assertEqual(result, SoftWire::ack)
-#define assertOk(status) assertEqual(status, Status::COMMAND_OK)
+#define assertAck(result, ...) assertEqual(result, SoftWire::ack, ## __VA_ARGS__)
+#define assertOk(status, ...) assertEqual(status, Status::COMMAND_OK, ## __VA_ARGS__)
 
 /**
  * Helper class to calculate crcs for transfers. To use it, create an

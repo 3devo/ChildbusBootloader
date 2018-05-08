@@ -70,15 +70,14 @@ struct Cfg {
 
 
 bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor = 0) {
-  auto on_failure = []() { return false; };
-  assertLessOrEqual(len + 2, MAX_MSG_LEN);
-  assertAck(bus.startWrite(cfg.curAddr));
-  assertAck(bus.write(cmd));
+  assertLessOrEqual(len + 2, MAX_MSG_LEN, "", false);
+  assertAck(bus.startWrite(cfg.curAddr),"", false);
+  assertAck(bus.write(cmd), "", false);
   for (uint8_t i = 0; i < len; ++i)
-    assertAck(bus.write(dataout[i]));
+    assertAck(bus.write(dataout[i]), "", false);
 
   uint8_t crc = Crc().update(cmd).update(dataout, len).get();
-  assertAck(bus.write(crc ^ crc_xor));
+  assertAck(bus.write(crc ^ crc_xor), "", false);
 
   if (!cfg.repStartAfterWrite)
     bus.stop();
@@ -86,14 +85,13 @@ bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor =
 }
 
 bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLen, bool skip_start = false) {
-  auto on_failure = []() { return false; };
-  assertLessOrEqual(okLen + 3, MAX_MSG_LEN);
-  assertLessOrEqual(failLen + 3, MAX_MSG_LEN);
+  assertLessOrEqual(okLen + 3, MAX_MSG_LEN, "", false);
+  assertLessOrEqual(failLen + 3, MAX_MSG_LEN, "", false);
   if (!skip_start) {
-    assertAck(bus.startRead(cfg.curAddr));
+    assertAck(bus.startRead(cfg.curAddr), "", false);
   }
-  assertTrue(status != nullptr);
-  assertAck(bus.readThenAck(*status));
+  assertTrue(status != nullptr, "", false);
+  assertAck(bus.readThenAck(*status), "", false);
 
   uint8_t expectedLen;
   if (*status == Status::COMMAND_OK)
@@ -104,34 +102,32 @@ bool read_status(uint8_t *status, uint8_t *datain, uint8_t okLen, uint8_t failLe
     expectedLen = 0;
 
   uint8_t len;
-  assertAck(bus.readThenAck(len));
-  assertEqual(len, expectedLen);
+  assertAck(bus.readThenAck(len), "", false);
+  assertEqual(len, expectedLen, "", false);
 
   for (uint8_t i = 0; i < expectedLen; ++i)
-    assertAck(bus.readThenAck(datain[i]));
+    assertAck(bus.readThenAck(datain[i]), "", false);
 
   uint8_t crc;
-  assertAck(bus.readThenNack(crc));
+  assertAck(bus.readThenNack(crc), "", false);
 
   uint8_t expectedCrc = Crc().update(*status).update(len).update(datain, expectedLen).get();
-  assertEqual(crc, expectedCrc);
+  assertEqual(crc, expectedCrc, "", false);
   if (!cfg.repStartAfterRead)
     bus.stop();
   return true;
 }
 
 bool run_transaction(uint8_t cmd, uint8_t *dataout, size_t len, uint8_t *status, uint8_t *datain = nullptr, size_t okLen = 0, uint8_t failLen = 0) {
-  auto on_failure = []() { return false; };
-  assertTrue(write_command(cmd, dataout, len));
-  assertTrue(read_status(status, datain, okLen, failLen));
+  assertTrue(write_command(cmd, dataout, len), "", false);
+  assertTrue(read_status(status, datain, okLen, failLen), "", false);
   return true;
 }
 
 bool run_transaction_ok(uint8_t cmd, uint8_t *dataout = nullptr, size_t len = 0, uint8_t *datain = nullptr, size_t okLen = 0, uint8_t failLen = 0) {
-  auto on_failure = []() { return false; };
   uint8_t status;
-  assertTrue(run_transaction(cmd, dataout, len, &status, datain, okLen, failLen));
-  assertOk(status);
+  assertTrue(run_transaction(cmd, dataout, len, &status, datain, okLen, failLen), "", false);
+  assertOk(status, "", false);
   return true;
 }
 
@@ -344,11 +340,11 @@ test(075_get_serial_number) {
   // is a lot number, wafer number and x/y position. The lot number
   // seems to be an ASCII uppercase letter followed by 5 ASCII numbers,
   // so check that.
-  assertMoreOrEqual(data[0], 'A');
-  assertLessOrEqual(data[0], 'Z');
+  assertMoreOrEqual(data[0], 'A', "", on_failure());
+  assertLessOrEqual(data[0], 'Z', "", on_failure());
   for (uint8_t i = 1; i < 6; ++i) {
-    assertMoreOrEqual(data[i], '0');
-    assertLessOrEqual(data[i], '9');
+    assertMoreOrEqual(data[i], '0', "", on_failure());
+    assertLessOrEqual(data[i], '9', "", on_failure());
   }
 }
 
@@ -366,8 +362,8 @@ test(100_command_not_supported) {
   auto on_failure = [&cmd]() { Serial.print("cmd: "); Serial.println(cmd); };
   while (cmd != 0) {
     uint8_t status;
-    assertTrue(run_transaction(cmd, nullptr, 0, &status));
-    assertEqual(status, Status::COMMAND_NOT_SUPPORTED);
+    assertTrue(run_transaction(cmd, nullptr, 0, &status), "", on_failure());
+    assertEqual(status, Status::COMMAND_NOT_SUPPORTED, "", on_failure());
     ++cmd;
   }
 }
@@ -399,22 +395,21 @@ bool verify_flash(uint8_t *data, uint16_t len, uint8_t readlen) {
   while (offset < len) {
     uint8_t nextlen = min(readlen, len - offset);
     uint8_t dataout[3] = {(uint8_t)(offset >> 8), (uint8_t)offset, nextlen};
-    assertTrue(run_transaction_ok(Commands::READ_FLASH, dataout, sizeof(dataout), datain, nextlen));
+    assertTrue(run_transaction_ok(Commands::READ_FLASH, dataout, sizeof(dataout), datain, nextlen), "", on_failure());
     for (i = 0; i < nextlen; ++i)
-      assertEqual(datain[i], data[offset + i]);
+      assertEqual(datain[i], data[offset + i], "", on_failure());
     offset += nextlen;
   }
   return true;
 }
 
 bool write_flash_cmd(uint16_t address, uint8_t *data, uint8_t len, uint8_t *status, uint8_t *reason) {
-  auto on_failure = []() { return false; };
   uint8_t dataout[len + 2];
 
   dataout[0] = address >> 8;
   dataout[1] = address;
   memcpy(dataout + 2, data, len);
-  assertTrue(run_transaction(Commands::WRITE_FLASH, dataout, len + 2, status, reason, 0, 1));
+  assertTrue(run_transaction(Commands::WRITE_FLASH, dataout, len + 2, status, reason, 0, 1), "", false);
   return true;
 }
 
@@ -429,11 +424,11 @@ bool write_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8_t *erase_c
   while (offset < len) {
     uint8_t nextlen = min(writelen, len - offset);
     uint8_t status, reason;
-    assertTrue(write_flash_cmd(offset, data + offset, nextlen, &status, &reason));
-    assertOk(status);
+    assertTrue(write_flash_cmd(offset, data + offset, nextlen, &status, &reason), "", on_failure());
+    assertOk(status, "", on_failure());
     offset += nextlen;
   }
-  assertTrue(run_transaction_ok(Commands::FINALIZE_FLASH, nullptr, 0, erase_count, 1, 1));
+  assertTrue(run_transaction_ok(Commands::FINALIZE_FLASH, nullptr, 0, erase_count, 1, 1), "", on_failure());
   return true;
 }
 
@@ -448,7 +443,7 @@ bool write_and_verify_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8
 #ifdef TIME_WRITE
   unsigned long start = millis();
 #endif
-  assertTrue(write_flash(data, len, writelen, erase_count));
+  assertTrue(write_flash(data, len, writelen, erase_count), "", on_failure());
 #ifdef TIME_WRITE
   unsigned long now = millis();
   Serial.print("Write took ");
@@ -459,7 +454,7 @@ bool write_and_verify_flash(uint8_t *data, uint16_t len, uint8_t writelen, uint8
 #ifdef TIME_WRITE
   start = millis();
 #endif
-  assertTrue(verify_flash(data, len, readlen));
+  assertTrue(verify_flash(data, len, readlen), "", on_failure());
 #ifdef TIME_WRITE
   now = millis();
   Serial.print("Verify took ");
