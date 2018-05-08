@@ -723,6 +723,13 @@ void setup() {
   //bus.print = true;
   //Test::min_verbosity = TEST_VERBOSITY_ALL;
   runFixedTests();
+  Serial.println("****************************");
+  Serial.println();
+
+  // Clear serial buffer, then wait for a newline
+  while(Serial.read() >= 0) /* nothing */;
+  Serial.println("Send a newline to start random tests");
+  while(Serial.read() != '\n') /* nothing */;
 
   Serial.println();
   Serial.println("****************************");
