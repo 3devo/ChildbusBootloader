@@ -342,9 +342,11 @@ test(075_get_serial_number) {
   assertTrue(run_transaction_ok(Commands::GET_SERIAL_NUMBER, nullptr, 0, data, sizeof(data)));
 
   auto on_failure = [&data]() {
+    Serial.print("serial = ");
     for (uint8_t i = 0; i < sizeof(data); ++i) {
       Serial.print(" 0x"); Serial.print(data[i], HEX);
     }
+    Serial.println();
   };
 
   // This is not required by the protocol, but the current
