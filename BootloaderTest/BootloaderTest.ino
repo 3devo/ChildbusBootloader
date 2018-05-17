@@ -150,7 +150,7 @@ test(010_general_call_reset) {
 
   if (oldAddr && (oldAddr < FIRST_ADDRESS || oldAddr > LAST_ADDRESS)) {
     // If the old address is set, but outside the default range, check
-    // that it no longer response
+    // that it no longer responds
     assertEqual(bus.startWrite(oldAddr), SoftWire::nack);
     bus.stop();
   }
