@@ -163,8 +163,20 @@ test(010_general_call_reset) {
 
   // After a reset, the display should be off
   if (cfg.displayAttached && cmd == GeneralCallCommands::RESET) {
-    assertEqual(bus.startWrite(DISPLAY_I2C_ADDRESS), SoftWire::nack);
+    SoftWire::result_t res = bus.startWrite(DISPLAY_I2C_ADDRESS);
     bus.stop();
+
+    // If the display is still on, wait a bit longer. When the attiny is
+    // reset, the 3V3 regulator is switched off, but it takes a while
+    // for its output capacitor to discharge, so the display controller
+    // might stay on for a while (and since its reset is pulled up to
+    // 3V3, it stays out of reset as well).
+    if (res == SoftWire::ack) {
+      delay(500);
+      res = bus.startWrite(DISPLAY_I2C_ADDRESS);
+      bus.stop();
+    }
+    assertEqual(res, SoftWire::nack);
   }
 }
 
