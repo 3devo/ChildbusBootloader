@@ -701,6 +701,12 @@ void setup() {
   Serial.begin(115200);
 
   bus.begin();
+  // In case we were reset halfway through a transfer, read a dummy byte
+  // and send a nack to make sure any active slave drops off the bus.
+  uint8_t dummy;
+  bus.readThenNack(dummy);
+  bus.stop();
+
   // Check the macros above at runtime, unfortunately these
   // digitalPinTo* macros do not work at compiletime.
   if (&DDR != portModeRegister(digitalPinToPort(bus.getScl()))
