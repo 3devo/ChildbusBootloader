@@ -620,8 +620,7 @@ void runTests() {
   Test::resetAllTests();
 
   // Run all tests to completion
-  while (Test::remaining())
-    Test::run();
+  Test::runUntilDone();
 
   if (Test::getCurrentFailed()) {
     Serial.println("FAILED");
