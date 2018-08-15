@@ -357,12 +357,12 @@ on.
 | 2     | Available flash size
 | 1     | CRC
 
-The following hardware types & revisions are defined:
+The following hardware types are defined:
 
-| Type | Revision | Meaning
-|------|----------|---------------------
-| 0x00 | -        | Reserved for wildcard in `GET_I2C_ADDRESS` command
-| 0x01 | 0x01     | Interface board v1.3
+| Type | Meaning
+|------|----------------------
+| 0x00 | Reserved for wildcard in `GET_I2C_ADDRESS` command
+| 0x01 | Interface board
 
 The compatible hardware revision field indicates the oldest revision
 that this board is compatible with and may not reflect the actual board
@@ -372,6 +372,15 @@ newer board. In practice, this means a newer version only has minor
 hardware optimizations, small improvements or additions that can be
 ignored by older firmware. To obtain the actual hardware version, use
 the `GET_HARDWARE_REVISION` command.
+
+The hardware revision is split into a major and minor version. The upper
+4 bits indicate the major version, while the lower 4 bits indicate the
+minor version. For example, 0x15 means revision 1.5, while 0x2f means
+revision 1.15.
+
+The only exception is that interface board (type 0x01) version 1.3
+should use a compatible hardware version value of 0x01, if compatibility
+with protocol version 1.0 is intended.
 
 The bootloader version value is informative (and should be considered
 board-specific) and its value is not defind by this specification.
