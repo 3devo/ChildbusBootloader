@@ -331,10 +331,20 @@ test(070_get_hardware_info) {
   assertTrue(run_transaction_ok(Commands::GET_HARDWARE_INFO, nullptr, 0, data, sizeof(data)));
 
   assertEqual(data[0], HARDWARE_TYPE);
-  assertEqual(data[1], HARDWARE_REVISION);
+  assertEqual(data[1], HARDWARE_COMPATIBLE_REVISION);
   assertEqual(data[2], BOOTLOADER_VERSION);
   uint16_t flash_size = data[3] << 8 | data[4];
   assertEqual(flash_size, AVAILABLE_FLASH_SIZE);
+}
+
+test(071_get_hardware_revision) {
+  if (PROTOCOL_VERSION < 0x0101)
+    skip();
+
+  uint8_t data[1];
+  assertTrue(run_transaction_ok(Commands::GET_HARDWARE_REVISION, nullptr, 0, data, sizeof(data)));
+
+  assertEqual(data[0], HARDWARE_REVISION);
 }
 
 test(075_get_serial_number) {

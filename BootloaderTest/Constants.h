@@ -53,6 +53,7 @@ struct Commands {
     WRITE_FLASH           = 0x06,
     FINALIZE_FLASH        = 0x07,
     READ_FLASH            = 0x08,
+    GET_HARDWARE_REVISION = 0x09,
     END_OF_COMMANDS
   };
 };
@@ -68,9 +69,10 @@ static const uint8_t LAST_ADDRESS = 15;
 static const uint8_t MAX_MSG_LEN = 32;
 
 // Expected values
-static const uint16_t PROTOCOL_VERSION = 0x0100;
+static const uint16_t PROTOCOL_VERSION = 0x0101;
 static const uint8_t HARDWARE_TYPE = 0x01;
-static const uint8_t HARDWARE_REVISION = 0x01;
+static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x01;
+static const uint8_t HARDWARE_REVISION = 0x14;
 static const uint8_t BOOTLOADER_VERSION = 0x01;
 static const uint16_t AVAILABLE_FLASH_SIZE = 8192-2048-2;
 
