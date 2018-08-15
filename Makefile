@@ -12,7 +12,7 @@
 # To compile, just make sure that avr-gcc and friends are in your path
 # and type "make".
 
-PROTOCOL_VERSION = 0x0100
+PROTOCOL_VERSION = 0x0101
 
 PRG            = bootloader
 CPPSRC         = $(wildcard *.cpp)
