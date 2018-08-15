@@ -31,8 +31,7 @@ CXXFLAGS      += -Os -fpack-struct -fshort-enums
 CXXFLAGS      += -flto -fno-fat-lto-objects
 CXXFLAGS      += -DF_CPU=8000000UL
 CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
-CXXFLAGS      += -D$(BOARD)
-CXXFLAGS      += -DPROTOCOL_VERSION=$(PROTOCOL_VERSION)
+CXXFLAGS      += -DPROTOCOL_VERSION=$(PROTOCOL_VERSION) -DBOARD_TYPE=$(BOARD_TYPE)
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)
@@ -51,7 +50,7 @@ OBJDUMP        = avr-objdump
 SIZE           = avr-size
 
 interface_v1.3:
-	$(MAKE) all PRG=bootloader-iface-v1.3 BOARD=BOARD_IFACE_V1_3
+	$(MAKE) all PRG=bootloader-iface-v1.3 BOARD_TYPE=interfaceboard
 
 all: hex fuses size
 

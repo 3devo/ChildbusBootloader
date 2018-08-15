@@ -25,7 +25,7 @@ struct Pin {
 	uint8_t mask;
 };
 
-#ifdef BOARD_IFACE_V1_3
+#if BOARD_TYPE == interfaceboard
 Pin PIN_3V3_ENABLE = {&PORTA, &DDRA, &PUEA, 1 << PA2};
 Pin PIN_BOOST_ENABLE = {&PORTA, &DDRA, &PUEA, 1 << PA3};
 Pin PIN_DISPLAY_RESET = {&PORTB, &DDRB, &PUEB, 1 << PB0};
