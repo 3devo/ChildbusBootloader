@@ -4,7 +4,7 @@ This protocol allows communicating with the bootloader running on an
 attiny or other small microcontroller, through I²C. Its main purpose is
 to allow writing an application to flash and executing that application.
 
-This document describes protocol version 1.0 (0x0100).
+This document describes protocol version 1.1 (0x0101).
 
 Transactions
 ------------
