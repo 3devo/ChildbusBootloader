@@ -236,6 +236,7 @@ The base protocol defines these commands:
 | 0x06        | `WRITE_FLASH`
 | 0x07        | `FINALIZE_FLASH`
 | 0x08        | `READ_FLASH`
+| 0x09        | `GET_HARDWARE_REVISION`
 | 0x80 - 0xfe | Reserved for application commands
 | 0xff        | Reserved
 
@@ -369,7 +370,8 @@ revision. A board is compatible with another revision, if anything (i.e.
 firmware) that is intended for the older version, will also work for the
 newer board. In practice, this means a newer version only has minor
 hardware optimizations, small improvements or additions that can be
-ignored by older firmware.
+ignored by older firmware. To obtain the actual hardware version, use
+the `GET_HARDWARE_REVISION` command.
 
 The bootloader version value is informative (and should be considered
 board-specific) and its value is not defind by this specification.
@@ -379,6 +381,35 @@ available to write to.
 
 The max message size indicates the largest I²C message that can be sent
 or received (including the checksum, excluding the address byte).
+
+`GET_HARDWARE_REVISION` command
+---------------------------
+This command requests the actual hardware version of the board.
+
+| Bytes | Command field
+|-------|-------------------------------
+| 1     | Cmd: `GET_HARDWARE_REVISION` (0x09)
+| 1     | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
+| 1     | Hardware revision
+| 1     | CRC
+
+The returned hardware revision indicates the actual board version and
+should be changed on every hardware change, even minor changes. Together
+with the compatible hardware revision returned by the
+`GET_HARDWARE_INFO` command, the master can determine whether it
+supports this hardware version.
+
+The hardware revision is split into a major and minor version. The upper
+4 bits indicate the major version, while the lower 4 bits indicate the
+minor version. For example, 0x13 means revision 1.3, while 0x2f means
+revision 1.15.
+
+This command was added in protocol version 1.1.
 
 `GET_SERIAL_NUMBER` command
 ---------------------------
