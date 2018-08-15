@@ -12,6 +12,8 @@
 # To compile, just make sure that avr-gcc and friends are in your path
 # and type "make".
 
+PROTOCOL_VERSION = 0x0100
+
 PRG            = bootloader
 CPPSRC         = $(wildcard *.cpp)
 OBJ            = $(CPPSRC:.cpp=.o)
@@ -30,6 +32,7 @@ CXXFLAGS      += -flto -fno-fat-lto-objects
 CXXFLAGS      += -DF_CPU=8000000UL
 CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
 CXXFLAGS      += -D$(BOARD)
+CXXFLAGS      += -DPROTOCOL_VERSION=$(PROTOCOL_VERSION)
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)

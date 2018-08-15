@@ -140,8 +140,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 
 	switch (cmd) {
 		case Commands::GET_PROTOCOL_VERSION:
-			dataout[0] = 1;
-			dataout[1] = 0;
+			dataout[0] = PROTOCOL_VERSION >> 8;
+			dataout[1] = PROTOCOL_VERSION & 0xFF;
 			return cmd_ok(2);
 
 		case Commands::SET_I2C_ADDRESS:
