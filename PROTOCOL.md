@@ -351,7 +351,7 @@ on.
 | 1     | Status: `COMMAND_OK` (0x00)
 | 1     | Length
 | 1     | Hardware type
-| 1     | Hardware revision
+| 1     | Compatible hardware revision
 | 1     | Bootloader version
 | 2     | Available flash size
 | 1     | CRC
@@ -362,6 +362,14 @@ The following hardware types & revisions are defined:
 |------|----------|---------------------
 | 0x00 | -        | Reserved for wildcard in `GET_I2C_ADDRESS` command
 | 0x01 | 0x01     | Interface board v1.3
+
+The compatible hardware revision field indicates the oldest revision
+that this board is compatible with and may not reflect the actual board
+revision. A board is compatible with another revision, if anything (i.e.
+firmware) that is intended for the older version, will also work for the
+newer board. In practice, this means a newer version only has minor
+hardware optimizations, small improvements or additions that can be
+ignored by older firmware.
 
 The bootloader version value is informative (and should be considered
 board-specific) and its value is not defind by this specification.
