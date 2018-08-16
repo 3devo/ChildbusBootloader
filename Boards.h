@@ -31,7 +31,6 @@ Pin PIN_BOOST_ENABLE = {&PORTA, &DDRA, &PUEA, 1 << PA3};
 Pin PIN_DISPLAY_RESET = {&PORTB, &DDRB, &PUEB, 1 << PB0};
 
 const uint8_t INFO_HW_TYPE = 1;
-const uint8_t INFO_HW_REVISION = 1;
 const uint8_t DISPLAY_CONTROLLER_TYPE = 1;
 #define HAVE_DISPLAY
 #else

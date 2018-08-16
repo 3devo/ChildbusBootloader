@@ -169,7 +169,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
 			dataout[0] = INFO_HW_TYPE;
-			dataout[1] = INFO_HW_REVISION;
+			dataout[1] = HARDWARE_COMPATIBLE_REVISION;
 			dataout[2] = INFO_BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
