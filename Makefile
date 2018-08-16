@@ -11,10 +11,8 @@
 #
 # To compile, just make sure that avr-gcc and friends are in your path
 # and type "make".
-
 PROTOCOL_VERSION = 0x0101
 
-PRG            = bootloader
 CPPSRC         = $(wildcard *.cpp)
 OBJ            = $(CPPSRC:.cpp=.o)
 LINKER_SCRIPT  = linker-script.x
@@ -50,27 +48,34 @@ OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 SIZE           = avr-size
 
+ifdef CURRENT_HW_REVISION
+  CURRENT_HW_REVISION_MAJOR=$(shell echo $$(($(CURRENT_HW_REVISION) / 0x10)))
+  CURRENT_HW_REVISION_MINOR=$(shell echo $$(($(CURRENT_HW_REVISION) % 0x10)))
+
+  FILE_NAME=$(BOARD_TYPE)-$(CURRENT_HW_REVISION_MAJOR).$(CURRENT_HW_REVISION_MINOR)
+endif
+
 interface_v1.3:
-	$(MAKE) all PRG=bootloader-iface-v1.3 BOARD_TYPE=interfaceboard CURRENT_HW_REVISION=0x13 COMPATIBLE_HW_REVISION=0x01
+	$(MAKE) all BOARD_TYPE=interfaceboard CURRENT_HW_REVISION=0x13 COMPATIBLE_HW_REVISION=0x01
 
 all: hex fuses size
 
-hex:  $(PRG).hex
+hex: $(FILE_NAME).hex
 
 fuses:
-	@if $(OBJDUMP) -s -j .fuse 2> /dev/null $(PRG).elf > /dev/null; then \
-		$(OBJDUMP) -s -j .fuse $(PRG).elf; \
+	@if $(OBJDUMP) -s -j .fuse 2> /dev/null $(FILE_NAME).elf > /dev/null; then \
+		$(OBJDUMP) -s -j .fuse $(FILE_NAME).elf; \
 		echo "        ^^     Low"; \
 		echo "          ^^   High"; \
 		echo "            ^^ Extended"; \
 	fi
 
 size:
-	$(SIZE) --format=avr $(PRG).elf
+	$(SIZE) --format=avr $(FILE_NAME).elf
 clean:
 	rm -rf $(OBJ) $(OBJ:.o=.d) *.elf *.hex *.lst *.map
 
-$(PRG).elf: $(OBJ) $(LINKER_SCRIPT)
+$(FILE_NAME).elf: $(OBJ) $(LINKER_SCRIPT)
 	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 %.o: %.cpp
