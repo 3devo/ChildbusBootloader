@@ -44,6 +44,7 @@ struct Commands {
 	static const uint8_t WRITE_FLASH           = 0x06;
 	static const uint8_t FINALIZE_FLASH        = 0x07;
 	static const uint8_t READ_FLASH            = 0x08;
+	static const uint8_t GET_HARDWARE_REVISION = 0x09;
 };
 
 volatile bool bootloaderExit = false;
@@ -177,6 +178,14 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			dataout[3] = size >> 8;
 			dataout[4] = size;
 			return cmd_ok(5);
+		}
+		case Commands::GET_HARDWARE_REVISION:
+		{
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			dataout[0] = HARDWARE_REVISION;
+			return cmd_ok(1);
 		}
 		case Commands::GET_SERIAL_NUMBER:
 		{
