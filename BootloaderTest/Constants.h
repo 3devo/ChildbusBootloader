@@ -73,7 +73,7 @@ static const uint16_t PROTOCOL_VERSION = 0x0101;
 static const uint8_t HARDWARE_TYPE = 0x01;
 static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x01;
 static const uint8_t HARDWARE_REVISION = 0x14;
-static const uint8_t BOOTLOADER_VERSION = 0x01;
+static const uint8_t BOOTLOADER_VERSION = 0x02;
 static const uint16_t AVAILABLE_FLASH_SIZE = 8192-2048-2;
 
 // As returned by POWER_UP_DISPLAY
