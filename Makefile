@@ -19,6 +19,7 @@ LINKER_SCRIPT  = linker-script.x
 MCU            = attiny841
 # Size of the bootloader area. Must be a multiple of the erase size
 BL_SIZE        = 2048
+VERSION_SIZE   = 4
 # Set the flash erase page size for the MCU here.
 ERASE_SIZE     = 64
 
@@ -28,6 +29,7 @@ CXXFLAGS      += -Wall -Wextra
 CXXFLAGS      += -Os -fpack-struct -fshort-enums
 CXXFLAGS      += -flto -fno-fat-lto-objects
 CXXFLAGS      += -DF_CPU=8000000UL
+CXXFLAGS      += -DVERSION_SIZE=$(VERSION_SIZE)
 CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
 CXXFLAGS      += -DPROTOCOL_VERSION=$(PROTOCOL_VERSION) -DBOARD_TYPE=$(BOARD_TYPE)
 CXXFLAGS      += -DHARDWARE_REVISION=$(CURRENT_HW_REVISION) -DHARDWARE_COMPATIBLE_REVISION=$(COMPATIBLE_HW_REVISION)
@@ -37,8 +39,9 @@ LDFLAGS       += -mmcu=$(MCU)
 
 # Use a custom linker script
 LDFLAGS       += -T $(LINKER_SCRIPT)
-# Pass BL_SIZE to the script for positioning
+# Pass sizes to the script for positioning
 LDFLAGS       += -Wl,--defsym=BL_SIZE=$(BL_SIZE)
+LDFLAGS       += -Wl,--defsym=VERSION_SIZE=$(VERSION_SIZE)
 # Pass ERASE_SIZE to the script to verify alignment
 LDFLAGS       += -Wl,--defsym=ERASE_SIZE=$(ERASE_SIZE)
 

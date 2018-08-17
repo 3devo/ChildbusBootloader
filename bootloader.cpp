@@ -47,6 +47,20 @@ struct Commands {
 	static const uint8_t GET_HARDWARE_REVISION = 0x09;
 };
 
+// Put version info into flash, so applications can read this to
+// determine the hardware version. The linker puts this at a fixed
+// position at the end of flash.
+constexpr const uint8_t version_info[] __attribute__((__section__(".version"), __used__)) = {
+	HARDWARE_COMPATIBLE_REVISION,
+	HARDWARE_REVISION,
+	INFO_HW_TYPE,
+	INFO_BL_VERSION,
+};
+
+// Check that the version info size used by the linker (which must be
+// hardcoded...) is correct.
+static_assert(sizeof(version_info) == VERSION_SIZE, "Version section has wrong size?");
+
 volatile bool bootloaderExit = false;
 
 static uint8_t writeBuffer[SPM_ERASESIZE];

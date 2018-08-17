@@ -58,6 +58,7 @@ SECTIONS
    /* Calculate the bootloader start point. "text" here refers to the
     * memory region, not the (input or output) section. */
    BL_START = ORIGIN(text) + LENGTH(text) - BL_SIZE;
+   VERSION_START = ORIGIN(text) + LENGTH(text) - VERSION_SIZE;
 
    /* Put the interrupt vector table at the start as normal. This:
     *  - Properly sets the reset vector to jump to the bootloader
@@ -92,6 +93,10 @@ SECTIONS
     * section declaration will be merged with the declaration from the
     * default script, which will provide the contents. */
    .text BL_START : { }
+
+   .text.version VERSION_START : {
+      *(.version)
+   }
 }
 
 /* Keep the entrypoint at 0x0 (but we can only set it through a symbol,
