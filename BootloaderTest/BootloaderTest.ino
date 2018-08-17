@@ -72,12 +72,12 @@ struct Cfg {
 bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor = 0) {
   assertLessOrEqual(len + 2, MAX_MSG_LEN, "", false);
   assertAck(bus.startWrite(cfg.curAddr),"", false);
-  assertAck(bus.write(cmd), "", false);
+  assertAck(bus.llWrite(cmd), "", false);
   for (uint8_t i = 0; i < len; ++i)
-    assertAck(bus.write(dataout[i]), "", false);
+    assertAck(bus.llWrite(dataout[i]), "", false);
 
   uint8_t crc = Crc().update(cmd).update(dataout, len).get();
-  assertAck(bus.write(crc ^ crc_xor), "", false);
+  assertAck(bus.llWrite(crc ^ crc_xor), "", false);
 
   if (!cfg.repStartAfterWrite)
     bus.stop();
@@ -142,7 +142,7 @@ test(010_general_call_reset) {
   // anyway).
   uint8_t cmd = random(2) ? GeneralCallCommands::RESET : GeneralCallCommands::RESET_ADDRESS;
   assertAck(bus.startWrite(GENERAL_CALL_ADDRESS));
-  assertAck(bus.write(cmd));
+  assertAck(bus.llWrite(cmd));
   bus.stop();
   uint8_t oldAddr = cfg.curAddr;
   cfg.curAddr = cfg.resetAddr;
@@ -722,12 +722,12 @@ void setup() {
 
   // These assume that pullups are disabled, so the PORT register is not
   // touched.
-  bus._setSclLow = [](const SoftWire *) { DDR |= SCL_BIT; };
-  bus._setSclHigh = [](const SoftWire *) { DDR &= ~SCL_BIT; };
-  bus._setSdaLow = [](const SoftWire *) { DDR |= SDA_BIT; };
-  bus._setSdaHigh = [](const SoftWire *) { DDR &= ~SDA_BIT; };
-  bus._readScl = [](const SoftWire *) { return (uint8_t)(PIN & SCL_BIT); };
-  bus._readSda = [](const SoftWire *) { return (uint8_t)(PIN & SDA_BIT); };
+  bus.setSetSclLow([](const SoftWire *) { DDR |= SCL_BIT; });
+  bus.setSetSclHigh([](const SoftWire *) { DDR &= ~SCL_BIT; });
+  bus.setSetSdaLow([](const SoftWire *) { DDR |= SDA_BIT; });
+  bus.setSetSdaHigh([](const SoftWire *) { DDR &= ~SDA_BIT; });
+  bus.setReadScl([](const SoftWire *) { return (uint8_t)(PIN & SCL_BIT); });
+  bus.setReadSda([](const SoftWire *) { return (uint8_t)(PIN & SDA_BIT); });
 
   // Run as fast as possible. With zero delay, the above direct pin
   // access results in about 12us clock period at 16Mhz

@@ -52,12 +52,12 @@ class PrintingSoftWire : private SoftWire {
     using SoftWire::setTimeout_ms;
     using SoftWire::getScl;
     using SoftWire::getSda;
-    using SoftWire::_setSclLow;
-    using SoftWire::_setSclHigh;
-    using SoftWire::_setSdaLow;
-    using SoftWire::_setSdaHigh;
-    using SoftWire::_readSda;
-    using SoftWire::_readScl;
+    using SoftWire::setSetSclLow;
+    using SoftWire::setSetSclHigh;
+    using SoftWire::setSetSdaLow;
+    using SoftWire::setSetSdaHigh;
+    using SoftWire::setReadSda;
+    using SoftWire::setReadScl;
     using SoftWire::setDelay_us;
 
     void printByte(uint8_t b, const char *sep = " ") {
@@ -101,9 +101,9 @@ class PrintingSoftWire : private SoftWire {
       }
     }
 
-    result_t write(uint8_t b) {
+    result_t llWrite(uint8_t b) {
       printByte(b);
-      return SoftWire::write(b);
+      return SoftWire::llWrite(b);
     }
 
     result_t readThenAck(uint8_t& b) {
