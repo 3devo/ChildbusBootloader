@@ -90,7 +90,7 @@ $(FILE_NAME).elf: $(OBJ) $(LINKER_SCRIPT)
 	$(OBJDUMP) -h -S $< > $@
 
 %.hex: %.elf
-	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+	$(OBJCOPY) -j .text -j '.text.*' -j .data -O ihex $< $@
 
 .PHONY: all lst hex clean fuses size
 
