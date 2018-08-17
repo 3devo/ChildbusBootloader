@@ -55,8 +55,13 @@ ifdef CURRENT_HW_REVISION
   FILE_NAME=$(BOARD_TYPE)-$(CURRENT_HW_REVISION_MAJOR).$(CURRENT_HW_REVISION_MINOR)
 endif
 
-interface_v1.3:
+# Make sure that .o files are deleted after building, so we can build for multiple
+# hw revisions without needing an explicit clean in between.
+.INTERMEDIATE: $(OBJ)
+
+default:
 	$(MAKE) all BOARD_TYPE=interfaceboard CURRENT_HW_REVISION=0x13 COMPATIBLE_HW_REVISION=0x01
+	$(MAKE) all BOARD_TYPE=interfaceboard CURRENT_HW_REVISION=0x14 COMPATIBLE_HW_REVISION=0x01
 
 all: hex fuses size
 
