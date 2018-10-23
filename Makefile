@@ -57,7 +57,7 @@ ifdef CURRENT_HW_REVISION
   CURRENT_HW_REVISION_MAJOR=$(shell echo $$(($(CURRENT_HW_REVISION) / 0x10)))
   CURRENT_HW_REVISION_MINOR=$(shell echo $$(($(CURRENT_HW_REVISION) % 0x10)))
 
-  FILE_NAME=$(BOARD_TYPE)-$(CURRENT_HW_REVISION_MAJOR).$(CURRENT_HW_REVISION_MINOR)
+  FILE_NAME=attinybootloader-v$(BL_VERSION)-$(BOARD_TYPE)-$(CURRENT_HW_REVISION_MAJOR).$(CURRENT_HW_REVISION_MINOR)
 endif
 
 # Make sure that .o files are deleted after building, so we can build for multiple
