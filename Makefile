@@ -20,6 +20,7 @@ MCU            = attiny841
 # Size of the bootloader area. Must be a multiple of the erase size
 BL_SIZE        = 2048
 VERSION_SIZE   = 4
+BL_VERSION     = 2
 # Set the flash erase page size for the MCU here.
 ERASE_SIZE     = 64
 
@@ -33,6 +34,7 @@ CXXFLAGS      += -DVERSION_SIZE=$(VERSION_SIZE)
 CXXFLAGS      += -DSPM_ERASESIZE=$(ERASE_SIZE)
 CXXFLAGS      += -DPROTOCOL_VERSION=$(PROTOCOL_VERSION) -DBOARD_TYPE=$(BOARD_TYPE)
 CXXFLAGS      += -DHARDWARE_REVISION=$(CURRENT_HW_REVISION) -DHARDWARE_COMPATIBLE_REVISION=$(COMPATIBLE_HW_REVISION)
+CXXFLAGS      += -DBL_VERSION=$(BL_VERSION)
 
 LDFLAGS        =
 LDFLAGS       += -mmcu=$(MCU)

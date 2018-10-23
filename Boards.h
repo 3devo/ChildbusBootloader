@@ -37,8 +37,6 @@ const uint8_t DISPLAY_CONTROLLER_TYPE = 1;
 #error "No board type defined"
 #endif
 
-const uint8_t INFO_BL_VERSION = 2;
-
 // By default, listen to addresses 8-15
 const uint8_t INITIAL_I2C_ADDRESS = 0x08;
 const uint8_t INITIAL_I2C_MASK = 0x07;

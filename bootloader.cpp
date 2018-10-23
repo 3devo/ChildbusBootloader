@@ -54,7 +54,7 @@ constexpr const uint8_t version_info[] __attribute__((__section__(".version"), _
 	HARDWARE_COMPATIBLE_REVISION,
 	HARDWARE_REVISION,
 	INFO_HW_TYPE,
-	INFO_BL_VERSION,
+	BL_VERSION,
 };
 
 // Check that the version info size used by the linker (which must be
@@ -185,7 +185,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 
 			dataout[0] = INFO_HW_TYPE;
 			dataout[1] = HARDWARE_COMPATIBLE_REVISION;
-			dataout[2] = INFO_BL_VERSION;
+			dataout[2] = BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
 			uint16_t size = SelfProgram::applicationSize;
