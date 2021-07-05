@@ -69,7 +69,7 @@ static const uint8_t LAST_ADDRESS = 15;
 static const uint8_t MAX_MSG_LEN = 32;
 
 // Expected values
-static const uint16_t PROTOCOL_VERSION = 0x0101;
+static const uint16_t PROTOCOL_VERSION = 0x0200;
 static const uint8_t HARDWARE_TYPE = 0x01;
 static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x01;
 static const uint8_t HARDWARE_REVISION = 0x14;
