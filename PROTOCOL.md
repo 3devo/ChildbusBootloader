@@ -7,7 +7,7 @@ number of child boards connected to a shared bus. This protocol then
 facilitates the mainboard uploading an application to each child bus and
 then executing that application.
 
-This document describes protocol version 2.0 (0x0200).
+This document describes protocol version 2.1 (0x0201).
 
 History, compatibility and intended use
 ---------------------------------------
@@ -876,6 +876,8 @@ as if a value of 0 was returned.
 | 1     | Number of children
 | 1/2   | CRC
 
+This command was added in protocol version 2.1.
+
 `SET_CHILD_SELECT` command (optional)
 -------------------------------------
 This command sets the status of a downstream child select pin.
@@ -912,6 +914,8 @@ will be returned.
 | 1     | Length
 | 1/2   | CRC
 
+This command was added in protocol version 2.1.
+
 `GET_MAX_PACKET_LENGTH` command (optional)
 ------------------------------------------
 This command returns the maximum length of a request or reply packet
@@ -943,9 +947,32 @@ even without using this command).
 | 2     | Max packet length
 | 1/2   | CRC
 
+This command was added in protocol version 2.1.
+
+Changelog
+=========
+ - Version 1.0
+   - Initial version.
+ - Version 1.1
+   - Redefined the hardware revision field to be the compatible
+     hardware revision field instead and generalize its meaning to a
+     major/minor format.
+   - Added `GET_HARDWARE_REVISION` command.
+ - Version 2.0
+   - Extend maximum clock stretch time to 80ms. This needs a major
+     version bump, since older masters might timeout at the previous
+     value of 35ms.
+ - Version 2.1
+   - Add support for RS485.
+   - Add support for child select pins (added `GET_NUM_CHILDREN` and
+     `SET_CHILD_SELECT` commands and support responding only when child
+     select pin is asserted).
+   - Renamed to Childbus protocol.
+   - Add `GET_MAX_PACKET_LENGTH` command.
+
 
 License
--------
+=======
 Permission is hereby granted, free of charge, to anyone
 obtaining a copy of this document, to do whatever they want with them without
 any restriction, including, but not limited to, copying, modification and

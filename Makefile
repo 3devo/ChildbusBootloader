@@ -11,7 +11,7 @@
 #
 # To compile, just make sure that avr-gcc and friends are in your path
 # and type "make".
-PROTOCOL_VERSION = 0x0200
+PROTOCOL_VERSION = 0x0201
 
 CPPSRC         = $(wildcard *.cpp)
 CPPSRC        += $(ARCH)/SelfProgram.cpp $(ARCH)/uart.cpp $(ARCH)/Reset.cpp
