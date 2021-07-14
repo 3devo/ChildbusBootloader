@@ -315,7 +315,9 @@ extern "C" {
 		BusInit(INITIAL_ADDRESS, INITIAL_BITS);
 
 		while (!bootloaderExit) {
+			#if !defined(BUS_USE_INTERRUPTS)
 			BusUpdate();
+			#endif // defined(BUS_USE_INTERRUPTS)
 		}
 
 		BusDeinit();
