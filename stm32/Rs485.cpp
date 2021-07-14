@@ -65,6 +65,8 @@
 	#define RST_USART1 0
 	#define rcc_periph_reset_pulse(instance) LL_APB2_GRP1_ForceReset(LL_APB2_GRP1_PERIPH_USART1)
 	#define usart1_isr USART1_IRQHandler
+	#define nvic_enable_irq NVIC_EnableIRQ
+	#define NVIC_USART1_IRQ USART1_IRQn
 #endif // defined(USE_LL_HAL)
 
 static uint8_t initAddress = 0;
@@ -115,7 +117,9 @@ void BusInit(uint8_t initialAddress, uint8_t initialBits) {
 	usart_enable(USART1);
 
 	#if defined(BUS_USE_INTERRUPTS)
-	USART_CR1(USART1) |= USART_CR1_TXEIE | USART_CR1_RXNEIE | USART_CR1_RTOIE;
+	// Call update once to set up the right interrupt enables
+	BusUpdate();
+	nvic_enable_irq(NVIC_USART1_IRQ);
 	#endif
 }
 
@@ -250,6 +254,13 @@ void BusUpdate() {
 		} else {
 			busState = StateIdle;
 		}
+	}
+	if (busState == StateWrite) {
+		USART_CR1(USART1) |= USART_CR1_TXEIE;
+		USART_CR1(USART1) &= ~(USART_CR1_RXNEIE | USART_CR1_RTOIE);
+	} else {
+		USART_CR1(USART1) &= ~USART_CR1_TXEIE;
+		USART_CR1(USART1) |= USART_CR1_RXNEIE | USART_CR1_RTOIE;
 	}
 	#undef printf
 }
