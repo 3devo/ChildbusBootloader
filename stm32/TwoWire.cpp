@@ -21,6 +21,10 @@
 #include <stdio.h>
 #include "../Bus.h"
 
+#if defined(BUS_USE_INTERRUPTS)
+#error "Interrupts not supported"
+#endif
+
 static uint8_t initAddress = 0;
 static uint8_t initBits = 0;
 

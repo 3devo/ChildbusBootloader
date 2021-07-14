@@ -37,7 +37,7 @@ void BusInit(uint8_t initialAddress, uint8_t initialBits) {
 	// Enable Data Interrupt, Address/Stop Interrupt, Two-Wire Interface, Stop Interrpt
 	TWSCRA = _BV(TWEN) | _BV(TWSIE);
 
-	#if defined(TWOWIRE_USE_INTERRUPTS)
+	#if defined(BUS_USE_INTERRUPTS)
 		TWSCRA |= _BV(TWDIE) | _BV(TWASIE) ;
 	#endif
 }
@@ -151,12 +151,12 @@ void BusUpdate() {
 	}
 }
 
-#if defined(TWOWIRE_USE_INTERRUPTS)
+#if defined(BUS_USE_INTERRUPTS)
 	// The two wire interrupt service routine
 	ISR(TWI_SLAVE_vect)
 	{
 		BusUpdate();
 	}
-#endif // defined(TWOWIRE_USE_INTERRUPTS)
+#endif // defined(BUS_USE_INTERRUPTS)
 
 #endif
