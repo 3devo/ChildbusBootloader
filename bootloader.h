@@ -24,6 +24,8 @@ extern "C" {
 #endif
 
 void runBootloader();
+void ClockInit();
+void ClockDeinit();
 
 #ifdef __cplusplus
 }
