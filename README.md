@@ -53,6 +53,11 @@ and that it relocates the interrupt vector table if it needs interrupts.
 The bootloader needs 4k of flash currently (in reality just over 2k, but
 rounded up to full 2k erase pages).
 
+To upload the bootloader using openocd and an stlink programmer, you can
+use something like this:
+
+    openocd -f interface/stlink.cfg -f target/stm32g0x.cfg -c 'program bootloader-v3-gphopper-1.0.elf verify reset exit'
+
 License
 -------
 The bootloader is based on the bootloader written by Erin Tomson for the
