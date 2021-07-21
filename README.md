@@ -14,6 +14,15 @@ controllers.
    flash erase and write cycle when the data is identical).
  - The master tells the child to start the application.
 
+Dependencies
+------------
+Required packages on Debian/Ubuntu:
+
+  sudo apt install build-essential gcc-avr avr-libc gcc-arm-none-eabi
+
+Compiling
+---------
+
 Attiny support
 --------------
 Since the attinies have no native bootloader support (the reset vector
