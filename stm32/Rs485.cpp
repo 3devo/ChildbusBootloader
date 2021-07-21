@@ -88,18 +88,6 @@ void BusInit(uint8_t initialAddress, uint8_t initialBits) {
 	/* Setup clocks & GPIO for USART */
 	rcc_periph_clock_enable(RCC_USART1);
 	rcc_periph_clock_enable(RCC_GPIOA);
-	#if defined(USE_LL_HAL)
-	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_9, LL_GPIO_MODE_ALTERNATE);
-	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_10, LL_GPIO_MODE_ALTERNATE);
-	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_12, LL_GPIO_MODE_ALTERNATE);
-	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_9, LL_GPIO_AF_1);
-	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_10, LL_GPIO_AF_1);
-	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_12, LL_GPIO_AF_1);
-	#else
-	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10 | GPIO12);
-	// RX & TX & RTS/DE
-	gpio_set_af(GPIOA, GPIO_AF1, GPIO9 | GPIO10 | GPIO12);
-	#endif
 
 	/* Setup USART parameters. */
 	usart_set_baudrate(USART1, BAUD_RATE);
@@ -115,6 +103,19 @@ void BusInit(uint8_t initialAddress, uint8_t initialBits) {
 
 	/* Finally enable the USART. */
 	usart_enable(USART1);
+
+	// RX & TX & RTS/DE
+	#if defined(USE_LL_HAL)
+	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_9, LL_GPIO_AF_1);
+	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_10, LL_GPIO_AF_1);
+	LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_12, LL_GPIO_AF_1);
+	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_9, LL_GPIO_MODE_ALTERNATE);
+	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_10, LL_GPIO_MODE_ALTERNATE);
+	LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_12, LL_GPIO_MODE_ALTERNATE);
+	#else
+	gpio_set_af(GPIOA, GPIO_AF1, GPIO9 | GPIO10 | GPIO12);
+	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10 | GPIO12);
+	#endif
 
 	#if defined(BUS_USE_INTERRUPTS)
 	// Call update once to set up the right interrupt enables
