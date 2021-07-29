@@ -509,6 +509,7 @@ The base protocol defines these commands:
 | 0x0a        | `GET_NUM_CHILDREN`
 | 0x0b        | `SET_CHILD_SELECT`
 | 0x0c        | `GET_MAX_PACKET_LENGTH`
+| 0x0d        | `GET_EXTRA_INFO`
 | 0x80 - 0xfe | Reserved for application commands
 | 0xff        | Reserved
 
@@ -950,6 +951,56 @@ even without using this command).
 
 This command was added in protocol version 2.1.
 
+`GET_EXTRA_INFO` command
+---------------------------
+This command requests additional information about the board, typically
+about the hardware. It can be used to supply more detailed information
+than just the board version returned by `GET_HARDWARE_REVISION`, for
+example about attached hardware, or about different variants of the same
+board with different component values.
+
+The meaning of the bytes depends on the board type, and might become
+dependent on hardware revision, protocol version and/or bootloader
+revision in the future.
+
+For compatibility with future changes, the master should ignore any
+bytes it did not expect, and provide an error when a byte that it does
+expect has an unexpected value.
+
+When changes to the meaning of these bytes (changing byte values, adding
+byte values, adding new bytes) would cause an older master to misbehave
+(stopping with an error is ok), ether the compatible hardware revision
+or the major protocol error must be bumped to force the master to error
+out instead.
+
+The maximum number of reply bytes is 16. A master should always be
+prepared to handle up to 16 bytes, even when it expects a smaller reply
+based on the board type, to ensure it will stay working when additional
+bytes are added later.
+
+This command is optional, if a board has no additional info to return,
+it can return `COMMAND_NOT_SUPPORTED` instaed.
+
+For the interface board (hardware type 0x01), the returned bytes are as
+follows:
+
+| Bytes | Command field
+|-------|-------------------------------
+| 1     | Display type
+
+The display type values are as follows:
+
+| Value | Display type meaning
+|-------|-------------------------------
+| 0     | Reserved
+| 1     | Reserved for original display module on interfaceboard <= 1.2
+| 2     | Wisechip UG-2864ASWPG01, display used on interfaceboard >= 1.3
+| 3     | Electronic Assembly EA OLEDM128-6LWA, alternative display used on interfaceboard >= 1.5
+
+For the hopper board (hardware type 0x02), no extra info is defined.
+
+This command was added in protocol version 2.1.
+
 Changelog
 =========
  - Version 1.0
@@ -971,6 +1022,7 @@ Changelog
    - Renamed to Childbus protocol.
    - Add `GET_MAX_PACKET_LENGTH` command.
    - Add hopper board hardware type.
+   - Add `GET_EXTRA_INFO` command.
 
 
 License
