@@ -643,6 +643,7 @@ The following hardware types are defined:
 |------|----------------------
 | 0x00 | Reserved for wildcard in `GET_I2C_ADDRESS` command
 | 0x01 | Interface board
+| 0x02 | Granulate processor hopper board
 
 The compatible hardware revision field indicates the oldest revision
 that this board is compatible with and may not reflect the actual board
@@ -969,6 +970,7 @@ Changelog
      select pin is asserted).
    - Renamed to Childbus protocol.
    - Add `GET_MAX_PACKET_LENGTH` command.
+   - Add hopper board hardware type.
 
 
 License
