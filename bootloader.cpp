@@ -50,6 +50,7 @@ struct Commands {
 	static const uint8_t GET_HARDWARE_REVISION = 0x09;
 	static const uint8_t GET_NUM_CHILDREN      = 0x0a;
 	static const uint8_t SET_CHILD_SELECT      = 0x0b;
+	static const uint8_t GET_EXTRA_INFO        = 0x0d;
 };
 
 // Put version info into flash, so applications can read this to
@@ -61,6 +62,8 @@ constexpr const uint8_t version_info[] __attribute__((__section__(".version"), _
 	INFO_HW_TYPE,
 	BL_VERSION,
 };
+
+constexpr const uint8_t MAX_EXTRA_INFO = 16;
 
 // Check that the version info size used by the linker (which must be
 // hardcoded...) is correct.
@@ -311,6 +314,23 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			return cmd_ok(0);
 		}
 		#endif // defined(USE_CHILD_SELECT)
+		#if defined(EXTRA_INFO)
+		case Commands::GET_EXTRA_INFO:
+		{
+			static constexpr const uint8_t info[] = {EXTRA_INFO};
+
+			if (len != 0)
+				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			static_assert(sizeof(info) <= MAX_EXTRA_INFO, "More EXTRA_INFO than protocol allows");
+
+			if (sizeof(info) > maxLen)
+				compiletime_check_failed();
+
+			memcpy(dataout, info, sizeof(info));
+			return cmd_ok(sizeof(info));
+		}
+		#endif // defined(EXTRA_INFO)
 
 		default:
 			return cmd_result(Status::COMMAND_NOT_SUPPORTED);
