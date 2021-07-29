@@ -74,6 +74,13 @@ volatile bool bootloaderExit = false;
 static uint8_t writeBuffer[FLASH_ERASE_SIZE];
 static uint16_t nextWriteAddress = 0;
 
+// Helper function that is declared but not defined, to allow
+// semi-static assertions (where input to a check is not really const,
+// but can be derived by the optimizer, so if the check passes, the call
+// to this function is optimized away, and if not, produces a linker
+// error).
+void compiletime_check_failed();
+
 static bool equalToFlash(uint16_t address, uint16_t len) {
 	uint16_t offset = 0;
 	while (len > 0) {
@@ -156,7 +163,7 @@ void displayOn() {
 
 cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *dataout, uint8_t maxLen) {
 	if (maxLen < 5)
-		return cmd_result(Status::NO_REPLY);
+		compiletime_check_failed();
 
 	switch (cmd) {
 		#ifdef HAVE_DISPLAY
@@ -201,7 +208,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			static const uint8_t PROGMEM serial_offset[] = {0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x15, 0x16, 0x17};
 
 			if (maxLen < sizeof(serial_offset))
-				return cmd_result(Status::NO_REPLY);
+				compiletime_check_failed();
 
 			for (uint8_t i = 0; i < sizeof(serial_offset); ++i)
 				dataout[i] = boot_signature_byte_get(pgm_read_byte(&serial_offset[i]));
@@ -209,7 +216,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			#elif defined(STM32)
 			const size_t id_size = 12;
 			if (maxLen < id_size)
-				return cmd_result(Status::NO_REPLY);
+				compiletime_check_failed();
 
 			// This access the id bytes directly rather than
 			// using the desig_get_unique_id libopencm3
