@@ -93,7 +93,6 @@ static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x01;
 static const uint8_t HARDWARE_REVISION = 0x14;
 static const uint16_t AVAILABLE_FLASH_SIZE = 8192-2048-2;
 static const bool SUPPORTS_DISPLAY = true;
-static const bool SUPPORTS_GET_MAX_PACKET_LENGTH = false;
 static const uint16_t MAX_MSG_LEN = 32;
 static const uint8_t NUM_CHILDREN = 0;
 #elif defined(TEST_SUBJECT_STM32)
@@ -102,7 +101,6 @@ static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x10;
 static const uint8_t HARDWARE_REVISION = 0x10;
 static const uint16_t AVAILABLE_FLASH_SIZE = 65536-4096;
 static const bool SUPPORTS_DISPLAY = false;
-static const bool SUPPORTS_GET_MAX_PACKET_LENGTH = true;
 static const uint16_t MAX_MSG_LEN = 255;
 static const uint8_t NUM_CHILDREN = 1;
 #endif
