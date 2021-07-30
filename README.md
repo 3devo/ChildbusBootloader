@@ -38,6 +38,11 @@ robust.
 
 The bootloader needs about 2k of flash.
 
+To upload the bootloader using avrdude and an usbasp programmer, you can
+use something like this:
+
+    avrdude -p attiny841 -c usbasp -U flash:w:bootloader-v3-interfaceboard-1.4-old-adelco-display.hex
+
 STM32 support
 -------------
 This currently supports the STM32G030, but should not be too hard to
