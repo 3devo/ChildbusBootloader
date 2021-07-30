@@ -65,6 +65,7 @@ struct Commands {
     GET_NUM_CHILDREN      = 0x0a,
     SET_CHILD_SELECT      = 0x0b,
     GET_MAX_PACKET_LENGTH = 0x0c,
+    GET_EXTRA_INFO        = 0x0d,
     END_OF_COMMANDS
   };
 };
@@ -84,6 +85,7 @@ struct GeneralCallCommands {
 static const uint8_t GENERAL_CALL_ADDRESS = 0;
 static const uint8_t FIRST_ADDRESS = 8;
 static const uint8_t LAST_ADDRESS = 15;
+static const uint8_t MAX_EXTRA_INFO = 16;
 
 // Expected values
 static const uint16_t PROTOCOL_VERSION = 0x0201;
@@ -95,6 +97,7 @@ static const uint16_t AVAILABLE_FLASH_SIZE = 8192-2048-2;
 static const bool SUPPORTS_DISPLAY = true;
 static const uint16_t MAX_MSG_LEN = 32;
 static const uint8_t NUM_CHILDREN = 0;
+static constexpr const uint8_t EXTRA_INFO[] = {0x02};
 #elif defined(TEST_SUBJECT_STM32)
 static const uint8_t HARDWARE_TYPE = 0x02;
 static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x10;
@@ -103,6 +106,7 @@ static const uint16_t AVAILABLE_FLASH_SIZE = 65536-4096;
 static const bool SUPPORTS_DISPLAY = false;
 static const uint16_t MAX_MSG_LEN = 255;
 static const uint8_t NUM_CHILDREN = 1;
+static const uint8_t EXTRA_INFO[] = {};
 #endif
 static const uint8_t BOOTLOADER_VERSION = 0x03;
 

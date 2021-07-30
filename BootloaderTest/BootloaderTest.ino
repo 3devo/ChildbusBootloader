@@ -687,6 +687,24 @@ test(071_get_hardware_revision) {
   assertEqual(data[0], HARDWARE_REVISION);
 }
 
+test(072_get_extra_info) {
+  if (PROTOCOL_VERSION < 0x0201)
+    skip();
+
+  uint8_t status, len;
+  uint8_t data[MAX_EXTRA_INFO];
+
+  assertTrue(run_transaction(Commands::GET_EXTRA_INFO, nullptr, 0, &status, data, READ_UP_TO(sizeof(data)), READ_EXACTLY(0), &len));
+
+  if (sizeof(EXTRA_INFO) == 0) {
+    assertEqual(status, Status::COMMAND_NOT_SUPPORTED);
+  } else {
+    assertEqual(status, Status::COMMAND_OK);
+    assertEqual(len, sizeof(EXTRA_INFO));
+    assertEqual(memcmp(data, EXTRA_INFO, len), 0);
+  }
+}
+
 test(075_get_serial_number) {
   #if defined(TEST_SUBJECT_ATTINY)
     uint8_t data[9];
