@@ -845,7 +845,7 @@ return an inconsistent state.
 
 | Bytes | Command field
 |-------|-------------------------------
-| 1     | Cmd: `READ_FLASH` (0x07)
+| 1     | Cmd: `READ_FLASH` (0x08)
 | 2     | Address
 | 1     | Length
 | 1/2   | CRC
