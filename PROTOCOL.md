@@ -981,6 +981,18 @@ bytes are added later.
 This command is optional, if a board has no additional info to return,
 it can return `COMMAND_NOT_SUPPORTED` instaed.
 
+| Bytes | Command field
+|-------|-------------------------------
+| 1     | Cmd: `GET_EXTRA_INFO` (0x0d)
+| 1/2   | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
+| 1-16  | Extra info
+| 1/2   | CRC
+
 For the interface board (hardware type 0x01), the returned bytes are as
 follows:
 
