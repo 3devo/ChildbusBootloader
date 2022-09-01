@@ -1,3 +1,8 @@
+Version 3.1
+===========
+- Support interfaceboard v1.5 and v1.6.
+- Support hopperboard v2.0 and 2.1.
+
 Version 3
 =========
  - Support protocol version 2.1.
