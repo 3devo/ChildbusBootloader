@@ -168,6 +168,10 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 	if (maxLen < 5)
 		compiletime_check_failed();
 
+	// Preloading these bytes into a variable allows gcc to generate
+	// slightly smaller code...
+	uint8_t datain0 = datain[0], datain1 = datain[1], datain2 = datain[2];
+
 	switch (cmd) {
 		#ifdef HAVE_DISPLAY
 		case Commands::POWER_UP_DISPLAY:
@@ -253,7 +257,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len < 2)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint16_t address = datain[0] << 8 | datain[1];
+			uint16_t address = datain0 << 8 | datain1;
 			return handleWriteFlash(address, datain + 2, len - 2, dataout);
 		}
 		case Commands::FINALIZE_FLASH:
@@ -277,8 +281,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len != 3)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint16_t address = datain[0] << 8 | datain[1];
-			uint8_t len = datain[2];
+			uint16_t address = datain0 << 8 | datain1;
+			uint8_t len = datain2;
 
 			if (len > maxLen)
 				return cmd_result(Status::INVALID_ARGUMENTS);
@@ -300,8 +304,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len != 2)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			uint8_t index = datain[0];
-			uint8_t state = datain[1];
+			uint8_t index = datain0;
+			uint8_t state = datain1;
 
 			if (index >= NUM_CHILDREN || state > 1)
 				return cmd_result(Status::INVALID_ARGUMENTS);
