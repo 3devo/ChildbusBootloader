@@ -25,13 +25,7 @@
 #error "Interrupts not supported"
 #endif
 
-static uint8_t initAddress = 0;
-static uint8_t initBits = 0;
-
-void BusInit(uint8_t initialAddress, uint8_t initialBits) {
-	initAddress = initialAddress;
-	initBits = initialBits;
-
+void BusInit() {
 	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_I2C1);
 
@@ -81,9 +75,9 @@ void BusResetDeviceAddress() {
 	I2C_CR1(I2C1) |= I2C_CR1_GCEN;
 
 	// Enable masked address
-	uint8_t oa2msk = (7 - initBits);
+	uint8_t oa2msk = (7 - INITIAL_BITS);
 	I2C_OAR2(I2C1) &= ~I2C_OAR2_OA2EN;
-	I2C_OAR2(I2C1) = I2C_OAR2_OA2EN | (oa2msk << 8) | (initAddress << 1);
+	I2C_OAR2(I2C1) = I2C_OAR2_OA2EN | (oa2msk << 8) | (INITIAL_ADDRESS << 1);
 }
 
 static uint8_t twiBuffer[MAX_PACKET_LENGTH];

@@ -69,20 +69,13 @@
 	#define NVIC_USART1_IRQ USART1_IRQn
 #endif // defined(USE_LL_HAL)
 
-static uint8_t initAddress = 0;
-static uint8_t initMask = 0;
 static uint8_t configuredAddress = 0;
 
 static const uint32_t BAUD_RATE = 1000000;
 static const uint32_t MAX_INTER_FRAME = 150; // us
 static const uint32_t INTER_FRAME_BITS = (MAX_INTER_FRAME * BAUD_RATE + 1e6 - 1) / 1e6;
 
-void BusInit(uint8_t initialAddress, uint8_t initialBits) {
-	initAddress = initialAddress;
-	// Create a mask with initialBits ones (address bits to match)
-	// followed by zeroes (address bits to ignore).
-	initMask = ~(0x7f >> initialBits);
-
+void BusInit() {
 	BusResetDeviceAddress();
 
 	/* Setup clocks & GPIO for USART */
@@ -175,7 +168,11 @@ static bool matchAddress(uint8_t address) {
 		return true;
 	if (configuredAddress)
 		return address == configuredAddress;
-	return (address & initMask) == initAddress;
+
+	// Create a mask with INITIAL_BITS ones (address bits to match)
+	// followed by zeroes (address bits to ignore).
+	const uint8_t initMask = ~(0x7f >> INITIAL_BITS);
+	return (address & initMask) == INITIAL_ADDRESS;
 }
 
 void BusUpdate() {

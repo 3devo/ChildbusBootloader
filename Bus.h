@@ -24,7 +24,7 @@
 static_assert(MAX_PACKET_LENGTH >= 32, "Protocol requires at least 32-byte packets");
 
 void BusUpdate();
-void BusInit(uint8_t initialAddress, uint8_t initialBits = 7);
+void BusInit();
 void BusDeinit();
 void BusSetDeviceAddress(uint8_t address);
 void BusResetDeviceAddress();

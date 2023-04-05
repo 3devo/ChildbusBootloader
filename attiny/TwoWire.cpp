@@ -22,15 +22,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static uint8_t initAddress = 0;
-static uint8_t initMask = 0;
-
-void BusInit(uint8_t initialAddress, uint8_t initialBits) {
-	initAddress = initialAddress;
-	// Create a mask with initialBits zeroes (address bits to match)
-	// followed by ones (address bits to ignore).
-	initMask = (0x7f >> initialBits);
-
+void BusInit() {
 	BusResetDeviceAddress();
 	TWSCRB = _BV(TWHNM);
 
@@ -55,7 +47,10 @@ void BusSetDeviceAddress(uint8_t address) {
 void BusResetDeviceAddress() {
 	// Set address and mask to listen for a range of addresses, and
 	// enable general call (address 0) recognition by setting TWSA0.
-	TWSA = (initAddress << 1) | 1;
+	// The mask has INITIAL_BITS zeroes (address bits to match)
+	// followed by ones (address bits to ignore).
+	const uint8_t initMask = (0x7f >> INITIAL_BITS);
+	TWSA = (INITIAL_ADDRESS << 1) | 1;
 	TWSAM = (initMask << 1);
 }
 

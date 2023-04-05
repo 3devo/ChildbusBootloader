@@ -340,7 +340,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 extern "C" {
 	void runBootloader() {
 		ClockInit();
-		BusInit(INITIAL_ADDRESS, INITIAL_BITS);
+		BusInit();
 
 		while (!bootloaderExit) {
 			#if !defined(BUS_USE_INTERRUPTS)
