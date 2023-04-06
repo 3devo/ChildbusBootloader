@@ -38,6 +38,14 @@
 #define SIGRD RSIG
 #endif
 
+// On non-AVR architectures, pgm_read_* is not needed (constants in
+// flash can be read directly)
+#if !defined(PROGMEM)
+	#define pgm_read_byte(addr) (*(const uint8_t *)(addr))
+	#define pgm_read_word(addr) (*(const uint16_t *)(addr))
+	#define pgm_read_dword(addr) (*(const uint32_t *)(addr))
+#endif
+
 struct Commands {
 	// See also ProtocolCommands in BaseProtocol.h
 	static const uint8_t POWER_UP_DISPLAY      = 0x02;
@@ -75,6 +83,38 @@ static uint16_t nextWriteAddress = 0;
 // current value (implicit zeroes) and force actually reading the value
 // at runtime.
 constexpr const uint8_t volatile BOARD_INFO[BOARD_INFO_SIZE] __attribute__((__section__(".board_info"))) = {};
+
+// This defines the expected board info structure. Only a couple of fields are
+// used (for getting values for older commands supported for compatibility),
+// but for simplicity this just defines the entire struct.
+struct BoardInfoV2 {
+    uint32_t signature;
+    uint8_t block_version_minor;
+    uint8_t block_version_major;
+    uint16_t design_files_date;
+    uint16_t board_assembly_date;
+    uint16_t board_flash_date;
+    uint32_t design_files_vcs_hash;
+    char batch_code[16];
+    uint8_t reserved;
+    uint8_t manufacturer_id;
+    uint16_t board_number;
+    uint32_t component_variations;
+    uint8_t current_board_version;
+    uint8_t compatible_board_version;
+    uint8_t rfu[20];
+    uint16_t crc;
+};
+static_assert(sizeof(BoardInfoV2) == BOARD_INFO_SIZE, "Unexpected board info size");
+
+// These are loaded from the board info at runtime and used by the
+// legacy information retrieval commands for older implementations.
+static uint8_t compatible_board_version;
+static uint8_t current_board_version;
+#if defined(BOARD_TYPE_interfaceboard)
+	static uint8_t extra_info[] = {0};
+#endif
+
 
 // Helper function that is declared but not defined, to allow
 // semi-static assertions (where input to a check is not really const,
@@ -185,7 +225,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
 			dataout[0] = INFO_HW_TYPE;
-			dataout[1] = HARDWARE_COMPATIBLE_REVISION;
+			dataout[1] = compatible_board_version;
 			dataout[2] = BL_VERSION;
 			// Available flash size is up to startApplication.
 			// Convert from words to bytes.
@@ -199,7 +239,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			dataout[0] = HARDWARE_REVISION;
+			dataout[0] = current_board_version;
 			return cmd_ok(1);
 		}
 		case Commands::GET_SERIAL_NUMBER:
@@ -328,21 +368,19 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			return cmd_ok(0);
 		}
 		#endif // defined(USE_CHILD_SELECT)
-		#if defined(EXTRA_INFO)
+		#if defined(BOARD_TYPE_interfaceboard)
 		case Commands::GET_EXTRA_INFO:
 		{
-			static constexpr const uint8_t info[] = {EXTRA_INFO};
-
 			if (len != 0)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			static_assert(sizeof(info) <= MAX_EXTRA_INFO, "More EXTRA_INFO than protocol allows");
+			static_assert(sizeof(extra_info) <= MAX_EXTRA_INFO, "More EXTRA_INFO than protocol allows");
 
-			if (sizeof(info) > maxLen)
+			if (sizeof(extra_info) > maxLen)
 				compiletime_check_failed();
 
-			memcpy(dataout, info, sizeof(info));
-			return cmd_ok(sizeof(info));
+			memcpy(dataout, extra_info, sizeof(extra_info));
+			return cmd_ok(sizeof(extra_info));
 		}
 		#endif // defined(EXTRA_INFO)
 
@@ -355,6 +393,33 @@ extern "C" {
 	void runBootloader() {
 		ClockInit();
 		BusInit();
+
+		auto board_info = reinterpret_cast<const volatile BoardInfoV2*>(&BOARD_INFO);
+		uint32_t signature = pgm_read_dword(&board_info->signature);
+		uint8_t block_version = pgm_read_word(&board_info->block_version_major);
+		if (signature == BOARD_INFO_SIGNATURE && block_version == BOARD_INFO_MAJOR_VERSION) {
+			current_board_version = pgm_read_byte(&board_info->current_board_version);
+			compatible_board_version = pgm_read_byte(&board_info->compatible_board_version);
+			#if defined(BOARD_TYPE_interfaceboard)
+			// This loads a byte instead of the full dword,
+			// since we only need the LSB (and this produces
+			// smaller code)
+			extra_info[0] = pgm_read_byte(&board_info->component_variations) & 0xf;
+			#endif
+		} else {
+			// If no valid board info is found, these will
+			// cause the mainboard to refuse operation
+			// (since there is no way to print a meaningful
+			// error). These could also have been the
+			// default values for these variables, but now
+			// there are no global variables with non-zero
+			// values, so no need for
+			// a copy-data-from-flash-to-ram startup loop,
+			// which saves 12 bytes on attiny.
+			current_board_version = 0xff;
+			compatible_board_version = 0xff;
+		}
+
 
 		while (!bootloaderExit) {
 			#if !defined(BUS_USE_INTERRUPTS)

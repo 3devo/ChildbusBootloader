@@ -29,6 +29,7 @@
 	const uint8_t INFO_HW_TYPE = 1;
 	const uint8_t DISPLAY_CONTROLLER_TYPE = 1;
         const uint16_t MAX_PACKET_LENGTH = 32;
+        const uint32_t BOARD_INFO_SIGNATURE = 0x489D6AB6;
 	#define HAVE_DISPLAY
 	#define NEED_TRAMPOLINE
 #elif defined(BOARD_TYPE_gphopper)
@@ -38,10 +39,13 @@
             {RCC_GPIOB, GPIOB, GPIO8},
         };
         const Pin CHILD_SELECT_PIN = {RCC_GPIOB, GPIOB, GPIO9};
+        const uint32_t BOARD_INFO_SIGNATURE = 0xFAABC3C2;
 	#define USE_CHILD_SELECT
 #else
 	#error "No board type defined"
 #endif
+
+const uint8_t BOARD_INFO_MAJOR_VERSION = 2;
 
 #if defined(USE_CHILD_SELECT)
 const uint8_t NUM_CHILDREN = sizeof(CHILDREN_SELECT_PINS) / sizeof(*CHILDREN_SELECT_PINS);
