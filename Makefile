@@ -40,7 +40,6 @@ FLASH_APP_OFFSET    = $(BL_SIZE)
 BL_OFFSET           = 0
 endif
 
-VERSION_SIZE   = 4
 BL_VERSION     = 3
 
 CXXFLAGS       =
@@ -55,7 +54,6 @@ CXXFLAGS      += -fno-exceptions
 
 CXXFLAGS      += -I$(ARCH)
 
-CXXFLAGS      += -DVERSION_SIZE=$(VERSION_SIZE)
 CXXFLAGS      += -DFLASH_ERASE_SIZE=$(FLASH_ERASE_SIZE)
 CXXFLAGS      += -DFLASH_WRITE_SIZE=$(FLASH_WRITE_SIZE)
 CXXFLAGS      += -DFLASH_APP_OFFSET=$(FLASH_APP_OFFSET)
@@ -86,7 +84,6 @@ CXXFLAGS      += -mmcu=$(MCU) -DF_CPU=8000000UL
 
 # Pass sizes to the script for positioning
 LDFLAGS       += -Wl,--defsym=BL_SIZE=$(BL_SIZE)
-LDFLAGS       += -Wl,--defsym=VERSION_SIZE=$(VERSION_SIZE)
 # Pass ERASE_SIZE to the script to verify alignment
 LDFLAGS       += -Wl,--defsym=FLASH_ERASE_SIZE=$(FLASH_ERASE_SIZE)
 else ifeq ($(ARCH),stm32)
@@ -98,7 +95,6 @@ CXXFLAGS      += -DAPPLICATION_SIZE="($(FLASH_SIZE)-$(FLASH_APP_OFFSET))"
 LDFLAGS       += -nostartfiles
 LDFLAGS       += -specs=nano.specs
 LDFLAGS       += -specs=nosys.specs
-# TODO: Position VERSION constant
 endif
 
 CC             = $(PREFIX)gcc
