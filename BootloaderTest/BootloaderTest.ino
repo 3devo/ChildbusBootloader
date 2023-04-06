@@ -874,7 +874,7 @@ test(091_set_child_select) {
 }
 
 test(095_get_max_packet_length) {
-  if (PROTOCOL_VERSION >= 0x0201)
+  if (PROTOCOL_VERSION >= 0x0201) {
     uint8_t data[2];
     assertTrue(run_transaction_ok(Commands::GET_MAX_PACKET_LENGTH, nullptr, 0, data, READ_EXACTLY(sizeof(data))));
 
