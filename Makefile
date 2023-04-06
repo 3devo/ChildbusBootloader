@@ -46,7 +46,7 @@ BL_VERSION     = 3
 CXXFLAGS       =
 CXXFLAGS      += -g3 -std=gnu++11
 CXXFLAGS      += -Wall -Wextra
-CXXFLAGS      += -Os -fpack-struct -fshort-enums
+CXXFLAGS      += -Os -fpack-struct -fshort-enums -fno-inline-small-functions
 CXXFLAGS      += -flto -fno-fat-lto-objects
 # I would think these are not required with -flto, but adding these
 # removes a lot of unused functions that lto apparently leaves...
