@@ -44,13 +44,13 @@ uint8_t SelfProgram::readByte(uint16_t address) {
 	return *ptr;
 }
 
-// Ensure that this code runs from RAM by putting into the .data
+// Ensure that this code runs from RAM by putting into the .ramtext
 // section, because during fast programming, no flash read accesses can
 // happen. This also needs noinline to ensure this code is not inlined
 // into a function running from flash, and this function cannot call
 // other functions that run from flash, so it is a bit more hardcoded
 // that it could be.
-__attribute__(( __section__(".data"), __noinline__ ))
+__attribute__(( __section__(".ramtext"), __noinline__ ))
 static void flash_program_row(uint16_t address, uint8_t *data, uint16_t len) {
 	#if !defined(STM32G0)
 	#warning "Fast programming code written for G0, might not work on other series"
