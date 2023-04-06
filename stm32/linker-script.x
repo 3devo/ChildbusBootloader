@@ -1,7 +1,8 @@
 /*
 
 This linker script:
- - Just loads the default linker script for now.
+ - Absolutely positions the board info at the end of the bootloader
+   flash area.
 
 This linker script creatively uses some peculiarities in how ld treats
 linker scripts. It is intended to be passed to the -T option on the
@@ -17,5 +18,20 @@ commandline. The following happens:
    override some existing sections, but that is not needed here.
 
 */
+
+SECTIONS
+{
+   BL_END = .;
+
+   /* Put board_info at the end of flash, and omit the data from the elf
+    * file (NOLOAD) since the contents must be flashed separately anyway
+    * (and if the elf file already contains dummy board_info data, it
+    * cannot be overwritten without another erase. */
+   BOARD_INFO_START = ORIGIN(rom) + FLASH_APP_OFFSET - BOARD_INFO_SIZE;
+   .text.board_info BOARD_INFO_START (NOLOAD) : {
+      ASSERT(BL_END < BOARD_INFO_START, "Bootloader too big");
+      *(.board_info)
+   }
+}
 
 INSERT AFTER .text;

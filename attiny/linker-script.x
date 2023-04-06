@@ -92,6 +92,18 @@ SECTIONS
     * section declaration will be merged with the declaration from the
     * default script, which will provide the contents. */
    .text BL_START : { }
+
+   BL_END = .;
+
+   /* Put board_info at the end of flash, and omit the data from the elf
+    * file (NOLOAD) since the contents must be flashed separately anyway
+    * (and if the elf file already contains dummy board_info data, it
+    * cannot be overwritten without another erase. */
+   BOARD_INFO_START = ORIGIN(text) + LENGTH(text) - BOARD_INFO_SIZE;
+   .text.board_info BOARD_INFO_START (NOLOAD) : {
+      ASSERT(BL_END < BOARD_INFO_START, "Bootloader too big");
+      *(.board_info)
+   }
 }
 
 /* Keep the entrypoint at 0x0 (but we can only set it through a symbol,

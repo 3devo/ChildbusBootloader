@@ -63,6 +63,18 @@ volatile bool bootloaderExit = false;
 static uint8_t writeBuffer[FLASH_ERASE_SIZE];
 static uint16_t nextWriteAddress = 0;
 
+// This is a placeholder in flash, that should be replaced with the
+// actual board info contents while flashing the bootloader.
+// The section is explicitly set, to force this into flash (on AVR) and
+// put it into a fixed location (to make it easy to replace when
+// flashing). The contents of this variable is also omitted from the
+// resulting elf file, otherwise (on STM32) it cannot be overwritten
+// with the actual board info without doing another erase.
+// This is volatile to prevent the compiler from optimizing against the
+// current value (implicit zeroes) and force actually reading the value
+// at runtime.
+constexpr const uint8_t volatile BOARD_INFO[BOARD_INFO_SIZE] __attribute__((__section__(".board_info"))) = {};
+
 // Helper function that is declared but not defined, to allow
 // semi-static assertions (where input to a check is not really const,
 // but can be derived by the optimizer, so if the check passes, the call
