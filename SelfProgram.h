@@ -21,8 +21,6 @@
 #include <stdint.h>
 #include "Config.h"
 
-void startApplication();
-
 class SelfProgram {
 public:
 	static void readFlash(uint16_t address, uint8_t *data, uint16_t len);
