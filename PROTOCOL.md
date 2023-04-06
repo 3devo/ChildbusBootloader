@@ -7,7 +7,7 @@ number of child boards connected to a shared bus. This protocol then
 facilitates the mainboard uploading an application to each child bus and
 then executing that application.
 
-This document describes protocol version 2.1 (0x0201).
+This document describes protocol version 2.2 (0x0202).
 
 History, compatibility and intended use
 ---------------------------------------
@@ -391,7 +391,7 @@ master (e.g. older firmware on the master) is running against a newer
 child, things should just work if possible, but at least allow an error
 message to be shown.
 
-This protocol is initially designed to talk to a microcontroller on the
+This protocol was initially designed to talk to a microcontroller on the
 interface board. This microcontroller needs to take action to enable the
 display before an error message can be shown to the user, so this protocol
 contains some special provisions for this case (e.g. the `POWER_UP_DISPLAY`
@@ -510,6 +510,7 @@ The base protocol defines these commands:
 | 0x0b        | `SET_CHILD_SELECT`
 | 0x0c        | `GET_MAX_PACKET_LENGTH`
 | 0x0d        | `GET_EXTRA_INFO`
+| 0x0e        | `READ_BOARD_INFO`
 | 0x80 - 0xfe | Reserved for application commands
 | 0xff        | Reserved
 
@@ -623,6 +624,13 @@ powerup-sequence is hardcoded and might not be ideal.
 This command requests information about the hardware the bootloader runs
 on.
 
+The data returned by this command is typically also returned by the
+`READ_BOARD_INFO` command, so master implementations should use that
+command when it is available, falling back to this command only when
+`READ_BOARD_INFO` is not supported or does not provide all of this
+information.
+
+
 | Bytes | Command field
 |-------|-------------------------------
 | 1     | Cmd: `GET_HARDWARE_INFO` (0x03)
@@ -676,6 +684,12 @@ or received (including the checksum, excluding the address byte).
 `GET_HARDWARE_REVISION` command
 ---------------------------
 This command requests the actual hardware version of the board.
+
+The data returned by this command is typically also returned by the
+`READ_BOARD_INFO` command, so master implementations should use that
+command when it is available, falling back to this command only when
+`READ_BOARD_INFO` is not supported or does not provide all of this
+information.
 
 | Bytes | Command field
 |-------|-------------------------------
@@ -952,12 +966,18 @@ even without using this command).
 This command was added in protocol version 2.1.
 
 `GET_EXTRA_INFO` command
----------------------------
+------------------------
 This command requests additional information about the board, typically
 about the hardware. It can be used to supply more detailed information
 than just the board version returned by `GET_HARDWARE_REVISION`, for
 example about attached hardware, or about different variants of the same
 board with different component values.
+
+The data returned by this command is typically also returned by the
+`READ_BOARD_INFO` command, so master implementations should use that
+command when it is available, falling back to this command only when
+`READ_BOARD_INFO` is not supported or does not provide all of this
+information.
 
 The meaning of the bytes depends on the board type, and might become
 dependent on hardware revision, protocol version and/or bootloader
@@ -1013,6 +1033,48 @@ For the hopper board (hardware type 0x02), no extra info is defined.
 
 This command was added in protocol version 2.1.
 
+`READ_BOARD_INFO` command
+------------------------
+This command allows reading information from the board info area, which
+contains information about the board versioning, its production, etc.
+
+This command is intended to replace (parts of) `GET_HARDWARE_INFO`,
+`GET_HARDWARE_REVISION` and `GET_EXTRA_INFO` commands with a more
+generic command, unifying the board info structure between 3devo
+childbus boards and mainboards.
+
+The format of the information returned is not defined by this
+specification - this command just returns a binary string that has its
+own versioning, crc and other structure defined elsewhere (but the
+bootloader implementation does currently make some assumptions about
+this format, so one only needs to write this board info blob into flash
+somewhere, and the bootloader can then derive the right values for the
+older commands from that).
+
+Since the board info area can be bigger than the max packet length (the
+initial version defined elsewhere is 64 bytes long), the command
+includes an offset and a length, which tells the child what part of the
+board info should be read. The returned length should always be equal to
+the requested length, except when this would read outside of the valid
+board info area. In that case, the child should limit the returned
+length to include only the valid bytes.
+
+| Bytes | Command field
+|-------|-------------------------------
+| 1     | Cmd: `READ_BOARD_INFO` (0x0e)
+| 2     | Offset
+| 1     | Length
+| 1/2   | CRC
+
+| Bytes | Reply format
+|-------|-------------------------------
+| 1     | Status: `COMMAND_OK` (0x00)
+| 1     | Length
+| 0+    | Board info
+| 1/2   | CRC
+
+This command was added in protocol version 2.2.
+
 Changelog
 =========
  - Version 1.0
@@ -1035,6 +1097,8 @@ Changelog
    - Add `GET_MAX_PACKET_LENGTH` command.
    - Add hopper board hardware type.
    - Add `GET_EXTRA_INFO` command.
+ - Version 2.2
+   - Add `READ_BOARD_INFO` command.
 
 
 License
