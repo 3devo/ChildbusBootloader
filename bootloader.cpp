@@ -51,6 +51,7 @@ struct Commands {
 	static const uint8_t GET_NUM_CHILDREN      = 0x0a;
 	static const uint8_t SET_CHILD_SELECT      = 0x0b;
 	static const uint8_t GET_EXTRA_INFO        = 0x0d;
+	static const uint8_t READ_BOARD_INFO       = 0x0e;
 };
 
 constexpr const uint8_t MAX_EXTRA_INFO = 16;
@@ -275,6 +276,7 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			}
 		}
 		case Commands::READ_FLASH:
+		case Commands::READ_BOARD_INFO:
 		{
 			if (len != 3)
 				return cmd_result(Status::INVALID_ARGUMENTS);
@@ -285,7 +287,15 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 			if (len > maxLen)
 				return cmd_result(Status::INVALID_ARGUMENTS);
 
-			address += FLASH_APP_OFFSET;
+			if (cmd == Commands::READ_BOARD_INFO) {
+				if (address >= sizeof(BOARD_INFO))
+					len = 0;
+				else if (len > sizeof(BOARD_INFO) - address)
+					len = sizeof(BOARD_INFO) - address;
+				address += reinterpret_cast<uintptr_t>(&BOARD_INFO);
+			} else {
+				address += FLASH_APP_OFFSET;
+			}
 
 			SelfProgram::readFlash(address, dataout, len);
 			return cmd_ok(len);
