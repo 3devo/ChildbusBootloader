@@ -76,6 +76,9 @@ class PrintingSoftWire : private SoftWire {
     result_t printResult(result_t res) {
       if (!print) return res;
       switch(res) {
+        case ack:
+          Serial.print("a");
+          break;
         case nack:
           Serial.print("n");
           break;
