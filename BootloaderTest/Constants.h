@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define USE_I2C
 #define USE_RS485
 
+// This should normally be enabled for STM32/RS485 and disabled for ATTINY/I2C
 #define USE_CHILD_SELECT
 
 struct Status {
