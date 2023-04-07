@@ -112,7 +112,7 @@ static const uint8_t NUM_CHILDREN = 1;
 static const uint8_t EXTRA_INFO[] = {};
 #define BOARD_INFO_FILE "board_info/gphopper.h"
 #endif
-static const uint8_t BOOTLOADER_VERSION = 0x03;
+static const uint8_t BOOTLOADER_VERSION = 0x04;
 
 #if defined (USE_I2C)
 static const uint8_t MAX_WRITE_DATA_LEN = MAX_MSG_LEN - 4; // cmd, 2xaddr, crc

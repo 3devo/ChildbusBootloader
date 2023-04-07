@@ -39,7 +39,7 @@ FLASH_APP_OFFSET    = $(BL_SIZE)
 BL_OFFSET           = 0
 endif
 
-BL_VERSION      = 3
+BL_VERSION      = 4
 BOARD_INFO_SIZE = 64
 
 CXXFLAGS       =

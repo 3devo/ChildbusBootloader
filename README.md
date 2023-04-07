@@ -41,7 +41,7 @@ The bootloader needs about 2k of flash.
 To upload the bootloader using avrdude and an usbasp programmer, you can
 use something like this:
 
-    avrdude -p attiny841 -c usbasp -U flash:w:bootloader-v3-interfaceboard.hex -U flash:w:BootloaderTest/board_info/interfaceboard.hex
+    avrdude -p attiny841 -c usbasp -U flash:w:bootloader-v4-interfaceboard.hex -U flash:w:BootloaderTest/board_info/interfaceboard.hex
 
 Note that the board info is not included in the bootloader hex file, but
 must be separately uploaded. The above command does this with a single
@@ -67,7 +67,7 @@ rounded up to full 2k erase pages).
 To upload the bootloader using openocd and an stlink programmer, you can
 use something like this:
 
-    openocd -f interface/stlink.cfg -f target/stm32g0x.cfg -c 'init; reset init; stm32l4x mass_erase 0; flash write_image bootloader-v3-gphopper.hex; flash write_image BootloaderTest/board_info/gphopper.hex; reset run; shutdown'
+    openocd -f interface/stlink.cfg -f target/stm32g0x.cfg -c 'init; reset init; stm32l4x mass_erase 0; flash write_image bootloader-v4-gphopper.hex; flash write_image BootloaderTest/board_info/gphopper.hex; reset run; shutdown'
 
 Note that the board info is not included in the bootloader hex file, but
 must be separately uploaded. The above command does this with a single
