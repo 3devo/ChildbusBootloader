@@ -1075,13 +1075,8 @@ test(120_write_flash) {
   assertTrue(write_and_verify_flash(data, flash_size, 16, 3, &erase_count));
   assertEqual(erase_count, 0);
   // Max write and read size
-  #if defined (USE_I2C)
-  uint8_t writelen = MAX_MSG_LEN - 4; // cmd, 2xaddr, crc
-  uint8_t readlen = MAX_MSG_LEN - 3; // status, len, crc
-  #elif defined (USE_RS485)
-  uint8_t writelen = MAX_MSG_LEN - 6; // addr, cmd, 2xaddr, 2xcrc
-  uint8_t readlen = MAX_MSG_LEN - 5; // addr, status, len, 2xcrc
-  #endif
+  uint8_t writelen = MAX_WRITE_DATA_LEN;
+  uint8_t readlen = MAX_READ_DATA_LEN;
   assertTrue(write_and_verify_flash(data, flash_size, writelen, readlen, &erase_count));
   assertEqual(erase_count, 0);
   // Random sizes

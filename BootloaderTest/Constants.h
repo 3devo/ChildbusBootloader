@@ -110,6 +110,14 @@ static const uint8_t EXTRA_INFO[] = {};
 #endif
 static const uint8_t BOOTLOADER_VERSION = 0x03;
 
+#if defined (USE_I2C)
+static const uint8_t MAX_WRITE_DATA_LEN = MAX_MSG_LEN - 4; // cmd, 2xaddr, crc
+static const uint8_t MAX_READ_DATA_LEN = MAX_MSG_LEN - 3; // status, len, crc
+#elif defined (USE_RS485)
+static const uint8_t MAX_WRITE_DATA_LEN = MAX_MSG_LEN - 6; // addr, cmd, 2xaddr, 2xcrc
+static const uint8_t MAX_READ_DATA_LEN = MAX_MSG_LEN - 5; // addr, status, len, 2xcrc
+#endif
+
 // As returned by POWER_UP_DISPLAY
 static const uint8_t DISPLAY_CONTROLLER_TYPE = 0x01;
 static const uint8_t DISPLAY_I2C_ADDRESS = 0x3C;
