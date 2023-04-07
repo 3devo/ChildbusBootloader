@@ -1,0 +1,17 @@
+@08000fc0 // Location in flash: 4096 - 64 (plus flash offset)
+c2 c3 ab fa // Signature
+00 02 // Board info version
+05 2d // Design files date
+81 2f // Board assembly date
+95 2f // Flash date
+ef be ad de // Design files hash
+31 32 33 34 35 2e 41 42 00 00 00 00 00 00 00 00 // Batch code
+00 // Reserved
+03 // Manufacturer id
+00 00 // Board number
+00 00 00 00 // Component variations (unused)
+// If you change these, also update Constants.h to match
+10 // Current board version
+10 // Compatible board version
+ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff // RFU
+89 d5 // Checksum (little endian!)
