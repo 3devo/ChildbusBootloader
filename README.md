@@ -41,7 +41,13 @@ The bootloader needs about 2k of flash.
 To upload the bootloader using avrdude and an usbasp programmer, you can
 use something like this:
 
-    avrdude -p attiny841 -c usbasp -U flash:w:bootloader-v3-interfaceboard-1.4-old-adelco-display.hex
+    avrdude -p attiny841 -c usbasp -U flash:w:bootloader-v3-interfaceboard.hex -U flash:w:BootloaderTest/board_info/interfaceboard.hex
+
+Note that the board info is not included in the bootloader hex file, but
+must be separately uploaded. The above command does this with a single
+command using a sample board info intended for the test run, be sure to
+replace that with a proper board info file during production. The board
+info is expected to be 64-bytes long and located at address 0x1fc0.
 
 STM32 support
 -------------
@@ -61,7 +67,23 @@ rounded up to full 2k erase pages).
 To upload the bootloader using openocd and an stlink programmer, you can
 use something like this:
 
-    openocd -f interface/stlink.cfg -f target/stm32g0x.cfg -c 'program bootloader-v3-gphopper-1.0.elf verify reset exit'
+    openocd -f interface/stlink.cfg -f target/stm32g0x.cfg -c 'init; reset init; stm32l4x mass_erase 0; flash write_image bootloader-v3-gphopper.hex; flash write_image BootloaderTest/board_info/gphopper.hex; reset run; shutdown'
+
+Note that the board info is not included in the bootloader hex file, but
+must be separately uploaded. The above command does this with a single
+command using a sample board info intended for the test run, be sure to
+replace that with a proper board info file during production. The board
+info is expected to be 64-bytes long and located at address 0x0fc0.
+
+Also note that the above uses the the lower level `flash write` command
+for flashing, since the higher-level `program` command can only handle
+a single file and insists on erasing before every file (which is
+problematic when there is flash page overlap between files, like here).
+This also uses an explicit mass erase instead of relying on openocd to
+automatically erase, which generates a warning in the log.
+
+For simplicity, flashing is not verified - this should probably be
+different during production.
 
 License
 -------
