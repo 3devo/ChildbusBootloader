@@ -90,7 +90,7 @@ static const uint8_t LAST_ADDRESS = 15;
 static const uint8_t MAX_EXTRA_INFO = 16;
 
 // Expected values
-static const uint16_t PROTOCOL_VERSION = 0x0201;
+static const uint16_t PROTOCOL_VERSION = 0x0202;
 #if defined(TEST_SUBJECT_ATTINY)
 static const uint8_t HARDWARE_TYPE = 0x01;
 static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x01;
