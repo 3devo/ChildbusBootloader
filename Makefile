@@ -23,7 +23,7 @@ FLASH_WRITE_SIZE    = SPM_PAGESIZE # Defined by avr-libc
 FLASH_ERASE_SIZE    = 64
 FLASH_SIZE          = 8192
 # Size of the bootloader area. Must be a multiple of the erase size
-BL_SIZE        = 2048
+BL_SIZE             = 2048
 FLASH_APP_OFFSET    = 0
 BL_OFFSET           = $(shell expr $(FLASH_SIZE) - $(BL_SIZE))
 else ifeq ($(ARCH),stm32)
