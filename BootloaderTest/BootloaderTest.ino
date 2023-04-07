@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   #include "PrintingStream.h"
 #endif
 
+#include BOARD_INFO_FILE
+
 #if defined(USE_I2C)
 PrintingSoftWire bus(SDA, SCL);
 #elif defined(USE_RS485)
@@ -710,6 +712,62 @@ test(072_get_extra_info) {
     assertEqual(status, Status::COMMAND_OK);
     assertEqual(len, sizeof(EXTRA_INFO));
     assertEqual(memcmp(data, EXTRA_INFO, len), 0, "", on_failure());
+  }
+}
+
+bool verify_board_info(uint8_t *data, uint16_t len, uint8_t readLen) {
+  uint16_t offset = 0;
+  uint8_t i = 0;
+  uint8_t datain[readLen];
+  uint8_t actualLen;
+  auto on_failure = [&i, &offset, &data, &len, &datain, &readLen, &actualLen]() {
+    Serial.print("data = ");
+    printHexBuf(data, len);
+    Serial.print("data@offset = ");
+    printHexBuf(data + offset, min(readLen, len - offset));
+    Serial.print("datain = ");
+    printHexBuf(datain, actualLen);
+    Serial.print("offset = 0x");
+    Serial.println(offset, HEX);
+    Serial.print("i = 0x");
+    Serial.println(i, HEX);
+    return false;
+  };
+
+  while (offset <= len) {
+    uint8_t dataout[3] = {(uint8_t)(offset >> 8), (uint8_t)offset, readLen};
+    assertTrue(run_transaction_ok(Commands::READ_BOARD_INFO, dataout, sizeof(dataout), datain, READ_UP_TO(readLen), READ_EXACTLY(0), &actualLen), "", on_failure());
+    assertEqual(actualLen, min(readLen, len - offset), "", on_failure());
+    for (i = 0; i < actualLen; ++i)
+      assertEqual(datain[i], data[offset + i], "", on_failure());
+    offset += readLen;
+  }
+  return true;
+}
+
+test(073_read_board_info) {
+  if (PROTOCOL_VERSION < 0x0202)
+    skip();
+
+  assertTrue(verify_board_info(board_info, sizeof(board_info), 1));
+  assertTrue(verify_board_info(board_info, sizeof(board_info), 16));
+  assertTrue(verify_board_info(board_info, sizeof(board_info), 21));
+  assertTrue(verify_board_info(board_info, sizeof(board_info), MAX_READ_DATA_LEN));
+}
+
+test(073_read_board_info_past_end) {
+  uint16_t offsets[] = {64, 80, 127, 65000};
+  uint8_t actualLen;
+  for (auto offset: offsets) {
+    auto on_failure = [&offset]() {
+      Serial.print("offset = 0x");
+      Serial.println(offset, HEX);
+    };
+
+    uint8_t dataout[3] = {(uint8_t)(offset >> 8), (uint8_t)offset, 1};
+    uint8_t datain[1];
+    assertTrue(run_transaction_ok(Commands::READ_BOARD_INFO, dataout, sizeof(dataout), datain, READ_UP_TO(1), READ_EXACTLY(0), &actualLen), "", on_failure());
+    assertEqual(actualLen, 0, "", on_failure());
   }
 }
 

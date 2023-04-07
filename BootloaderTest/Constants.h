@@ -66,6 +66,7 @@ struct Commands {
     SET_CHILD_SELECT      = 0x0b,
     GET_MAX_PACKET_LENGTH = 0x0c,
     GET_EXTRA_INFO        = 0x0d,
+    READ_BOARD_INFO       = 0x0e,
     END_OF_COMMANDS
   };
 };
@@ -98,6 +99,7 @@ static const bool SUPPORTS_DISPLAY = true;
 static const uint16_t MAX_MSG_LEN = 32;
 static const uint8_t NUM_CHILDREN = 0;
 static constexpr const uint8_t EXTRA_INFO[] = {0x02};
+#define BOARD_INFO_FILE "board_info/interfaceboard.h"
 #elif defined(TEST_SUBJECT_STM32)
 static const uint8_t HARDWARE_TYPE = 0x02;
 static const uint8_t HARDWARE_COMPATIBLE_REVISION = 0x10;
@@ -107,6 +109,7 @@ static const bool SUPPORTS_DISPLAY = false;
 static const uint16_t MAX_MSG_LEN = 255;
 static const uint8_t NUM_CHILDREN = 1;
 static const uint8_t EXTRA_INFO[] = {};
+#define BOARD_INFO_FILE "board_info/gphopper.h"
 #endif
 static const uint8_t BOOTLOADER_VERSION = 0x03;
 
