@@ -701,9 +701,15 @@ test(072_get_extra_info) {
   if (sizeof(EXTRA_INFO) == 0) {
     assertEqual(status, Status::COMMAND_NOT_SUPPORTED);
   } else {
+    auto on_failure = [&data, &len] {
+      Serial.print("data = ");
+      printHexBuf(data, len);
+      Serial.println();
+    };
+
     assertEqual(status, Status::COMMAND_OK);
     assertEqual(len, sizeof(EXTRA_INFO));
-    assertEqual(memcmp(data, EXTRA_INFO, len), 0);
+    assertEqual(memcmp(data, EXTRA_INFO, len), 0, "", on_failure());
   }
 }
 
