@@ -372,6 +372,8 @@ void set_child_select(bool state) {
   digitalWrite(CHILD_SELECT_PIN, state ? LOW : HIGH);
   pinMode(CHILD_SELECT_PIN, OUTPUT);
   digitalWrite(CHILD_SELECT_PIN, state ? LOW : HIGH);
+  #else
+  (void)state;
   #endif // defined(USE_CHILD_SELECT)
 }
 
