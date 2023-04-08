@@ -85,7 +85,7 @@ void compiletime_check_failed();
 static bool equalToFlash(uint16_t address, uint16_t len) {
 	uint16_t offset = 0;
 	while (len > 0) {
-		if (writeBuffer[offset] != SelfProgram::readByte(address + offset))
+		if (writeBuffer[offset] != SelfProgram::readByte(FLASH_APP_OFFSET + address + offset))
 			return false;
 		--len;
 		++offset;
@@ -102,7 +102,7 @@ static uint8_t commitToFlash(uint16_t address, uint16_t len) {
 	uint16_t offset = 0;
 	while (len > 0) {
 		uint16_t pageLen = len < FLASH_WRITE_SIZE ? len : FLASH_WRITE_SIZE;
-		uint8_t err = SelfProgram::writePage(address + offset, &writeBuffer[offset], pageLen);
+		uint8_t err = SelfProgram::writePage(FLASH_APP_OFFSET + address + offset, &writeBuffer[offset], pageLen);
 		if (err)
 			return err;
 		len -= pageLen;
@@ -284,6 +284,8 @@ cmd_result processCommand(uint8_t cmd, uint8_t *datain, uint8_t len, uint8_t *da
 
 			if (len > maxLen)
 				return cmd_result(Status::INVALID_ARGUMENTS);
+
+			address += FLASH_APP_OFFSET;
 
 			SelfProgram::readFlash(address, dataout, len);
 			return cmd_ok(len);

@@ -40,7 +40,7 @@ void SelfProgram::readFlash(uint16_t address, uint8_t *data, uint16_t len) {
 }
 
 uint8_t SelfProgram::readByte(uint16_t address) {
-	uint8_t *ptr = (uint8_t*)FLASH_BASE + FLASH_APP_OFFSET + address;
+	uint8_t *ptr = (uint8_t*)FLASH_BASE + address;
 	return *ptr;
 }
 
@@ -73,7 +73,7 @@ static void flash_program_row(uint16_t address, uint8_t *data, uint16_t len) {
 			i + 3 < len ? data[i + 3] : 0xff);
 
 		// Program each word in turn
-		MMIO32(FLASH_BASE + FLASH_APP_OFFSET + address + i) = value;
+		MMIO32(FLASH_BASE + address + i) = value;
 	}
 
 	// Wait for completion
@@ -90,7 +90,7 @@ uint8_t SelfProgram::writePage(uint16_t address, uint8_t *data, uint16_t len) {
 	}
 
 	// If the address is past the application section don't write anything
-	if (address + len > applicationSize) {
+	if (address < FLASH_APP_OFFSET || address + len > FLASH_APP_OFFSET + applicationSize) {
 		return 3;
 	}
 
@@ -101,7 +101,7 @@ uint8_t SelfProgram::writePage(uint16_t address, uint8_t *data, uint16_t len) {
 	if (address % FLASH_ERASE_SIZE == 0) {
 		if (eraseCount < 0xff)
 			++eraseCount;
-		flash_erase_page((address + FLASH_APP_OFFSET) / FLASH_ERASE_SIZE);
+		flash_erase_page(address / FLASH_ERASE_SIZE);
 	}
 
 	// If no errors from erase, then program
