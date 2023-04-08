@@ -129,7 +129,7 @@ static const uint8_t DISPLAY_I2C_ADDRESS = 0x3C;
 static const uint16_t CHILD_SELECT_PIN = PD2;
 static const uint16_t DOWNSTREAM_CS_CHECK_PINS[] = {
   // These must be analog pins, may have a pulldown
-  PC4, // Thermistor 1
+  PC5, // Internal thermistor, J3-2
 };
 static_assert(sizeof(DOWNSTREAM_CS_CHECK_PINS)/sizeof(*DOWNSTREAM_CS_CHECK_PINS) >= NUM_CHILDREN, "Insufficient CS check pins");
 #endif // defined(ARDUINO_STM32_GP20_MAINBOARD)

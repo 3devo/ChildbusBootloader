@@ -904,6 +904,10 @@ test(091_set_child_select) {
   for (uint8_t i = 0; i < NUM_CHILDREN; ++i) {
     auto on_failure = [&i]() { Serial.print("idx: "); Serial.println(i); };
 
+    // This code is written to work with or without an external
+    // pulldown on our board.
+    pinMode(DOWNSTREAM_CS_CHECK_PINS[i], INPUT_PULLDOWN);
+
     // Check that the pin is is hi-Z by default (only pullup on board
     // under test, that should form a divider with our internal
     // pulldown)
@@ -916,10 +920,6 @@ test(091_set_child_select) {
       1, // asserted
     };
     assertTrue(run_transaction_ok(Commands::SET_CHILD_SELECT, data, sizeof(data), nullptr, READ_EXACTLY(0)), "", on_failure());
-
-    // This code is written to work with or without an external
-    // pulldown on our board.
-    pinMode(DOWNSTREAM_CS_CHECK_PINS[i], INPUT_PULLDOWN);
 
     // Check that the pin is pulled low hard
     assertEqual(digitalRead(DOWNSTREAM_CS_CHECK_PINS[i]), LOW, "", on_failure());
