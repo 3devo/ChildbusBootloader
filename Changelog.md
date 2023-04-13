@@ -1,3 +1,16 @@
+Version 4 (2023-04)
+===================
+ - Support protocol verfsion 2.2.
+ - Support `READ_BOARD_INFO` command.
+ - No longer set board versions and extra info (display type) at
+   compiletime, but read them from board info from flash at runtime.
+   This means that instead of producing a hex file for each board
+   version, just a hex file per hardware type (interface board & hopper
+   board) is produced that will be combined with a board info block at
+   flash time.
+ - Removed version number block from flash.
+ - Size optimizations to make things fit on the attiny.
+
 Version 3.1 (2022-09)
 =====================
 - Support interfaceboard v1.5 and v1.6.
