@@ -143,7 +143,7 @@ void printHexBuf(uint8_t *buf, size_t len) {
 
 #if defined(USE_I2C)
   bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor = 0) {
-    assertLessOrEqual(len + 2, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)len + 2, MAX_MSG_LEN, "", false);
     assertAck(bus.startWrite(cfg.curAddr),"", false);
     assertAck(bus.llWrite(cmd), "", false);
     for (uint8_t i = 0; i < len; ++i)
@@ -158,8 +158,8 @@ void printHexBuf(uint8_t *buf, size_t len) {
   }
 
   bool read_status(uint8_t *status, uint8_t *datain, ReadLen okLen, ReadLen failLen, uint8_t *actualLen = nullptr, bool skip_start = false) {
-    assertLessOrEqual(okLen.len + 3, MAX_MSG_LEN, "", false);
-    assertLessOrEqual(failLen.len + 3, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)okLen.len + 3, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)failLen.len + 3, MAX_MSG_LEN, "", false);
     if (!skip_start) {
       assertAck(bus.startRead(cfg.curAddr), "", false);
     }
@@ -199,7 +199,7 @@ void printHexBuf(uint8_t *buf, size_t len) {
   }
 #elif defined(USE_RS485)
   bool write_command(uint8_t cmd, uint8_t *dataout, uint8_t len, uint8_t crc_xor = 0) {
-    assertLessOrEqual(len + 2, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)len + 2, MAX_MSG_LEN, "", false);
     assertEqual(bus.read(), -1, F("pending data at start of command"), false);
     digitalWrite(RS485_DE_PIN, HIGH);
     bus.write(cfg.curAddr);
@@ -259,8 +259,8 @@ void printHexBuf(uint8_t *buf, size_t len) {
   }
 
   bool read_status(uint8_t *status, uint8_t *datain, ReadLen okLen, ReadLen failLen, uint8_t *actualLen = nullptr, bool skip_start = false) {
-    assertLessOrEqual(okLen.len + 3, MAX_MSG_LEN, "", false);
-    assertLessOrEqual(failLen.len + 3, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)okLen.len + 3, MAX_MSG_LEN, "", false);
+    assertLessOrEqual((uint16_t)failLen.len + 3, MAX_MSG_LEN, "", false);
 
     uint8_t addr;
     assertTrue(read_byte(&addr, MAX_RESPONSE_TIME), F("timeout waiting for response"), false);
@@ -944,7 +944,7 @@ test(095_get_max_packet_length) {
     uint8_t data[2];
     assertTrue(run_transaction_ok(Commands::GET_MAX_PACKET_LENGTH, nullptr, 0, data, READ_EXACTLY(sizeof(data))));
 
-    assertEqual(data[0] << 8 | data[1], MAX_MSG_LEN);
+    assertEqual((uint16_t)data[0] << 8 | data[1], MAX_MSG_LEN);
   } else {
     assertTrue(check_command_not_supported(Commands::GET_MAX_PACKET_LENGTH));
   }
