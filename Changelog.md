@@ -1,10 +1,10 @@
-Version 3.1
-===========
+Version 3.1 (2022-09)
+=====================
 - Support interfaceboard v1.5 and v1.6.
 - Support hopperboard v2.0 and 2.1.
 
-Version 3
-=========
+Version 3 (2021-08)
+===================
  - Support protocol version 2.1.
  - Support STM32G0.
  - Support ATtiny441 (untested).
@@ -24,19 +24,19 @@ Version 3
    and allow reusing parts of the code elsewhere.
  - Support hopperboard v1.0.
 
-Version 2.1
-===========
+Version 2.1 (2018-11)
+=====================
  - Support interfaceboard v1.5.
 
-Version 2
-=========
+Version 2 (2018-10)
+===================
  - Support protocol version 1.1.
  - Add `GET_HARDWARE_VERSION` command.
  - Put version info in a fixed position in flash.
  - Support interfaceboard v1.4.
 
-Version 1
-=========
+Version 1 (2017-08)
+===================
  - Initial release.
  - Supports ATtiny841.
  - Supports interfaceboard v1.3.
