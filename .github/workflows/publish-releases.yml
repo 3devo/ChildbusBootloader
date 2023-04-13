@@ -1,0 +1,44 @@
+# This workflow handles tagged releases.
+#
+# Whenever a tag is pushed, this produces a clean build, creates
+# a github release for the thag and attaches the build results.
+name: Release Workflow
+on:
+  push:
+    tags:
+    - '*'
+env:
+  CHANGELOG: Changelog.md
+  RELEASE_CHANGELOG: Release.md
+
+jobs:
+  build_and_publish:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v3
+
+      - name: Install tools
+        run: |
+          apt install build-essential gcc-avr gcc-arm-none-eabi
+
+      - name: Build firmware
+        run: |
+          make
+
+      - name: Generate changelog
+        run: |
+          # This prints the first two lines and then up to the next
+          # heading (next version), and then uses head to remove that
+          # heading again
+          sed -n '1p; 2,/^===/p' "${CHANGELOG}" | head -n -2 > "${RELEASE_CHANGELOG}"
+
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: ${{ env.RELEASE_CHANGELOG }}
+          files: |
+            *.bin
+            *.hex
+            *.elf
