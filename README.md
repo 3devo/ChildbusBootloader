@@ -23,6 +23,9 @@ Required packages on Debian/Ubuntu:
 Compiling
 ---------
 
+    make -C libopencm3 lib/stm32/g0 CFLAGS='-flto -fno-fat-lto-objects
+    make
+
 Attiny support
 --------------
 Since the attinies have no native bootloader support (the reset vector
