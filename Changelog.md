@@ -1,6 +1,6 @@
 Version 4 (2023-04)
 ===================
- - Support protocol verfsion 2.2.
+ - Support protocol version 2.2.
  - Support `READ_BOARD_INFO` command.
  - No longer set board versions and extra info (display type) at
    compiletime, but read them from board info from flash at runtime.
