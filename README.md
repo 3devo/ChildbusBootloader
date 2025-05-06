@@ -18,7 +18,7 @@ Dependencies
 ------------
 Required packages on Debian/Ubuntu:
 
-  sudo apt install build-essential gcc-avr avr-libc gcc-arm-none-eabi
+    sudo apt install build-essential gcc-avr avr-libc gcc-arm-none-eabi
 
 Compiling
 ---------
