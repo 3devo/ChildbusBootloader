@@ -128,6 +128,7 @@ endif
 default:
 	$(MAKE) all ARCH=attiny BUS=TwoWire BOARD_TYPE=interfaceboard
 	$(MAKE) all ARCH=stm32 BUS=Rs485 BOARD_TYPE=gphopper
+	#$(MAKE) all ARCH=stm32 BUS=TwoWire BOARD_TYPE=gphopper
 
 all: hex fuses size checksize
 
