@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 (http://www.3devo.eu)
+ * Copyright (C) 2017-2025 3devo (http://www.3devo.eu)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
 /*
-Copyright 2017 3devo (www.3devo.eu)
+Copyright 2017-2025 3devo (www.3devo.eu)
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
